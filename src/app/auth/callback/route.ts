@@ -1,0 +1,29 @@
+import { createClient } from '@/lib/supabase/server'
+import { sendWelcomeEmail } from '@/lib/resend'
+import { NextResponse } from 'next/server'
+
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  const next = searchParams.get('next') ?? '/dashboard'
+  const safePath = next.startsWith('/') && !next.startsWith('//') ? next : '/dashboard'
+
+  if (code) {
+    const supabase = await createClient()
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error) {
+      const user = data.session?.user ?? data.user
+      if (user?.email) {
+        const createdAt = new Date(user.created_at).getTime()
+        const lastSignIn = new Date(user.last_sign_in_at ?? user.created_at).getTime()
+        const isNewUser = Math.abs(lastSignIn - createdAt) < 60_000
+        if (isNewUser) {
+          sendWelcomeEmail(user.email).catch(console.error)
+        }
+      }
+      return NextResponse.redirect(`${origin}${safePath}`)
+    }
+  }
+
+  return NextResponse.redirect(`${origin}/login?error=auth_callback_error`)
+}

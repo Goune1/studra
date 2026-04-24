@@ -1,0 +1,293 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import { toast } from 'sonner'
+import { ImageUploadInput } from '@/components/image-upload-input'
+
+interface ContentInputFormProps {
+  onSubmit: (data: { title: string; subject: string; content: string; language: string }) => Promise<void>
+  submitLabel: string
+  titlePlaceholder: string
+  contentPlaceholder: string
+  loading: boolean
+  extras?: React.ReactNode
+}
+
+const MAX_CHARS = 100000
+
+const LANGUAGES = [
+  { code: 'fr', label: 'Français' },
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Español' },
+  { code: 'de', label: 'Deutsch' },
+  { code: 'it', label: 'Italiano' },
+  { code: 'pt', label: 'Português' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'zh', label: '中文' },
+  { code: 'ja', label: '日本語' },
+]
+
+type SourceTab = 'text' | 'pdf' | 'youtube' | 'photo'
+
+export function ContentInputForm({
+  onSubmit,
+  submitLabel,
+  titlePlaceholder,
+  contentPlaceholder,
+  loading,
+  extras,
+}: ContentInputFormProps) {
+  const [title, setTitle] = useState('')
+  const [subject, setSubject] = useState('')
+  const [content, setContent] = useState('')
+  const [language, setLanguage] = useState('fr')
+  const [sourceTab, setSourceTab] = useState<SourceTab>('text')
+  const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [extracting, setExtracting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handlePdfUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setExtracting(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/extract/pdf', { method: 'POST', body: formData })
+      const json = await res.json()
+      if (!res.ok) {
+        toast.error(json.error ?? 'Erreur lors de l\'extraction du PDF')
+        return
+      }
+      setContent(json.text)
+      if (!title) setTitle(file.name.replace('.pdf', ''))
+      toast.success(`PDF extrait : ${json.pages} page(s), ${json.text.length} caractères`)
+    } catch {
+      toast.error('Erreur lors de la lecture du PDF')
+    } finally {
+      setExtracting(false)
+    }
+  }
+
+  async function handleYoutubeExtract() {
+    if (!youtubeUrl) return
+    setExtracting(true)
+    try {
+      const res = await fetch('/api/extract/youtube', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: youtubeUrl }),
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        toast.error(json.error ?? 'Erreur lors de l\'extraction YouTube')
+        return
+      }
+      setContent(json.text)
+      toast.success('Transcription YouTube extraite !')
+      setSourceTab('text')
+    } catch {
+      toast.error('Erreur lors de l\'extraction YouTube')
+    } finally {
+      setExtracting(false)
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    await onSubmit({ title, subject, content, language })
+  }
+
+  const busy = loading || extracting
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Title + Subject */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Titre *</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            disabled={busy}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors disabled:opacity-50"
+            placeholder={titlePlaceholder}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Matière</label>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            disabled={busy}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors disabled:opacity-50"
+            placeholder="Maths, Histoire, Biologie..."
+          />
+        </div>
+      </div>
+
+      {/* Language selector */}
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">Langue de génération</label>
+        <div className="flex flex-wrap gap-2">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.code}
+              type="button"
+              disabled={busy}
+              onClick={() => setLanguage(lang.code)}
+              className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                language === lang.code
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              {lang.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Source type tabs */}
+      <div>
+        <div className="flex gap-1 mb-3 p-1 bg-white/5 rounded-xl w-fit">
+          {([['text', 'Texte', '📝'], ['pdf', 'PDF', '📄'], ['youtube', 'YouTube', '🎬'], ['photo', 'Photo', '📷']] as const).map(([tab, label, icon]) => (
+            <button
+              key={tab}
+              type="button"
+              disabled={busy}
+              onClick={() => setSourceTab(tab)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                sourceTab === tab
+                  ? 'bg-violet-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {icon} {label}
+            </button>
+          ))}
+        </div>
+
+        {sourceTab === 'text' && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-300">Contenu du cours *</label>
+              <span className={`text-xs ${content.length > MAX_CHARS * 0.9 ? 'text-orange-400' : 'text-gray-500'}`}>
+                {content.length.toLocaleString('fr')} / {MAX_CHARS.toLocaleString('fr')}
+              </span>
+            </div>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value.slice(0, MAX_CHARS))}
+              required
+              disabled={busy}
+              rows={12}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors disabled:opacity-50 resize-none font-mono text-sm"
+              placeholder={contentPlaceholder}
+            />
+          </div>
+        )}
+
+        {sourceTab === 'pdf' && (
+          <div
+            className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-violet-500/50 transition-colors cursor-pointer"
+            onClick={() => !busy && fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf"
+              className="hidden"
+              onChange={handlePdfUpload}
+              disabled={busy}
+            />
+            {extracting ? (
+              <div className="flex flex-col items-center gap-2 text-violet-400">
+                <span className="animate-spin text-2xl">⟳</span>
+                <span className="text-sm">Extraction du PDF...</span>
+              </div>
+            ) : content && sourceTab === 'pdf' ? (
+              <div className="text-green-400">
+                <div className="text-2xl mb-1">✓</div>
+                <div className="text-sm">{content.length.toLocaleString()} caractères extraits</div>
+                <div className="text-xs text-gray-500 mt-1">Cliquez pour changer de fichier</div>
+              </div>
+            ) : (
+              <div className="text-gray-400">
+                <div className="text-3xl mb-2">📄</div>
+                <div className="font-medium text-white mb-1">Déposez votre PDF ici</div>
+                <div className="text-sm">ou cliquez pour sélectionner un fichier</div>
+                <div className="text-xs text-gray-600 mt-2">Max 10 Mo · PDF uniquement</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {sourceTab === 'photo' && (
+          <ImageUploadInput
+            disabled={busy}
+            onTextExtracted={(extracted) => {
+              setContent((prev) => prev ? prev + '\n\n' + extracted : extracted)
+              setSourceTab('text')
+            }}
+          />
+        )}
+
+        {sourceTab === 'youtube' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">URL de la vidéo YouTube</label>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={youtubeUrl}
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  disabled={busy}
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors disabled:opacity-50"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                />
+                <button
+                  type="button"
+                  onClick={handleYoutubeExtract}
+                  disabled={busy || !youtubeUrl}
+                  className="px-4 py-3 rounded-xl bg-red-600/80 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium transition-colors"
+                >
+                  {extracting ? <span className="animate-spin">⟳</span> : 'Extraire'}
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
+              La vidéo doit avoir des sous-titres activés (automatiques ou manuels).
+            </p>
+            {content && (
+              <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+                ✓ Transcription extraite ({content.length.toLocaleString()} caractères) — vous pouvez maintenant générer.
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {extras}
+
+      <button
+        type="submit"
+        disabled={busy || content.length < 50}
+        className="w-full py-4 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-semibold text-lg transition-colors flex items-center justify-center gap-3"
+      >
+        {loading ? (
+          <>
+            <span className="animate-spin">⟳</span>
+            Génération en cours...
+          </>
+        ) : (
+          submitLabel
+        )}
+      </button>
+    </form>
+  )
+}
