@@ -69,21 +69,21 @@ interface NodeProps {
 
 const COLOR_STYLES: Record<SchemaNodeColor, { bg: string; border: string; text: string; ring: string; shadow: string }> = {
   primary: {
-    bg: 'linear-gradient(135deg, rgba(99,102,241,0.32) 0%, rgba(139,92,246,0.32) 100%)',
+    bg: 'linear-gradient(135deg, rgba(99,102,241,0.55) 0%, rgba(139,92,246,0.50) 100%)',
     border: 'rgba(167,139,250,0.55)',
     text: '#ffffff',
     ring: 'rgba(167,139,250,0.85)',
     shadow: '0 12px 30px -10px rgba(99,102,241,0.55)',
   },
   accent: {
-    bg: 'linear-gradient(135deg, rgba(236,72,153,0.22) 0%, rgba(239,68,68,0.18) 100%)',
+    bg: 'linear-gradient(135deg, rgba(236,72,153,0.40) 0%, rgba(239,68,68,0.32) 100%)',
     border: 'rgba(244,114,182,0.45)',
     text: '#fdf2f8',
     ring: 'rgba(244,114,182,0.85)',
     shadow: '0 12px 26px -12px rgba(236,72,153,0.4)',
   },
   neutral: {
-    bg: 'rgba(20,20,28,0.78)',
+    bg: 'rgba(20,20,28,0.92)',
     border: 'rgba(255,255,255,0.10)',
     text: '#e6e7ee',
     ring: 'rgba(139,122,255,0.85)',
@@ -133,8 +133,6 @@ function NodeImpl({
         color: colors.text,
         borderRadius: 14,
         padding: '10px 14px',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

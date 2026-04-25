@@ -45,6 +45,10 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
   const autoSaveTimerRef = useRef<number | null>(null)
   const userTouchedViewportRef = useRef(Boolean(initialData.viewport))
 
+  // Always-fresh snapshot of state — lets handleSave be a stable reference
+  const latestStateRef = useRef({ nodes: state.nodes, edges: state.edges, viewport: state.viewport, dirty: state.dirty })
+  latestStateRef.current = { nodes: state.nodes, edges: state.edges, viewport: state.viewport, dirty: state.dirty }
+
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 640px)')
     const apply = () => setIsCompact(mq.matches)
@@ -57,13 +61,11 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
     if (state.dirty) setStatus('dirty')
   }, [state.dirty])
 
+  // Stable across all renders — reads state via latestStateRef, never from closure
   const handleSave = useCallback(async () => {
     setStatus('saving')
-    const payload: SchemaData = {
-      nodes: state.nodes,
-      edges: state.edges,
-      viewport: state.viewport,
-    }
+    const { nodes, edges, viewport } = latestStateRef.current
+    const payload: SchemaData = { nodes, edges, viewport }
     try {
       const res = await fetch(`/api/schemas/${schemaId}`, {
         method: 'PATCH',
@@ -80,19 +82,27 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
       setStatus('dirty')
       toast.error('Échec de la sauvegarde')
     }
-  }, [schemaId, state.nodes, state.edges, state.viewport, dispatch])
+  }, [schemaId, dispatch])
 
-  // Auto-save
+  // Auto-save debounce — re-arms on every structural change while dirty.
+  // handleSave is stable so this effect only runs when nodes/edges/viewport/dirty actually change.
   useEffect(() => {
-    if (!state.dirty) return
-    if (autoSaveTimerRef.current) window.clearTimeout(autoSaveTimerRef.current)
-    autoSaveTimerRef.current = window.setTimeout(() => {
-      handleSave()
-    }, AUTO_SAVE_INTERVAL)
-    return () => {
-      if (autoSaveTimerRef.current) window.clearTimeout(autoSaveTimerRef.current)
+    if (!state.dirty) {
+      if (autoSaveTimerRef.current) {
+        window.clearTimeout(autoSaveTimerRef.current)
+        autoSaveTimerRef.current = null
+      }
+      return
     }
-  }, [state.dirty, handleSave])
+    if (autoSaveTimerRef.current) window.clearTimeout(autoSaveTimerRef.current)
+    autoSaveTimerRef.current = window.setTimeout(handleSave, AUTO_SAVE_INTERVAL)
+    return () => {
+      if (autoSaveTimerRef.current) {
+        window.clearTimeout(autoSaveTimerRef.current)
+        autoSaveTimerRef.current = null
+      }
+    }
+  }, [state.nodes, state.edges, state.viewport, state.dirty, handleSave])
 
   // Fit to view — re-runs on every container/nodes change until the user touches the viewport
   useEffect(() => {
@@ -131,6 +141,15 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [state.selectedIds, state.locked, dispatch, handleSave])
+
+  // Warn before tab close if there are unsaved changes
+  useEffect(() => {
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (latestStateRef.current.dirty) e.preventDefault()
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [])
 
   const handleViewportChange = useCallback(
     (vp: SchemaViewport) => {

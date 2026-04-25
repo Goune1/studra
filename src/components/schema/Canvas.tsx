@@ -72,10 +72,13 @@ export function Canvas({
 }: CanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 })
-  const [dragState, setDragState] = useState<{ ids: string[]; deltaX: number; deltaY: number } | null>(null)
+  const [draggingIds, setDraggingIds] = useState<string[] | null>(null)
   const [connectDraft, setConnectDraft] = useState<{ sourceId: string; cursor: { x: number; y: number } } | null>(null)
   const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map())
   const pinchRef = useRef<{ dist: number; zoom: number; midScreen: { x: number; y: number } } | null>(null)
+  // Always-fresh viewport — lets wheel/drag handlers avoid stale closures without re-registering
+  const viewportRef = useRef(viewport)
+  viewportRef.current = viewport
 
   // Resize observer
   useEffect(() => {
@@ -99,26 +102,27 @@ export function Canvas({
     return m
   }, [nodes])
 
-  // Wheel zoom — use non-passive listener so preventDefault works
+  // Wheel zoom — stable listener (registered once); reads viewport via viewportRef
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
     function onWheel(e: WheelEvent) {
       e.preventDefault()
+      const vp = viewportRef.current
       const rect = el!.getBoundingClientRect()
       const sx = e.clientX - rect.left
       const sy = e.clientY - rect.top
       const factor = Math.pow(1.0015, -e.deltaY)
-      const newZoom = clampZoom(viewport.zoom * factor)
-      const ratio = newZoom / viewport.zoom
+      const newZoom = clampZoom(vp.zoom * factor)
+      const ratio = newZoom / vp.zoom
       if (ratio === 1) return
-      const x = sx - (sx - viewport.x) * ratio
-      const y = sy - (sy - viewport.y) * ratio
+      const x = sx - (sx - vp.x) * ratio
+      const y = sy - (sy - vp.y) * ratio
       onViewportChange({ x, y, zoom: newZoom })
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
-  }, [viewport, onViewportChange])
+  }, [onViewportChange])
 
   const beginNodeDrag = useCallback(
     (e: React.PointerEvent, nodeId: string) => {
@@ -126,7 +130,6 @@ export function Canvas({
       if (editingId === nodeId) return
       if (e.button !== undefined && e.button !== 0) return
 
-      // Selection first
       const isShift = e.shiftKey
       if (isShift) {
         onSelectNodes([nodeId], 'toggle')
@@ -138,40 +141,60 @@ export function Canvas({
         ? [...selectedIds, nodeId].filter((v, i, a) => a.indexOf(v) === i)
         : [nodeId]
 
+      let pendingDx = 0
+      let pendingDy = 0
+      let rafId: number | null = null
       let committed = false
+
       startPointerDrag(e, {
         onMove: (_, __, delta) => {
           if (delta.dx === 0 && delta.dy === 0) return
-          const dx = delta.dx / viewport.zoom
-          const dy = delta.dy / viewport.zoom
-          onMoveNodes(movingIds, dx, dy)
-          setDragState((prev) => ({
-            ids: movingIds,
-            deltaX: (prev?.deltaX ?? 0) + delta.dx,
-            deltaY: (prev?.deltaY ?? 0) + delta.dy,
-          }))
-          committed = true
+          // Accumulate sub-frame deltas; dispatch once per animation frame
+          pendingDx += delta.dx / viewportRef.current.zoom
+          pendingDy += delta.dy / viewportRef.current.zoom
+          if (rafId !== null) return
+          rafId = requestAnimationFrame(() => {
+            rafId = null
+            if (pendingDx === 0 && pendingDy === 0) return
+            onMoveNodes(movingIds, pendingDx, pendingDy)
+            setDraggingIds(movingIds)
+            pendingDx = 0
+            pendingDy = 0
+            committed = true
+          })
         },
         onEnd: () => {
+          if (rafId !== null) {
+            cancelAnimationFrame(rafId)
+            rafId = null
+            if (pendingDx !== 0 || pendingDy !== 0) {
+              onMoveNodes(movingIds, pendingDx, pendingDy)
+              committed = true
+            }
+          }
           if (committed) onCommitPositions()
-          setDragState(null)
+          setDraggingIds(null)
         },
-        onCancel: () => setDragState(null),
+        onCancel: () => {
+          if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null }
+          setDraggingIds(null)
+        },
       })
     },
-    [locked, editingId, selectedIds, viewport.zoom, onSelectNodes, onMoveNodes, onCommitPositions],
+    // viewport.zoom removed — read via viewportRef to avoid recreating on every zoom
+    [locked, editingId, selectedIds, onSelectNodes, onMoveNodes, onCommitPositions],
   )
 
   const beginHandleDrag = useCallback(
     (e: React.PointerEvent, nodeId: string) => {
       if (locked) return
       e.stopPropagation()
-      setConnectDraft({ sourceId: nodeId, cursor: getCanvasPoint(e, containerRef.current, viewport) })
+      setConnectDraft({ sourceId: nodeId, cursor: getCanvasPoint(e, containerRef.current, viewportRef.current) })
 
       startPointerDrag(e, {
         threshold: 0,
         onMove: (ev) => {
-          const pt = getCanvasPoint(ev, containerRef.current, viewport)
+          const pt = getCanvasPoint(ev, containerRef.current, viewportRef.current)
           setConnectDraft((prev) => (prev ? { ...prev, cursor: pt } : prev))
         },
         onEnd: (ev) => {
@@ -184,7 +207,7 @@ export function Canvas({
         onCancel: () => setConnectDraft(null),
       })
     },
-    [locked, viewport, onAddEdge],
+    [locked, onAddEdge], // viewport removed — read via viewportRef
   )
 
   // Background pan — also coordinates pinch
@@ -197,18 +220,17 @@ export function Canvas({
         const pts = [...activePointersRef.current.values()]
         const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
         const mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
-        pinchRef.current = { dist, zoom: viewport.zoom, midScreen: mid }
+        pinchRef.current = { dist, zoom: viewportRef.current.zoom, midScreen: mid }
         return
       }
 
       // Single pointer: pan
       ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
 
-      // Capture viewport at drag start — closures below must NOT read `viewport` directly
-      // because it's stale after every onViewportChange re-render.
-      const startVpX = viewport.x
-      const startVpY = viewport.y
-      const startZoom = viewport.zoom
+      // Capture viewport at drag start via ref — always fresh, no stale closure
+      const startVpX = viewportRef.current.x
+      const startVpY = viewportRef.current.y
+      const startZoom = viewportRef.current.zoom
 
       startPointerDrag(e, {
         onMove: (ev, state) => {
@@ -252,7 +274,7 @@ export function Canvas({
         },
       })
     },
-    [connectDraft, connectionMode, onViewportChange, viewport],
+    [connectDraft, connectionMode, onViewportChange], // viewport removed — read via viewportRef at drag start
   )
 
   const handleBackgroundClick = useCallback(
@@ -308,12 +330,36 @@ export function Canvas({
     return () => window.removeEventListener('keydown', onKey)
   }, [connectionMode, onExitConnectionMode])
 
+  // Stable handlers for Node.memo — inline arrows would break reference equality
+  const handleNodePointerDown = useCallback(
+    (e: React.PointerEvent, id: string) => {
+      if (connectionMode) {
+        e.stopPropagation()
+        handleNodeTap(id)
+        return
+      }
+      beginNodeDrag(e, id)
+    },
+    [connectionMode, handleNodeTap, beginNodeDrag],
+  )
+
+  const handleNodeDoubleClick = useCallback(
+    (id: string) => {
+      if (connectionMode) return
+      onRequestEdit(id)
+    },
+    [connectionMode, onRequestEdit],
+  )
+
+  // O(1) dragging lookup — avoids O(n²) Array.includes per render
+  const draggingSet = useMemo(() => new Set(draggingIds ?? []), [draggingIds])
+
   // Grid pattern — fixed screen-space unit scaled by zoom
   const gridUnit = 24 * viewport.zoom
   const gridOpacity = Math.min(0.55, Math.max(0.18, viewport.zoom * 0.45))
 
-  // Edges SVG — recomputed every render; memoized per-edge via Edge component
-  const edgeViews = useMemo(() => {
+  // Edge geometry — recomputed only when positions/topology change, not on selection
+  const edgeGeometry = useMemo(() => {
     return edges.map((e) => {
       const s = nodeById.get(e.source)
       const t = nodeById.get(e.target)
@@ -322,10 +368,18 @@ export function Canvas({
       const tCenter = getNodeCenter(t)
       const from = getEdgeAnchorToward(s, tCenter)
       const to = getEdgeAnchorToward(t, sCenter)
-      const highlighted = selectedIds.has(e.source) || selectedIds.has(e.target)
-      return { edge: e, from, to, highlighted }
+      return { edge: e, from, to }
     })
-  }, [edges, nodeById, selectedIds])
+  }, [edges, nodeById])
+
+  // Highlighted flag — recomputed only on selection change, not on node move
+  const edgeViews = useMemo(() => {
+    return edgeGeometry.map((v) => {
+      if (!v) return null
+      const highlighted = selectedIds.has(v.edge.source) || selectedIds.has(v.edge.target)
+      return { ...v, highlighted }
+    })
+  }, [edgeGeometry, selectedIds])
 
   const connectDraftView = useMemo(() => {
     if (!effectiveConnectDraft) return null
@@ -437,22 +491,12 @@ export function Canvas({
               <Node
                 node={n}
                 selected={selectedIds.has(n.id)}
-                dragging={dragState?.ids.includes(n.id) ?? false}
+                dragging={draggingSet.has(n.id)}
                 showHandles={!locked && !connectionMode && singleSelectedId === n.id}
                 zoom={viewport.zoom}
                 editing={editingId === n.id}
-                onPointerDown={(e, id) => {
-                  if (connectionMode) {
-                    e.stopPropagation()
-                    handleNodeTap(id)
-                    return
-                  }
-                  beginNodeDrag(e, id)
-                }}
-                onDoubleClick={(id) => {
-                  if (connectionMode) return
-                  onRequestEdit(id)
-                }}
+                onPointerDown={handleNodePointerDown}
+                onDoubleClick={handleNodeDoubleClick}
                 onCommitLabel={onCommitLabel}
                 onCancelLabel={onCancelEdit}
                 onHandlePointerDown={beginHandleDrag}
