@@ -15,6 +15,13 @@ export function Footer() {
         </div>
 
         <FooterCol title="Produit" links={[['Formats', '#formats'], ['Fonctionnalités', '#features'], ['Tarifs', '#pricing'], ['Changelog', '/changelog'] ]} />
+        <FooterCol title="Fonctionnalités" links={[
+          ['Flashcards IA', '/flashcards-ia'],
+          ['Fiches de révision IA', '/fiches-de-revision-ia'],
+          ['Répétition espacée', '/repetition-espacee'],
+          ['Examens blancs IA', '/examen-blanc-ia'],
+          ['Blog', '/blog'],
+        ]} />
         <FooterCol title="Légal" links={[['CGU', '/cgu'], ['CGV', '/cgv'], ['Confidentialité', '/confidentialite']]} />
       </div>
 
