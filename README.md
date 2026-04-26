@@ -1,32 +1,69 @@
 # Studra
 
-Application SaaS de révision assistée par IA. Génère automatiquement des flashcards, fiches de révision, schémas conceptuels, frises chronologiques et examens à partir de n'importe quel contenu (texte, PDF, YouTube).
+SaaS de révision assistée par IA. Génère automatiquement des outils de révision à partir de n'importe quel contenu (texte libre, PDF, YouTube).
 
-## Stack
+## Stack technique
 
-- **Framework** — Next.js 16 (App Router, Turbopack)
-- **Base de données & Auth** — Supabase (PostgreSQL + Row Level Security)
-- **IA** — OpenAI GPT-4o mini
-- **Paiement** — Stripe (abonnement mensuel)
-- **Style** — Tailwind CSS v4
-- **Déploiement** — Vercel
+| Couche | Technologie |
+|--------|-------------|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| UI | React 19, Tailwind CSS v4, Lucide React |
+| Base de données & Auth | Supabase (PostgreSQL, RLS, SSR) |
+| IA | OpenAI GPT-4o mini |
+| Répétition espacée | ts-fsrs (algorithme FSRS) |
+| Visualisation | @xyflow/react (React Flow) |
+| Paiement | Stripe (checkout, portail, webhooks) |
+| Email | Resend |
+| Extraction | pdf-parse, youtube-transcript |
+| Déploiement | Vercel (Analytics + Speed Insights) |
+| Langage | TypeScript 5 (strict) |
 
 ## Fonctionnalités
 
-| Fonctionnalité | Gratuit | Pro |
-|---|:---:|:---:|
-| Flashcards (10–25 cartes) | ✓ | ✓ |
-| Fiche de révision Markdown | ✓ | ✓ |
-| Schéma conceptuel interactif | ✓ | ✓ |
-| Frise chronologique | ✓ | ✓ |
-| Examen (QCM + questions ouvertes) | ✓ | ✓ |
-| Mode étude interactif | ✓ | ✓ |
-| 9 langues de génération | ✓ | ✓ |
-| Générations par mois | 5 | Illimitées |
-| Mode Socrate (dialogue IA) | — | ✓ |
-| Analyse des lacunes | — | ✓ |
+### Génération IA
 
-**Sources d'entrée acceptées** : texte libre, PDF (extraction automatique), URL YouTube (transcription automatique).
+| Outil | Description |
+|-------|-------------|
+| **Flashcards** | Decks de 10–25 cartes avec mode étude (FSRS) |
+| **Fiches** | Fiches de révision en Markdown structuré |
+| **Schémas** | Cartes conceptuelles interactives (drag & drop) |
+| **Frises chronologiques** | Événements classés par date |
+| **Examens** | QCM + questions ouvertes, correction automatique |
+| **Annales** | Sujets d'examen générés à partir d'un modèle |
+| **Planning** | Plan de révision adapté à une date d'examen |
+
+### Fonctionnalités Pro
+
+| Outil | Description |
+|-------|-------------|
+| **Socrate** | Dialogue guidé par IA pour tester la compréhension |
+| **Rappel libre** | Session de rappel chronométrée avec évaluation IA |
+| **Lacunes** | Analyse automatique des points faibles (flashcards + rappels) |
+
+### Sources d'entrée
+
+- Texte libre
+- PDF (extraction serveur)
+- URL YouTube (transcription automatique)
+- Image (OCR)
+
+### Autres
+
+- 9 langues de génération
+- Thème clair / sombre
+- Paramètres FSRS personnalisables (rétention cible, intervalle max, poids)
+- Panel d'administration (générations, paiements)
+- Blog + pages SEO
+
+## Plans
+
+| | Gratuit | Pro (4,99 €/mois) |
+|---|:---:|:---:|
+| Flashcards, Fiches, Schémas, Frises, Examens, Annales, Planning | ✓ | ✓ |
+| 9 langues | ✓ | ✓ |
+| Générations / mois | 5 | Illimitées |
+| Socrate, Rappel libre, Lacunes | — | ✓ |
+| Paramètres FSRS avancés | — | ✓ |
 
 ## Installation
 
@@ -35,19 +72,18 @@ Application SaaS de révision assistée par IA. Génère automatiquement des fla
 - Node.js 18+
 - Compte [Supabase](https://supabase.com)
 - Clé API [OpenAI](https://platform.openai.com)
-- Compte [Stripe](https://stripe.com) (optionnel pour le développement)
+- Compte [Stripe](https://stripe.com) (optionnel en développement)
+- Compte [Resend](https://resend.com) (optionnel en développement)
 
 ### 1. Cloner et installer
 
 ```bash
-git clone https://github.com/Goune1/revision-ai.git
-cd revision-ai
+git clone <repo-url>
+cd studra
 npm install
 ```
 
 ### 2. Variables d'environnement
-
-Copier le fichier d'exemple et remplir les valeurs :
 
 ```bash
 cp .env.exemple .env.local
@@ -67,22 +103,22 @@ STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PRICE_ID=price_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 
+# Resend
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=noreply@studra.fr
+
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Admin
 ADMIN_EMAIL=ton-email@example.com
 ```
 
 ### 3. Base de données
 
-Appliquer les migrations Supabase :
-
 ```bash
 npx supabase db push
 ```
 
-Ou exécuter manuellement les fichiers SQL dans `supabase/migrations/` depuis l'interface Supabase.
+Ou exécuter manuellement les fichiers dans `supabase/migrations/` depuis l'interface Supabase.
 
 ### 4. Lancer en développement
 
@@ -90,52 +126,52 @@ Ou exécuter manuellement les fichiers SQL dans `supabase/migrations/` depuis l'
 npm run dev
 ```
 
-L'application est disponible sur [http://localhost:3000](http://localhost:3000).
+Disponible sur [http://localhost:3000](http://localhost:3000).
 
-## Structure du projet
-
-```
-src/
-├── app/
-│   ├── (auth)/              # Pages login / register
-│   ├── (dashboard)/         # Interface utilisateur protégée
-│   │   ├── dashboard/       # Accueil avec stats et activité récente
-│   │   ├── flashcards/      # Decks, mode étude, mode Socrate
-│   │   ├── fiches/          # Fiches de révision Markdown
-│   │   ├── schemas/         # Schémas conceptuels (React Flow)
-│   │   ├── timelines/       # Frises chronologiques
-│   │   ├── exams/           # Examens et résultats
-│   │   ├── lacunes/         # Analyse des lacunes (Pro)
-│   │   ├── billing/         # Gestion abonnement Stripe
-│   │   └── settings/        # Paramètres du compte
-│   ├── api/
-│   │   ├── generate/        # Routes de génération IA (flashcards, fiche, schéma, etc.)
-│   │   ├── extract/         # Extraction PDF et YouTube
-│   │   ├── billing/         # Checkout et portail Stripe
-│   │   └── webhooks/        # Webhooks Stripe
-│   └── page.tsx             # Landing page
-├── components/
-│   ├── dashboard/           # Composants du tableau de bord
-│   ├── lacunes/             # Composants analyse des lacunes
-│   ├── landing/             # Sections de la landing page
-│   └── flashcards/          # Composant de carte flashcard
-└── lib/
-    └── supabase/            # Clients Supabase (server / client)
-```
-
-## Plans et limites
-
-- **Gratuit** — 5 générations par mois, toutes les fonctionnalités de base
-- **Pro (4,99 €/mois)** — Générations illimitées, Mode Socrate, Analyse des lacunes
-
-Le compteur de générations se réinitialise automatiquement chaque début de mois via un webhook Stripe ou une fonction Supabase.
-
-## Stripe Webhook (développement local)
-
-Pour tester les webhooks Stripe en local :
+### Webhooks Stripe en local
 
 ```bash
 stripe listen --forward-to localhost:3000/api/webhooks/stripe
 ```
 
 Copier le `whsec_...` affiché dans `STRIPE_WEBHOOK_SECRET`.
+
+## Structure du projet
+
+```
+src/
+├── app/
+│   ├── (auth)/              # Login / Register
+│   ├── (dashboard)/         # Routes protégées
+│   │   ├── dashboard/       # Accueil (stats, activité)
+│   │   ├── flashcards/      # Decks et mode étude
+│   │   ├── fiches/          # Fiches Markdown
+│   │   ├── schemas/         # Schémas React Flow
+│   │   ├── timelines/       # Frises chronologiques
+│   │   ├── exams/           # Examens et résultats
+│   │   ├── annales/         # Sujets d'annales
+│   │   ├── socrate/         # Dialogue socratique (Pro)
+│   │   ├── recall/          # Rappel libre (Pro)
+│   │   ├── lacunes/         # Analyse des lacunes (Pro)
+│   │   ├── planning/        # Plan de révision
+│   │   ├── billing/         # Abonnement Stripe
+│   │   └── settings/        # Paramètres + FSRS
+│   ├── (seo)/               # Pages SEO publiques
+│   ├── admin/               # Panel administrateur
+│   ├── blog/                # Articles de blog
+│   ├── api/
+│   │   ├── generate/        # Génération IA
+│   │   ├── extract/         # PDF et YouTube
+│   │   ├── billing/         # Stripe checkout / portail
+│   │   ├── webhooks/        # Webhooks Stripe
+│   │   └── ...              # CRUD flashcards, fiches, etc.
+│   └── page.tsx             # Landing page
+├── components/              # Composants React
+├── lib/
+│   ├── supabase/            # Clients server / client / middleware
+│   ├── fsrs/                # Logique de répétition espacée
+│   ├── openai.ts            # Fonctions de génération IA
+│   ├── stripe.ts            # Intégration Stripe
+│   └── resend.ts            # Envoi d'emails
+└── types/                   # Interfaces TypeScript
+```
