@@ -83,7 +83,7 @@ export default async function SettingsPage() {
                 { label: 'Base',       value: 'Supabase (PostgreSQL)'      },
                 { label: 'Auth',       value: 'Supabase Auth'              },
                 { label: 'Paiements',  value: 'Stripe'                    },
-                { label: 'IA',         value: 'OpenAI GPT-4o mini'        },
+                { label: 'IA',         value: 'OpenAI GPT-5 nano'         },
                 { label: 'Deploy',     value: 'Vercel'                    },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between">

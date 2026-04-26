@@ -30,7 +30,7 @@ const entries: Entry[] = [
       'Nouveau canvas SVG natif pour les schémas mentaux : pan, zoom, drag, multi-sélection, édition inline des labels et création de connexions',
       'Mise en page automatique (BFS hiérarchique + fallback radial) et minimap',
       'Sur chaque page de création, tu peux maintenant générer plusieurs types en même temps (ex. flashcards + fiche + schéma en un clic)',
-      'Import de photos et images sur tous les outils de génération : compression automatique côté client, reconnaissance de texte via GPT-4o Vision',
+      'Import de photos et images sur tous les outils de génération : compression automatique côté client, reconnaissance de texte via GPT-5 nano Vision',
     ],
   },
   {

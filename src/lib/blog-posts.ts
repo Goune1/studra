@@ -61,7 +61,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: 'p',
-        text: "Studra part d'un constat simple : créer des flashcards manuellement est la partie la plus fastidieuse — et la moins efficace — du processus de révision. Studra automatise entièrement la création depuis ton cours, ton PDF ou une vidéo YouTube, grâce à l'IA (GPT-4o).",
+        text: "Studra part d'un constat simple : créer des flashcards manuellement est la partie la plus fastidieuse — et la moins efficace — du processus de révision. Studra automatise entièrement la création depuis ton cours, ton PDF ou une vidéo YouTube, grâce à l'IA (GPT-5 nano).",
       },
       {
         type: 'p',
@@ -164,7 +164,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: 'p',
-        text: "Studra utilise GPT-4o pour analyser ton cours et générer automatiquement des paires question/réponse de qualité. L'IA identifie les concepts clés, les définitions, les distinctions importantes et formule des cartes ciblées. Le processus prend 10 à 30 secondes pour un cours standard.",
+        text: "Studra utilise GPT-5 nano pour analyser ton cours et générer automatiquement des paires question/réponse de qualité. L'IA identifie les concepts clés, les définitions, les distinctions importantes et formule des cartes ciblées. Le processus prend 10 à 30 secondes pour un cours standard.",
       },
       {
         type: 'h3',
