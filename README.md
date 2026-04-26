@@ -9,7 +9,7 @@ SaaS de révision assistée par IA. Génère automatiquement des outils de révi
 | Framework | Next.js 16 (App Router, Turbopack) |
 | UI | React 19, Tailwind CSS v4, Lucide React |
 | Base de données & Auth | Supabase (PostgreSQL, RLS, SSR) |
-| IA | OpenAI GPT-4o mini |
+| IA | OpenAI GPT-5-nano |
 | Répétition espacée | ts-fsrs (algorithme FSRS) |
 | Visualisation | @xyflow/react (React Flow) |
 | Paiement | Stripe (checkout, portail, webhooks) |
