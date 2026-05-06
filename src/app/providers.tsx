@@ -25,7 +25,7 @@ function PostHogPageView() {
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: '/ingest',
+      api_host: '/api/events',
       ui_host: 'https://eu.posthog.com',
       capture_pageview: false,
       capture_pageleave: true,
