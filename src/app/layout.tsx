@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { PostHogProvider } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -107,9 +108,11 @@ export default function RootLayout({
         className={`${inter.className} ${displayFont.variable} ${monoFont.variable} ${dmSerif.variable} ${dmSans.variable} min-h-screen`}
         style={{ background: 'var(--app-bg)', color: 'var(--text-1)', transition: 'background 0.2s, color 0.2s' }}
       >
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <PostHogProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </PostHogProvider>
         <Toaster position="top-right" />
         <Analytics />
         <SpeedInsights />
