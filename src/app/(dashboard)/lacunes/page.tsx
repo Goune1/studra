@@ -10,6 +10,7 @@ import { ProGate } from '@/components/pro-gate'
 import { createClient } from '@/lib/supabase/client'
 import type { MockCard, MockStats, LacunesAnalysis } from '@/lib/lacunes/mock'
 import type { Profile } from '@/types'
+import { trackLacunesOpen, trackLacunesAnalyze } from '@/lib/analytics'
 
 interface ApiResponse {
   lacunes: Array<{
@@ -35,6 +36,7 @@ export default function LacunesPage() {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
+      trackLacunesOpen(user.id)
       supabase.from('profiles').select('*').eq('id', user.id).single().then(({ data }) => {
         if (data) setProfile(data as Profile)
         setProfileLoading(false)
@@ -50,6 +52,7 @@ export default function LacunesPage() {
 
   async function fetchLacunes() {
     setLoading(true)
+    trackLacunesAnalyze(profile?.id ?? 'anonymous')
     try {
       const res = await fetch('/api/analyze/lacunes')
       const json = await res.json()

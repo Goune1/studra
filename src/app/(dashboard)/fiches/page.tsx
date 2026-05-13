@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { FileText, PlusCircle, Search, ChevronDown } from 'lucide-react'
 import { EmptyState } from '@/components/content/EmptyState'
 import type { Fiche } from '@/types'
+import { trackFichesOpen } from '@/lib/analytics'
 
 const COLOR = '#3B82F6'
 const MATIERES = ['Tous', 'SES', 'HGGSP', 'Maths', 'Histoire', 'Physique', 'Autre']
@@ -42,6 +43,7 @@ export default function FichesPage() {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      trackFichesOpen(user.id)
       const { data } = await supabase
         .from('fiches')
         .select('*')

@@ -5,6 +5,7 @@ import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
+import { trackFlashcardsGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'schema', 'exam', 'timeline']
 
@@ -19,12 +20,20 @@ export default function NewFlashcardsPage() {
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
     setLoading(true)
+    trackFlashcardsGenerate(data.subject || data.title, 0)
+    const startedAt = Date.now()
     try {
       const { primary, also: alsoRes } = await generateWithAlso('flashcards', [...also], data, toast.error)
-      if (!primary.ok) { toast.error('Erreur lors de la génération des flashcards'); return }
+      if (!primary.ok) {
+        trackAIGenerationError('flashcards', 'generation_failed')
+        toast.error('Erreur lors de la génération des flashcards')
+        return
+      }
+      trackAIGenerationSuccess('flashcards', Date.now() - startedAt)
       toast.success('Contenu généré avec succès !')
       setResults(buildResources('flashcards', primary.id!, alsoRes))
     } catch {
+      trackAIGenerationError('flashcards', 'exception')
       toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)

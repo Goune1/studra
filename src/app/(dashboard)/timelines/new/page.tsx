@@ -5,6 +5,7 @@ import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
+import { trackFriseGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'schema', 'exam']
 
@@ -19,12 +20,20 @@ export default function NewTimelinePage() {
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
     setLoading(true)
+    trackFriseGenerate(data.subject || data.title, data.title)
+    const startedAt = Date.now()
     try {
       const { primary, also: alsoRes } = await generateWithAlso('timeline', [...also], data, toast.error)
-      if (!primary.ok) { toast.error('Erreur lors de la génération de la frise'); return }
+      if (!primary.ok) {
+        trackAIGenerationError('frises', 'generation_failed')
+        toast.error('Erreur lors de la génération de la frise')
+        return
+      }
+      trackAIGenerationSuccess('frises', Date.now() - startedAt)
       toast.success('Contenu généré avec succès !')
       setResults(buildResources('timeline', primary.id!, alsoRes))
     } catch {
+      trackAIGenerationError('frises', 'exception')
       toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)

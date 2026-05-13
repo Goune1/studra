@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { sendWelcomeProEmail, sendSubscriptionCancelledEmail } from '@/lib/resend'
+import { PostHog } from 'posthog-node'
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-03-31.basil' })
@@ -51,6 +52,19 @@ export async function POST(request: Request) {
       if (email) {
         await sendWelcomeProEmail(email).catch(console.error)
       }
+
+      const ph = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+        host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      })
+      await ph.capture({
+        distinctId: userId,
+        event: 'checkout_completed',
+        properties: {
+          plan: 'premium',
+          price_eur: session.amount_total ? session.amount_total / 100 : null,
+        },
+      })
+      await ph.shutdown()
       break
     }
 
@@ -84,6 +98,16 @@ export async function POST(request: Request) {
       if (email) {
         await sendSubscriptionCancelledEmail(email).catch(console.error)
       }
+
+      const ph = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+        host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      })
+      await ph.capture({
+        distinctId: userId,
+        event: 'subscription_cancelled',
+        properties: { reason: null },
+      })
+      await ph.shutdown()
       break
     }
   }

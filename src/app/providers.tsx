@@ -5,6 +5,7 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 function PostHogPageView() {
   const pathname = usePathname()
@@ -29,6 +30,15 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       ui_host: 'https://eu.posthog.com',
       capture_pageview: false,
       capture_pageleave: true,
+    })
+
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        try {
+          posthog.identify(session.user.id, { email: session.user.email })
+        } catch {}
+      }
     })
   }, [])
 

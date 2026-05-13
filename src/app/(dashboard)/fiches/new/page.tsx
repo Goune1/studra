@@ -5,6 +5,7 @@ import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
+import { trackFichesGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 
 const ALSO_OPTIONS: AlsoKey[] = ['flashcards', 'schema', 'exam', 'timeline']
 
@@ -19,12 +20,20 @@ export default function NewFichePage() {
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
     setLoading(true)
+    trackFichesGenerate(data.subject || data.title, data.title)
+    const startedAt = Date.now()
     try {
       const { primary, also: alsoRes } = await generateWithAlso('fiche', [...also], data, toast.error)
-      if (!primary.ok) { toast.error('Erreur lors de la génération de la fiche'); return }
+      if (!primary.ok) {
+        trackAIGenerationError('fiches', 'generation_failed')
+        toast.error('Erreur lors de la génération de la fiche')
+        return
+      }
+      trackAIGenerationSuccess('fiches', Date.now() - startedAt)
       toast.success('Contenu généré avec succès !')
       setResults(buildResources('fiche', primary.id!, alsoRes))
     } catch {
+      trackAIGenerationError('fiches', 'exception')
       toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)

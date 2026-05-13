@@ -1,5 +1,6 @@
 import { getDashboardData } from '@/lib/dashboard/queries'
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
+import { DashboardTracker } from '@/components/dashboard/DashboardTracker'
 import { FocusBlock } from '@/components/dashboard/FocusBlock'
 import { TodayList } from '@/components/dashboard/TodayList'
 import { WeekProgress } from '@/components/dashboard/WeekProgress'
@@ -12,6 +13,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
+      <DashboardTracker />
       <DashboardHeader user={data.user} />
 
       <FocusBlock

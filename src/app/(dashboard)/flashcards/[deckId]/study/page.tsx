@@ -8,6 +8,7 @@ import type { DueCard } from '@/lib/fsrs/service'
 import type { RatingPreview } from '@/lib/fsrs/types'
 import Link from 'next/link'
 import { X, RotateCcw, CheckCircle, Clock } from 'lucide-react'
+import { trackFlashcardsSessionStart, trackFlashcardsSessionComplete, trackFlashcardsSessionAbandoned } from '@/lib/analytics'
 
 const COLOR = '#F59E0B'
 
@@ -43,6 +44,10 @@ export default function StudyPage() {
   const [noCards, setNoCards] = useState(false)
 
   const revealedAtRef = useRef<number | null>(null)
+  const sessionStartedAtRef = useRef<number | null>(null)
+  const finishedRef = useRef(false)
+  const currentIndexRef = useRef(0)
+  const cardsRef = useRef<DueCard[]>([])
 
   // ── Keyboard shortcuts ────────────────────────────────────────────────────
   useEffect(() => {
@@ -77,10 +82,13 @@ export default function StudyPage() {
       }
 
       setCards(json.cards)
+      cardsRef.current = json.cards
       setTotalInDeck(json.totalInDeck)
       setNextDueAt(json.nextDueAt)
       setCurrentPreview(json.cards[0]?.preview ?? [])
       setLoading(false)
+      sessionStartedAtRef.current = Date.now()
+      trackFlashcardsSessionStart(deckId, json.cards.length)
     }
     load()
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,12 +104,33 @@ export default function StudyPage() {
   // Auto-complétion de la session planning correspondante à la fin du deck
   useEffect(() => {
     if (!finished) return
+    finishedRef.current = true
     fetch('/api/study-plans/auto-complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content_id: deckId, content_type: 'deck' }),
     }).catch(() => {})
   }, [finished, deckId])
+
+  // Track session complete
+  useEffect(() => {
+    if (!finished) return
+    const total = stats.again + stats.hard + stats.good + stats.easy
+    const retained = stats.good + stats.easy
+    const score = total > 0 ? Math.round((retained / total) * 100) : 0
+    const duration = sessionStartedAtRef.current ? Math.round((Date.now() - sessionStartedAtRef.current) / 1000) : 0
+    trackFlashcardsSessionComplete(deckId, score, duration)
+  }, [finished, deckId, stats])
+
+  // Track session abandoned on unmount if not finished
+  useEffect(() => {
+    return () => {
+      if (!finishedRef.current && cardsRef.current.length > 0) {
+        trackFlashcardsSessionAbandoned(deckId, currentIndexRef.current, cardsRef.current.length)
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Track when the answer is first revealed
   function handleFlipChange(flipped: boolean) {
@@ -124,8 +153,12 @@ export default function StudyPage() {
       easy:  s.easy  + (rating === 4 ? 1 : 0),
     }))
 
-    if (currentIndex + 1 >= cards.length) setFinished(true)
-    else setCurrentIndex((i) => i + 1)
+    const nextIndex = currentIndex + 1
+    if (nextIndex >= cards.length) setFinished(true)
+    else {
+      currentIndexRef.current = nextIndex
+      setCurrentIndex(nextIndex)
+    }
 
     fetch(`/api/flashcards/${deckId}/review`, {
       method: 'POST',

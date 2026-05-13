@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { trackSignupAttempt, trackSignupSuccess, trackSignupError } from '@/lib/analytics'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -18,6 +19,7 @@ export default function RegisterPage() {
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    trackSignupAttempt('email')
 
     const res = await fetch('/api/auth/register', {
       method: 'POST',
@@ -28,17 +30,22 @@ export default function RegisterPage() {
     const data = await res.json()
 
     if (!res.ok) {
+      trackSignupError(data.error ?? 'unknown')
       toast.error(data.error ?? 'Erreur lors de la création du compte')
       setLoading(false)
       return
     }
 
     // Connecter l'utilisateur après création
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
     if (signInError) {
       toast.error(signInError.message)
       setLoading(false)
       return
+    }
+
+    if (signInData.user) {
+      trackSignupSuccess(signInData.user.id, signInData.user.email ?? email, 'email')
     }
 
     toast.success('Compte créé !')

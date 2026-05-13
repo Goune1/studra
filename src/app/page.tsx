@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import { Suspense }     from 'react'
 import { Nav }          from '@/components/landing/Nav'
 import { Hero }         from '@/components/landing/Hero'
+import { LandingTracker } from '@/components/landing/LandingTracker'
 import { Formats }      from '@/components/landing/Formats'
 import { Features }     from '@/components/landing/Features'
 import { HowItWorks }   from '@/components/landing/HowItWorks'
@@ -41,6 +43,9 @@ export default function LandingPage() {
   return (
     <div className="bg-bg text-fg min-h-screen">
       <LandingJsonLd />
+      <Suspense fallback={null}>
+        <LandingTracker />
+      </Suspense>
       <Nav />
       <main>
         <Hero />

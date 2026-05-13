@@ -5,6 +5,7 @@ import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
+import { trackSchemaGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'exam', 'timeline']
 
@@ -19,12 +20,20 @@ export default function NewSchemaPage() {
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
     setLoading(true)
+    trackSchemaGenerate(data.subject || data.title, 'concept')
+    const startedAt = Date.now()
     try {
       const { primary, also: alsoRes } = await generateWithAlso('schema', [...also], data, toast.error)
-      if (!primary.ok) { toast.error('Erreur lors de la génération du schéma'); return }
+      if (!primary.ok) {
+        trackAIGenerationError('schemas', 'generation_failed')
+        toast.error('Erreur lors de la génération du schéma')
+        return
+      }
+      trackAIGenerationSuccess('schemas', Date.now() - startedAt)
       toast.success('Contenu généré avec succès !')
       setResults(buildResources('schema', primary.id!, alsoRes))
     } catch {
+      trackAIGenerationError('schemas', 'exception')
       toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)

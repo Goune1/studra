@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { Layers, Plus, Search } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { trackFlashcardsOpen } from '@/lib/analytics'
 
 const COLOR = '#F59E0B'
 
@@ -27,6 +28,7 @@ export default function FlashcardsPage() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
+      trackFlashcardsOpen(user?.id ?? 'anonymous')
       const { data } = await supabase
         .from('decks').select('*').eq('user_id', user!.id).order('created_at', { ascending: false })
       if (data) setDecks(data as Deck[])

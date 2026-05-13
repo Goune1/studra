@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { trackLogin } from '@/lib/analytics'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -18,12 +19,16 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       toast.error(error.message)
       setLoading(false)
       return
+    }
+
+    if (data.user) {
+      trackLogin(data.user.id, data.user.email ?? email, 'email')
     }
 
     router.push('/dashboard')

@@ -5,6 +5,7 @@ import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
+import { trackExamGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'schema', 'timeline']
 
@@ -19,12 +20,20 @@ export default function NewExamPage() {
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
     setLoading(true)
+    trackExamGenerate(data.subject || data.title, 'moyen')
+    const startedAt = Date.now()
     try {
       const { primary, also: alsoRes } = await generateWithAlso('exam', [...also], data, toast.error)
-      if (!primary.ok) { toast.error('Erreur lors de la génération de l\'examen'); return }
+      if (!primary.ok) {
+        trackAIGenerationError('exam', 'generation_failed')
+        toast.error('Erreur lors de la génération de l\'examen')
+        return
+      }
+      trackAIGenerationSuccess('exam', Date.now() - startedAt)
       toast.success('Contenu généré avec succès !')
       setResults(buildResources('exam', primary.id!, alsoRes))
     } catch {
+      trackAIGenerationError('exam', 'exception')
       toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)
