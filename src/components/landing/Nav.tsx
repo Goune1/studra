@@ -1,8 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
-import { NavClient } from './NavClient';
+import { getUser } from '@/lib/supabase/get-user'
+import { NavClient } from './NavClient'
 
 export async function Nav() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return <NavClient isLoggedIn={!!user} />;
+  const user = await getUser()
+  return <NavClient isLoggedIn={!!user} />
 }

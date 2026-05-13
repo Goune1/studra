@@ -54,7 +54,9 @@ export default function LandingPage() {
         <HowItWorks />
         <Testimonials />
         <SeoLinks />
-        <Pricing />
+        <Suspense fallback={<div className="py-30 px-7 min-h-140" />}>
+          <Pricing />
+        </Suspense>
         <FAQ />
         <CTA />
       </main>

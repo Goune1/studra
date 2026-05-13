@@ -1,12 +1,13 @@
 import Link from 'next/link';
+import { getUser } from '@/lib/supabase/get-user';
 import { createClient } from '@/lib/supabase/server';
 
 export async function Pricing() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getUser();
 
   let plan: 'guest' | 'free' | 'pro' = 'guest';
   if (user) {
+    const supabase = await createClient();
     const { data: profile } = await supabase
       .from('profiles')
       .select('plan')
