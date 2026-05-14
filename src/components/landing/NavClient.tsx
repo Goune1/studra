@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 const NAV_LINKS = [
@@ -23,7 +24,7 @@ export function NavClient({ isLoggedIn }: { isLoggedIn: boolean }) {
           className="flex items-center gap-2.5 text-[18px] tracking-[-0.02em] font-semibold"
           onClick={() => setOpen(false)}
         >
-          <span className="logo-mark w-[26px] h-[26px] rounded-[7px] bg-accent-gradient relative shadow-[0_0_24px_rgba(99,102,241,0.55)]" />
+          <Image src="/logo.png" alt="Studra" width={36} height={36} />
           <span>Studra</span>
         </Link>
 
