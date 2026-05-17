@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { KpiStrip }     from './KpiStrip'
+import { NewUsersChart } from './NewUsersChart'
 import { MembresTable } from './MembresTable'
 import { MemberPanel }  from './MemberPanel'
 import type { AdminUser } from '@/lib/admin/mock-data'
@@ -16,6 +17,7 @@ export function AdminClient({ users }: Props) {
   return (
     <>
       <KpiStrip users={users} />
+      <NewUsersChart users={users} />
       <MembresTable
         users={users}
         onSelectMember={setSelectedMember}

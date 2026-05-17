@@ -106,7 +106,7 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       stripeStatus,
       stripeCustomerId:  profile.stripe_customer_id  ?? null,
       generationsUsed:   profile.generations_used_this_month,
-      generationsQuota:  profile.plan === 'pro' ? Infinity : 5,
+      generationsQuota:  profile.plan === 'pro' ? null : 5,
       createdAt:         profile.created_at,
       lastLoginAt:       lastLoginMap.get(userId) ?? null,
       recentGenerations,

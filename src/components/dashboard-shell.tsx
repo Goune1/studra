@@ -5,7 +5,15 @@ import { Sidebar } from './sidebar'
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
 
-export function DashboardShell({ children, isPro }: { children: React.ReactNode; isPro: boolean }) {
+interface DashboardShellProps {
+  children: React.ReactNode
+  isPro: boolean
+  userName: string
+  userEmail: string
+  userAvatar: string | null
+}
+
+export function DashboardShell({ children, isPro, userName, userEmail, userAvatar }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -18,7 +26,14 @@ export function DashboardShell({ children, isPro }: { children: React.ReactNode;
         />
       )}
 
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} isPro={isPro} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        isPro={isPro}
+        userName={userName}
+        userEmail={userEmail}
+        userAvatar={userAvatar}
+      />
 
       <div className="md:ml-64 flex flex-col min-h-screen">
         {/* Mobile top bar */}

@@ -1,32 +1,8 @@
 import Link from 'next/link';
-import { getUser } from '@/lib/supabase/get-user';
-import { createClient } from '@/lib/supabase/server';
 
-export async function Pricing() {
-  const user = await getUser();
-
-  let plan: 'guest' | 'free' | 'pro' = 'guest';
-  if (user) {
-    const supabase = await createClient();
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('plan')
-      .eq('id', user.id)
-      .single();
-    plan = profile?.plan === 'pro' ? 'pro' : 'free';
-  }
-
-  const freeCta = plan === 'guest'
-    ? <Link href="/register" className="btn btn-outline justify-center mt-auto">Créer mon compte</Link>
-    : plan === 'free'
-      ? <Link href="/dashboard" className="btn btn-outline justify-center mt-auto">Accéder à l&apos;app</Link>
-      : <span className="btn btn-outline justify-center mt-auto opacity-40 cursor-default pointer-events-none">Plan actuel</span>;
-
-  const proCta = plan === 'guest'
-    ? <Link href="/register" className="btn btn-primary justify-center mt-auto">Passer Pro <span className="arrow">→</span></Link>
-    : plan === 'free'
-      ? <Link href="/upgrade" className="btn btn-primary justify-center mt-auto">Passer Pro <span className="arrow">→</span></Link>
-      : <span className="btn btn-primary justify-center mt-auto opacity-40 cursor-default pointer-events-none">Plan actuel ✓</span>;
+export function Pricing() {
+  const freeCta = <Link href="/register" className="btn btn-outline justify-center mt-auto">Créer mon compte</Link>;
+  const proCta = <Link href="/register" className="btn btn-primary justify-center mt-auto">Passer Pro <span className="arrow">→</span></Link>;
 
   return (
     <section id="pricing" data-screen-label="Pricing" className="py-30 px-7">

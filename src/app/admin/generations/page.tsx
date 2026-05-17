@@ -97,7 +97,7 @@ export default async function GenerationsPage() {
                 </thead>
                 <tbody>
                   {[...users].sort((a, b) => b.generationsUsed - a.generationsUsed).map((u: AdminUser) => {
-                    const pct = u.generationsQuota === Infinity ? 0 : Math.min(u.generationsUsed / u.generationsQuota, 1)
+                    const pct = u.generationsQuota === null ? 0 : Math.min(u.generationsUsed / u.generationsQuota, 1)
                     const barColor = pct >= 0.8 ? '#EF4444' : pct >= 0.6 ? '#F59E0B' : '#22C55E'
                     return (
                       <tr key={u.id} className="border-b border-[#1A1A1A] hover:bg-white/[0.02] transition-colors">
@@ -113,7 +113,7 @@ export default async function GenerationsPage() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-xs text-white">{u.generationsUsed}</span>
-                            {u.generationsQuota !== Infinity && (
+                            {u.generationsQuota !== null && (
                               <div className="w-20 h-1.5 bg-[#222] rounded-full overflow-hidden">
                                 <div className="h-full rounded-full" style={{ width: `${pct * 100}%`, background: barColor }} />
                               </div>
@@ -121,7 +121,7 @@ export default async function GenerationsPage() {
                           </div>
                         </td>
                         <td className="px-4 py-3 font-mono text-[10px] text-gray-500">
-                          {u.generationsQuota === Infinity ? '∞' : `/ ${u.generationsQuota}`}
+                          {u.generationsQuota === null ? '∞' : `/ ${u.generationsQuota}`}
                         </td>
                       </tr>
                     )

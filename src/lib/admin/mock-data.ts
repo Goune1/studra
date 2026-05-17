@@ -26,7 +26,7 @@ export interface AdminUser {
   stripeStatus:      StripeStatus
   stripeCustomerId:  string | null
   generationsUsed:   number
-  generationsQuota:  number          // 5 for free, Infinity for pro
+  generationsQuota:  number | null    // 5 for free, null = unlimited (pro)
   createdAt:         string
   lastLoginAt:       string | null
   recentGenerations: RecentGeneration[]

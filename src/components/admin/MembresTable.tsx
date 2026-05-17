@@ -57,7 +57,7 @@ function StatusBadge({ status }: { status: StripeStatus }) {
 }
 
 function QuotaCell({ user }: { user: AdminUser }) {
-  if (!isFinite(user.generationsQuota)) {
+  if (user.generationsQuota === null) {
     return <span className="font-mono text-gray-500 text-sm">∞</span>
   }
   const pct       = Math.min((user.generationsUsed / user.generationsQuota) * 100, 100)
@@ -218,7 +218,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
           <tbody>
             {paginated.map((user, idx) => {
               const rowNum    = start + idx
-              const genLabel  = isFinite(user.generationsQuota)
+              const genLabel  = user.generationsQuota !== null
                 ? `${user.generationsUsed} / ${user.generationsQuota}`
                 : String(user.generationsUsed)
               const isActive  = selectedMemberId === user.id
@@ -291,7 +291,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
 
                       {/* Reset quota */}
                       <button
-                        disabled={user.plan !== 'free'}
+                        disabled={user.plan !== 'free' || undefined}
                         className={`p-1.5 rounded transition-colors ${
                           user.plan === 'free'
                             ? 'text-gray-600 hover:text-amber-400 hover:bg-[#252525]'
@@ -353,7 +353,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
           <div className="flex items-center gap-1">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={safePage === 1}
+              disabled={safePage === 1 || undefined}
               className="p-1 rounded text-gray-600 hover:text-gray-200 hover:bg-[#222] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft size={14} />
@@ -363,7 +363,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
             </span>
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={safePage === totalPages}
+              disabled={safePage === totalPages || undefined}
               className="p-1 rounded text-gray-600 hover:text-gray-200 hover:bg-[#222] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight size={14} />

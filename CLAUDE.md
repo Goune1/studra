@@ -63,3 +63,22 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+## 5. Next.js Rules
+
+This project uses Next.js 16, React 19, App Router, Supabase, Vercel.
+
+**Before writing or editing any Next.js code, apply the rules in [`NEXT-BEST-PRACTICES.md`](./NEXT-BEST-PRACTICES.md).**
+
+Key rules to internalize:
+
+- `params` and `searchParams` are `Promise<...>` — always `await` them.
+- Server Components read data directly (no API round-trip). Client Components use Server Actions for mutations.
+- Never wrap `redirect()` / `notFound()` in `try/catch` — use `unstable_rethrow` if needed.
+- `'use client'` components cannot be `async function`.
+- Props crossing Server → Client must be JSON-serializable (no `Date`, `Map`, `Set`, class instances).
+- Always `next/image` (never `<img>`), `next/font` (never Google Fonts CDN), `next/script` (never native `<script>`), `next/og` (never `@vercel/og`).
+- `useSearchParams()` always needs `<Suspense>`. `usePathname()` needs it on dynamic routes without `generateStaticParams`.
+- `runtime = 'edge'` on OG images is forbidden. Default to Node.js runtime.
+- Every `@slot` (parallel route) needs a `default.tsx`. Close modals with `router.back()`.
+- `error.tsx` must be `'use client'`. `global-error.tsx` must include `<html>` and `<body>`.

@@ -7,6 +7,7 @@ export interface Profile {
   lemon_squeezy_subscription_id: string | null
   generations_used_this_month: number
   generations_reset_at: string
+  marketing_consent: boolean
   created_at: string
 }
 

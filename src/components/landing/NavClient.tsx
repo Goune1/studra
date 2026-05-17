@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 const NAV_LINKS = [
   { href: '#formats', label: 'Formats' },
@@ -12,8 +13,23 @@ const NAV_LINKS = [
   { href: '#faq', label: 'FAQ' },
 ];
 
-export function NavClient({ isLoggedIn }: { isLoggedIn: boolean }) {
+export function NavClient() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<{ email: string | null } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (cancelled || !data.user) return;
+      setUser({ email: data.user.email ?? null });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="sticky top-0 z-50 backdrop-blur-[14px] bg-[rgba(7,7,11,0.72)] border-b border-line">
@@ -39,7 +55,7 @@ export function NavClient({ isLoggedIn }: { isLoggedIn: boolean }) {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex gap-2.5 items-center">
-          {isLoggedIn ? (
+          {user ? (
             <Link href="/dashboard" className="btn btn-primary">
               Accéder à l&apos;application <span className="arrow">→</span>
             </Link>
@@ -84,7 +100,7 @@ export function NavClient({ isLoggedIn }: { isLoggedIn: boolean }) {
             </Link>
           ))}
           <div className="flex flex-col gap-2.5 pt-4">
-            {isLoggedIn ? (
+            {user ? (
               <Link href="/dashboard" className="btn btn-primary justify-center" onClick={() => setOpen(false)}>
                 Accéder à l&apos;application <span className="arrow">→</span>
               </Link>

@@ -3,6 +3,8 @@ import { Brain } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/checkout-button'
 import { ManageSubscriptionButton } from '@/components/manage-subscription-button'
+import { MarketingConsentToggle } from '@/components/settings/MarketingConsentToggle'
+import { updateMarketingConsent } from './actions'
 
 export default async function SettingsPage() {
   const supabase = await createClient()
@@ -55,6 +57,16 @@ export default async function SettingsPage() {
               ? new Date(profile.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
               : '-'}
           </p>
+        </div>
+        <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-6">
+          <div>
+            <p className="text-sm font-medium text-gray-400 mb-1">Emails marketing</p>
+            <p className="text-sm text-white">Recevoir les actualités et offres Studra par email.</p>
+          </div>
+          <MarketingConsentToggle
+            initialValue={profile?.marketing_consent ?? false}
+            updateMarketingConsent={updateMarketingConsent}
+          />
         </div>
       </div>
 

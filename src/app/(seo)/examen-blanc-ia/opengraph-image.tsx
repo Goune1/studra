@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 
+export const alt = "Studra, examens blancs générés par IA"
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 

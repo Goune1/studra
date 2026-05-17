@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef } from 'react'
+import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
@@ -21,6 +22,7 @@ import {
   Sparkles,
   Settings,
   LogOut,
+  ChevronsUpDown,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -46,28 +48,41 @@ const navItems: NavItem[] = [
   { href: '/lacunes',     label: 'Lacunes',       Icon: Target },
 ]
 
-const bottomItems: NavItem[] = [
-  { href: '/settings', label: 'Paramètres', Icon: Settings },
-]
 
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
   isPro: boolean
+  userName: string
+  userEmail: string
+  userAvatar: string | null
 }
 
-export function Sidebar({ isOpen, onClose, isPro }: SidebarProps) {
+export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvatar }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
   const prevPathname = useRef(pathname)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (prevPathname.current !== pathname) {
       prevPathname.current = pathname
       onClose()
+      setUserMenuOpen(false)
     }
   }, [pathname, onClose])
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
+      }
+    }
+    if (userMenuOpen) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [userMenuOpen])
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -125,7 +140,8 @@ export function Sidebar({ isOpen, onClose, isPro }: SidebarProps) {
     >
       {/* Logo */}
       <div className="h-16 px-6 flex items-center justify-between border-b" style={{ borderColor: 'var(--border-sub)' }}>
-        <Link href="/" className="text-lg font-bold tracking-tight">
+        <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
+          <Image src="/logo.png" alt="Studra" width={34} height={34} />
           <span style={{ color: 'var(--text-1)' }}>Studra</span>
         </Link>
         {/* Close button — mobile only */}
@@ -146,26 +162,71 @@ export function Sidebar({ isOpen, onClose, isPro }: SidebarProps) {
           <NavLink key={item.href} item={item} />
         ))}
 
-        <div className="pt-3 mt-3 border-t space-y-0.5" style={{ borderColor: 'var(--border-sub)' }}>
-          {!isPro && (
+        {!isPro && (
+          <div className="pt-3 mt-3 border-t" style={{ borderColor: 'var(--border-sub)' }}>
             <NavLink
               item={{ href: '/upgrade', label: 'Passer Pro', Icon: Sparkles, color: '#818cf8' }}
             />
-          )}
-          {bottomItems.map((item) => (
-            <NavLink key={item.href} item={item} />
-          ))}
-        </div>
+          </div>
+        )}
       </nav>
 
-      <div className="px-3 py-3 border-t" style={{ borderColor: 'var(--border-sub)' }}>
+      <div ref={userMenuRef} className="px-3 py-3 border-t" style={{ borderColor: 'var(--border-sub)' }}>
+        {userMenuOpen && (
+          <div
+            className="mb-1 rounded-xl overflow-hidden border"
+            style={{ borderColor: 'var(--border-sub)', background: 'var(--sidebar-bg)' }}
+          >
+            <Link
+              href="/settings"
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-white/4 transition-colors"
+              style={{ color: 'var(--text-2)' }}
+            >
+              <Settings size={15} />
+              Paramètres
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-white/4 transition-colors"
+              style={{ color: 'var(--text-2)' }}
+            >
+              <LogOut size={15} />
+              Déconnexion
+            </button>
+          </div>
+        )}
         <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium hover:bg-white/2 transition-all duration-150"
-          style={{ paddingLeft: '10px', paddingRight: '12px', borderLeft: '2px solid transparent', color: 'var(--text-2)' }}
+          onClick={() => setUserMenuOpen((v) => !v)}
+          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/4 transition-all duration-150"
         >
-          <LogOut size={15} />
-          Déconnexion
+          {userAvatar ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={userAvatar}
+              alt={userName}
+              width={32}
+              height={32}
+              className="rounded-full shrink-0 object-cover"
+              style={{ width: 32, height: 32 }}
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <span
+              className="flex items-center justify-center rounded-full shrink-0 text-sm font-semibold"
+              style={{ width: 32, height: 32, background: 'var(--border-sub)', color: 'var(--text-1)' }}
+            >
+              {userName.charAt(0).toUpperCase()}
+            </span>
+          )}
+          <span className="flex-1 text-left min-w-0">
+            <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-1)' }}>
+              {userName}
+            </span>
+            <span className="block text-xs truncate" style={{ color: 'var(--text-3)' }}>
+              {userEmail}
+            </span>
+          </span>
+          <ChevronsUpDown size={14} style={{ color: 'var(--text-3)' }} className="shrink-0" />
         </button>
       </div>
     </aside>

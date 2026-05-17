@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og'
 
-export const runtime = 'edge'
 export const alt = "Studra – Révision intelligente avec l'IA"
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -58,7 +57,7 @@ export default function OgImage() {
               border: '1px solid rgba(99,102,241,0.3)',
               borderRadius: 999,
               padding: '8px 16px',
-              width: 'fit-content',
+              alignSelf: 'flex-start',
               marginBottom: 32,
             }}
           >
@@ -78,14 +77,15 @@ export default function OgImage() {
           {/* Headline */}
           <div
             style={{
-              color: 'white',
+              display: 'flex',
+              flexDirection: 'column',
               fontSize: 72,
               fontWeight: 700,
               lineHeight: 1.1,
               marginBottom: 24,
             }}
           >
-            Gagne du temps,{'\n'}
+            <span style={{ color: 'white' }}>Gagne du temps,</span>
             <span style={{ color: '#6366f1' }}>Retiens mieux.</span>
           </div>
 

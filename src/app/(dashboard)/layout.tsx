@@ -15,6 +15,16 @@ export default async function DashboardLayout({
     : { data: null }
 
   const isPro = profile?.plan === 'pro'
+  const userName = (user?.user_metadata?.full_name as string | undefined)
+    ?? (user?.user_metadata?.name as string | undefined)
+    ?? user?.email?.split('@')[0]
+    ?? 'Utilisateur'
+  const userEmail = user?.email ?? ''
+  const userAvatar = (user?.user_metadata?.avatar_url as string | null) ?? null
 
-  return <DashboardShell isPro={isPro}>{children}</DashboardShell>
+  return (
+    <DashboardShell isPro={isPro} userName={userName} userEmail={userEmail} userAvatar={userAvatar}>
+      {children}
+    </DashboardShell>
+  )
 }

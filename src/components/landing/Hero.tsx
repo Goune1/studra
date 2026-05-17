@@ -1,10 +1,6 @@
 import Link from 'next/link';
-import { getUser } from '@/lib/supabase/get-user';
 
-export async function Hero() {
-  const user = await getUser();
-  const isLoggedIn = !!user;
-
+export function Hero() {
   return (
     <header className="relative overflow-hidden max-sm:pt-14 max-sm:pb-6 max-sm:px-4 pt-20 pb-10 px-7" id="top" data-screen-label="Hero">
       <div className="hero-bg absolute inset-0 pointer-events-none z-0" />
@@ -21,8 +17,8 @@ export async function Hero() {
           Colle un cours, un PDF ou un lien YouTube. Studra génère flashcards, fiches, schémas, timelines et examens blancs en quelques secondes, et t&apos;entraîne comme un coach personnel.
         </p>
         <div className="flex gap-3 justify-center items-center flex-wrap">
-          <Link href={isLoggedIn ? '/dashboard' : '/register'} className="btn btn-primary btn-lg">
-            {isLoggedIn ? 'Accéder à l\'application' : 'Commencer gratuitement'} <span className="arrow">→</span>
+          <Link href="/register" className="btn btn-primary btn-lg">
+            Commencer gratuitement <span className="arrow">→</span>
           </Link>
           <Link href="#how" className="btn btn-outline btn-lg">Voir comment ça marche</Link>
         </div>

@@ -166,10 +166,10 @@ export function MemberPanel({ member, onClose }: Props) {
                   <Row label="Générations">
                     <span className="font-mono text-xs text-gray-300 tabular-nums">
                       {member.generationsUsed}
-                      {isFinite(member.generationsQuota) ? ` / ${member.generationsQuota}` : ' / ∞'}
+                      {member.generationsQuota !== null ? ` / ${member.generationsQuota}` : ' / ∞'}
                     </span>
                   </Row>
-                  {isFinite(member.generationsQuota) && (
+                  {member.generationsQuota !== null && (
                     <Row label="Quota restant">
                       <div className="flex items-center gap-2">
                         <div className="w-24 h-1 bg-[#2a2a2a] rounded-full overflow-hidden">
