@@ -23,6 +23,48 @@ const TAG_COLORS: Record<Entry['tag'], string> = {
 
 const entries: Entry[] = [
   {
+    date: '17 mai 2026',
+    tag: 'Nouvelle fonctionnalité',
+    title: 'Profil utilisateur dans la sidebar et campagnes email',
+    items: [
+      'Profil utilisateur en bas de la barre latérale : avatar Google OAuth ou initiale du nom pour les connexions email',
+      'Menu déroulant au clic avec accès rapide aux Paramètres et à la Déconnexion',
+      'Interface d\'envoi de campagnes email marketing dans le panneau admin (composition, sélection de destinataires, génération IA, prévisualisation)',
+      'Page de désinscription aux emails marketing (/unsubscribe)',
+      'Toggle de consentement marketing dans les paramètres utilisateur',
+      'Pages d\'erreur dédiées : error.tsx, global-error.tsx, not-found.tsx et loading.tsx pour le dashboard',
+    ],
+  },
+  {
+    date: '14 mai 2026',
+    tag: 'Amélioration',
+    title: 'Nouveau logo Studra',
+    items: [
+      'Nouveau logo dans le favicon, la navbar de la landing page, la sidebar du dashboard et le footer',
+    ],
+  },
+  {
+    date: '13 mai 2026',
+    tag: 'Amélioration',
+    title: 'Analytics et performances de la landing page',
+    items: [
+      'Intégration de PostHog via reverse proxy Next.js pour le suivi des événements produit (inscription, connexion, génération, paiement…)',
+      'Identification automatique des utilisateurs Supabase au boot PostHog',
+      'Optimisations TTFB et FCP : déduplication des appels Supabase avec React cache(), streaming <Suspense> sur le bloc Pricing',
+      'Réduction du blur et de la taille des arrière-plans hero pour accélérer le premier rendu',
+    ],
+  },
+  {
+    date: '25 avril 2026',
+    tag: 'Amélioration',
+    title: 'SEO, blog et mises à jour de la landing page',
+    items: [
+      'Nouvelles pages SEO dédiées (flashcards, fiches de révision, répétition espacée, examen blanc)',
+      'Middleware de protection des routes dashboard',
+      'Mises à jour du contenu de la landing page (Hero, Tarifs, Témoignages)',
+    ],
+  },
+  {
     date: '21 avril 2026',
     tag: 'Nouvelle fonctionnalité',
     title: 'Canvas de schémas natif, génération croisée et import photo',
