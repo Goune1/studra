@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Instrument_Serif, JetBrains_Mono, DM_Serif_Display, DM_Sans } from 'next/font/google'
+import { Inter, Instrument_Serif, JetBrains_Mono, DM_Serif_Display, DM_Sans, Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/next'
@@ -8,6 +8,18 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { PostHogProvider } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
+
+const geist = Geist({
+  variable: '--font-geist',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+})
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+  weight: ['400', '500'],
+})
 
 const displayFont = Instrument_Serif({
   weight: '400',
@@ -105,7 +117,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
       <body
-        className={`${inter.className} ${displayFont.variable} ${monoFont.variable} ${dmSerif.variable} ${dmSans.variable} min-h-screen`}
+        className={`${inter.className} ${displayFont.variable} ${monoFont.variable} ${dmSerif.variable} ${dmSans.variable} ${geist.variable} ${geistMono.variable} min-h-screen`}
         style={{ background: 'var(--app-bg)', color: 'var(--text-1)', transition: 'background 0.2s, color 0.2s' }}
       >
         <PostHogProvider>

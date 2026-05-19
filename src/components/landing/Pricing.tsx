@@ -1,100 +1,116 @@
-import Link from 'next/link';
+"use client";
 
-export function Pricing() {
-  const freeCta = <Link href="/register" className="btn btn-outline justify-center mt-auto">Créer mon compte</Link>;
-  const proCta = <Link href="/register" className="btn btn-primary justify-center mt-auto">Passer Pro <span className="arrow">→</span></Link>;
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Check } from "@phosphor-icons/react";
+
+const FREE = {
+  name: "Free", price: "0", desc: "Pour tester et réviser une matière.",
+  cta: "Commencer gratuitement", ctaStyle: "btn-outline",
+  features: ["Import texte et PDF", "3 decks de flashcards", "Fiches illimitées", "Examens blancs · 2 par semaine", "Mode Socrate · limité", "Planning basique"],
+};
+const PRO = {
+  name: "Pro", price: "5", desc: "Pour préparer un bac, un concours, un examen sérieux.",
+  cta: "Passer à Pro", ctaStyle: "btn-primary", recommended: true,
+  features: ["Tout le plan Free", "Flashcards illimitées", "Import YouTube et image", "Analyse des lacunes", "Annales adaptatives", "Planning avancé", "Examens blancs illimités", "Mode Socrate illimité"],
+};
+
+function PlanCard({ plan, index }: { plan: typeof FREE & { recommended?: boolean }; index: number }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section id="pricing" data-screen-label="Pricing" className="py-30 px-7">
-      <div className="max-w-[1240px] mx-auto text-center">
-        <span className="font-mono text-xs text-accent uppercase tracking-[0.18em]">Tarifs</span>
-        <h2 className="font-serif text-[clamp(36px,5vw,60px)] leading-[1.02] tracking-[-0.03em] mt-3.5 mb-4.5 max-w-[18ch] mx-auto">
-          Commence gratuit. <em className="italic text-[#c4b5fd]">Passe Pro quand tu veux.</em>
-        </h2>
-        <p className="text-[17px] text-fg-dim max-w-[58ch] leading-[1.55] mx-auto">
-          Pas de période d&apos;essai piégeuse. Pas de facture surprise. Annule en un clic.
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-4.5 mt-15 max-w-[900px] mx-auto text-left">
-          <Plan
-            name="Gratuit"
-            price="0 €"
-            unit="/pour toujours"
-            sub="Pour découvrir la méthode Studra sur un chapitre ou une fiche."
-            features={[
-              '5 générations par mois',
-              'Accès à tous les formats',
-              'Import PDF · texte · YouTube',
-              'Répétition espacée FSRS',
-            ]}
-            cta={freeCta}
-          />
-          <Plan
-            pro
-            name="Pro"
-            price="4,99 €"
-            unit="/mois"
-            sub="Pour les étudiants qui veulent passer au niveau au-dessus, sans limite."
-            features={[
-              <span key="gen">Générations <strong className="text-fg">illimitées</strong></span>,
-              'Mode Socrate',
-              "Planning d'examen personnalisé",
-              'Analyse des lacunes avancée',
-              'Toutes les futures fonctionnalités',
-            ]}
-            cta={proCta}
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Plan({
-  name,
-  price,
-  unit,
-  sub,
-  features,
-  cta,
-  pro,
-}: {
-  name: string;
-  price: string;
-  unit: string;
-  sub: string;
-  features: React.ReactNode[];
-  cta: React.ReactNode;
-  pro?: boolean;
-}) {
-  return (
-    <article
-      className={`relative overflow-hidden rounded-[22px] p-9 flex flex-col gap-5 border ${
-        pro
-          ? 'plan-pro border-[rgba(99,102,241,0.4)] bg-gradient-to-b from-[#15152e] to-[#0e0e1c] shadow-[0_40px_80px_-40px_rgba(99,102,241,0.55)]'
-          : 'border-line bg-gradient-to-b from-surface to-bg-2'
-      }`}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: index * 0.12, duration: 0.7, ease: [0.2, 0.7, 0.3, 1] }}
+      style={{
+        position: "relative",
+        background: "var(--bg-elev)",
+        border: `1px solid ${plan.recommended ? "var(--accent)" : "var(--line)"}`,
+        boxShadow: plan.recommended ? "0 0 0 1px var(--accent) inset" : "none",
+        borderRadius: 24,
+        padding: 40,
+        display: "flex", flexDirection: "column", gap: 24,
+      }}
     >
-      {pro && (
-        <span className="absolute top-5 right-5 font-mono text-[10px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full bg-accent-gradient text-white">
+      {plan.recommended && (
+        <div className="mono" style={{ position: "absolute", top: 18, right: 24, fontSize: 10.5, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--accent)", fontWeight: 500 }}>
           Recommandé
-        </span>
+        </div>
       )}
-      <div className="font-serif text-[28px] tracking-[-0.02em]">{name}</div>
-      <div className="flex items-baseline gap-1.5">
-        <span className="font-serif text-[64px] tracking-[-0.03em] leading-none">{price}</span>
-        <span className="text-fg-mute text-sm">{unit}</span>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="mono" style={{ fontSize: 12, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--ink-500)", fontWeight: 500 }}>{plan.name}</div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+          <span style={{ fontSize: 52, fontWeight: 500, letterSpacing: "-.035em", lineHeight: 1, color: "var(--ink)", fontFeatureSettings: "'tnum'" }}>{plan.price}</span>
+          <span style={{ fontSize: 22, color: "var(--ink)", fontWeight: 500 }}>
+            €<span style={{ color: "var(--ink-500)", fontSize: 16, fontWeight: 400 }}>/mois</span>
+          </span>
+        </div>
+        <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--ink-700)", maxWidth: "36ch" }}>{plan.desc}</p>
       </div>
-      <p className="text-fg-dim text-sm leading-[1.5]">{sub}</p>
-      <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
-        {features.map((f, i) => (
-          <li key={i} className="flex items-center gap-2.5 text-sm text-fg-dim">
-            <span className="tick" />
-            {f}
+
+      <a href="#" className={`btn ${plan.ctaStyle}`} style={{ width: "100%", padding: "14px 20px", justifyContent: "center" }}>{plan.cta}</a>
+
+      <div style={{ height: 1, background: "var(--ink-200)" }} />
+
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+        {plan.features.map((f) => (
+          <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14.5, lineHeight: 1.45, color: "var(--ink-700)" }}>
+            <span style={{ color: "var(--accent)", flexShrink: 0, display: "inline-flex", marginTop: 2 }}>
+              <Check size={14} weight="regular" />
+            </span>
+            <span>{f}</span>
           </li>
         ))}
       </ul>
-      {cta}
-    </article>
+    </motion.div>
+  );
+}
+
+export default function Pricing() {
+  const headRef = useRef(null);
+  const headInView = useInView(headRef, { once: true, margin: "-80px" });
+
+  return (
+    <section className="sec" id="tarifs">
+      <div className="container">
+        <motion.div
+          ref={headRef}
+          initial={{ opacity: 0, y: 24 }}
+          animate={headInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.2, 0.7, 0.3, 1] }}
+          style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 56, maxWidth: 760 }}
+        >
+          <div className="eyebrow">
+            <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
+            <span>Tarifs</span>
+          </div>
+          <h2 className="section-h">
+            Gratuit pour commencer.<br />
+            <span className="dim">Pas cher pour aller au bout.</span>
+          </h2>
+        </motion.div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "stretch" }} className="plans-grid-responsive">
+          <PlanCard plan={FREE} index={0} />
+          <PlanCard plan={PRO} index={1} />
+        </div>
+
+        <div style={{ marginTop: 32, textAlign: "center", fontSize: 13.5, color: "var(--ink-500)" }}>
+          Annulable à tout moment. Pas d&apos;engagement.
+        </div>
+      </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .plans-grid-responsive { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 540px) {
+          .plans-grid-responsive > div { padding: 32px 28px !important; }
+        }
+      `}</style>
+    </section>
   );
 }

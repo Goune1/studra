@@ -1,31 +1,29 @@
 import type { Metadata } from 'next'
-import { Suspense }     from 'react'
-import { Nav }          from '@/components/landing/Nav'
-import { Hero }         from '@/components/landing/Hero'
+import { Suspense } from 'react'
 import { LandingTracker } from '@/components/landing/LandingTracker'
-import { Formats }      from '@/components/landing/Formats'
-import { Features }     from '@/components/landing/Features'
-import { HowItWorks }   from '@/components/landing/HowItWorks'
-import { Testimonials } from '@/components/landing/Testimonials'
-import { Pricing }      from '@/components/landing/Pricing'
-import { FAQ }          from '@/components/landing/FAQ'
-import { CTA }          from '@/components/landing/CTA'
-import { Footer }       from '@/components/landing/Footer'
-import { LandingJsonLd } from '@/components/landing/LandingJsonLd'
-import { SeoLinks }     from '@/components/landing/SeoLinks'
+import { LandingJsonLd }  from '@/components/landing/LandingJsonLd'
+import Nav      from '@/components/landing/nav/Nav'
+import Hero     from '@/components/landing/hero/Hero'
+import HowItWorks from '@/components/landing/HowItWorks'
+import Features from '@/components/landing/features/Features'
+import Method   from '@/components/landing/Method'
+import Pricing  from '@/components/landing/Pricing'
+import FAQ      from '@/components/landing/FAQ'
+import FinalCTA from '@/components/landing/FinalCTA'
+import Footer   from '@/components/landing/Footer'
 
 export const metadata: Metadata = {
-  title: "Studra — Flashcards IA, Fiches de révision & Répétition espacée",
+  title: "Studra — Révise sérieusement. Sans y passer ses nuits.",
   description:
-    "Transforme n'importe quel cours en flashcards, fiches de révision et examens blancs grâce à l'IA. Répétition espacée FSRS, méthode Socrate, planning de révision. Gratuit.",
+    "Colle ton cours. Studra le transforme en flashcards, fiches, schémas et examens blancs. Le moteur de répétition espacée s'occupe du reste.",
   alternates: {
     canonical: 'https://studra.fr',
     languages: { fr: 'https://studra.fr' },
   },
   openGraph: {
-    title: "Studra — Flashcards IA, Fiches de révision & Répétition espacée",
+    title: "Studra — Révise sérieusement. Sans y passer ses nuits.",
     description:
-      "Transforme n'importe quel cours en flashcards, fiches de révision et examens blancs grâce à l'IA. Répétition espacée FSRS, méthode Socrate, planning de révision. Gratuit.",
+      "Colle ton cours. Studra le transforme en flashcards, fiches, schémas et examens blancs. Le moteur de répétition espacée s'occupe du reste.",
     url: 'https://studra.fr',
     siteName: 'Studra',
     locale: 'fr_FR',
@@ -33,15 +31,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Studra — Flashcards IA, Fiches de révision & Répétition espacée",
+    title: "Studra — Révise sérieusement. Sans y passer ses nuits.",
     description:
-      "Transforme n'importe quel cours en flashcards, fiches de révision et examens blancs grâce à l'IA. Répétition espacée FSRS, méthode Socrate, planning de révision. Gratuit.",
+      "Colle ton cours. Studra le transforme en flashcards, fiches, schémas et examens blancs. Le moteur de répétition espacée s'occupe du reste.",
   },
 }
 
 export default function LandingPage() {
   return (
-    <div className="bg-bg text-fg min-h-screen">
+    <div className="landing-v2">
       <LandingJsonLd />
       <Suspense fallback={null}>
         <LandingTracker />
@@ -49,16 +47,12 @@ export default function LandingPage() {
       <Nav />
       <main>
         <Hero />
-        <Formats />
-        <Features />
         <HowItWorks />
-        <Testimonials />
-        <SeoLinks />
-        <Suspense fallback={<div className="py-30 px-7 min-h-140" />}>
-          <Pricing />
-        </Suspense>
+        <Features />
+        <Method />
+        <Pricing />
         <FAQ />
-        <CTA />
+        <FinalCTA />
       </main>
       <Footer />
     </div>

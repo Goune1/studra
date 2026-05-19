@@ -1,50 +1,88 @@
-export function FAQ() {
-  const items = [
-    {
-      q: 'Studra remplace-t-il mes cours ?',
-      a: "Non. Studra est un outil de révision : il prend ton cours existant (PDF, notes, vidéo) et le transforme en supports d'apprentissage actif. Le contenu vient toujours de toi. On ne fait qu'accélérer la mise en forme et l'entraînement.",
-      open: true,
-    },
-    {
-      q: 'Combien de temps pour générer une fiche ?',
-      a: "Entre 5 et 30 secondes selon la longueur du cours et le format choisi. Une fiche de 10 pages prend environ 15 secondes ; un examen blanc complet environ 40 secondes.",
-    },
-    {
-      q: 'Quels formats de fichier sont acceptés ?',
-      a: "PDF (y compris scannés, grâce à l'OCR), texte brut collé, et liens YouTube (nous extrayons automatiquement la transcription). Word et Pages arrivent dans les prochaines semaines.",
-    },
-    {
-      q: 'Mes cours sont-ils en sécurité ?',
-      a: "Oui. Tes contenus sont chiffrés, stockés sur Supabase (RGPD, hébergement UE) et protégés par Row Level Security. Ils ne servent jamais à entraîner des modèles tiers.",
-    },
-    {
-      q: "Puis-je annuler mon abonnement Pro ?",
-      a: "Oui, à tout moment depuis le portail client Stripe. Tu gardes l'accès Pro jusqu'à la fin de la période en cours, sans frais cachés.",
-    },
-    {
-      q: 'Est-ce que ça marche pour toutes les matières ?',
-      a: "Oui. Sciences dures, droit, médecine, sciences humaines, langues. Studra s'adapte au type de contenu détecté. Les frises sont particulièrement utiles en histoire et droit ; les schémas brillent en biologie et en économie.",
-    },
-  ];
-  return (
-    <section id="faq" data-screen-label="FAQ" className="py-30 px-7">
-      <div className="max-w-[1240px] mx-auto text-center">
-        <span className="font-mono text-xs text-accent uppercase tracking-[0.18em]">FAQ</span>
-        <h2 className="font-serif text-[clamp(36px,5vw,60px)] leading-[1.02] tracking-[-0.03em] mt-3.5 mb-4.5 max-w-[18ch] mx-auto">
-          Questions <em className="italic text-[#c4b5fd]">fréquentes.</em>
-        </h2>
+"use client";
 
-        <div className="max-w-[820px] mx-auto mt-15 border-t border-line text-left">
-          {items.map((it, i) => (
-            <details key={i} className="faq border-b border-line py-5 px-1 cursor-pointer" open={it.open}>
-              <summary className="flex justify-between items-center gap-4 cursor-pointer">
-                <span className="font-serif text-[22px] tracking-[-0.015em]">{it.q}</span>
-                <span className="faq-plus" />
-              </summary>
-              <p className="text-fg-dim text-[15px] leading-[1.6] pt-3.5 pb-1.5 max-w-[68ch]">{it.a}</p>
-            </details>
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { Plus, Minus } from "@phosphor-icons/react";
+
+const ITEMS = [
+  { q: "C'est différent d'Anki ou de Quizlet ?", a: "Anki ne génère rien — tu écris tes cartes à la main. Quizlet fait des QCM basiques. Studra prend ton cours et génère flashcards, fiches, schémas, examens et dialogues socratiques, le tout connecté au même algorithme de répétition espacée." },
+  { q: "L'IA peut se tromper sur les flashcards générées ?", a: "Oui, ça arrive. Chaque carte est éditable en un clic. On affiche un score de confiance quand la génération hésite, et tu peux corriger ou supprimer en deux secondes." },
+  { q: "Mes cours sont confidentiels ?", a: "Tes cours te restent. On ne les utilise pas pour entraîner de modèle. Les fichiers sont chiffrés, hébergés en Europe, et tu peux tout supprimer depuis ton compte." },
+  { q: "Ça marche pour quelles matières ?", a: "Toutes les matières textuelles fonctionnent très bien — histoire, philo, SVT, langues, droit, médecine. Pour les maths et la physique, les flashcards et les fiches sont solides ; les schémas conceptuels marchent moins bien sur des démonstrations longues." },
+  { q: "Combien de temps avant de voir un effet ?", a: "Dès la première semaine, tu remarques ce que tu retiens vraiment et ce que tu pensais retenir. L'effet sur la mémoire long terme est mesurable après deux à trois semaines de sessions régulières." },
+  { q: "Je peux annuler Pro à tout moment ?", a: "Oui, en un clic depuis les paramètres. Pas de période d'engagement. Tu gardes Pro jusqu'à la fin du mois en cours, puis tu repasses sur Free sans rien perdre." },
+  { q: "Vous avez un essai gratuit ?", a: "Le plan Free n'est pas une démo limitée dans le temps : il reste gratuit. Pour tester Pro, on rembourse les 14 premiers jours si ça ne te convient pas." },
+  { q: "Studra remplace mon prof ?", a: "Non." },
+];
+
+function FAQItem({ item, open, onToggle }: { item: typeof ITEMS[0]; open: boolean; onToggle: () => void }) {
+  return (
+    <li style={{ borderBottom: "1px solid var(--ink-200)" }}>
+      <button
+        onClick={onToggle}
+        aria-expanded={open}
+        style={{
+          appearance: "none", border: 0, background: "transparent",
+          width: "100%", padding: "22px 4px",
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24,
+          font: "inherit", fontSize: 17.5, fontWeight: 500, letterSpacing: "-.015em",
+          color: "var(--ink)", cursor: "pointer", textAlign: "left",
+        }}
+      >
+        <span>{item.q}</span>
+        <span style={{ color: "var(--ink-400)", flexShrink: 0, display: "inline-flex" }}>
+          {open ? <Minus size={18} weight="regular" /> : <Plus size={18} weight="regular" />}
+        </span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.3, 0.7, 0.3, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <div style={{ padding: "0 4px 22px", fontSize: 15.5, lineHeight: 1.6, color: "var(--ink-700)", maxWidth: "60ch" }}>
+              {item.a}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </li>
+  );
+}
+
+export default function FAQ() {
+  const [open, setOpen] = useState<number>(0);
+  const headRef = useRef(null);
+  const headInView = useInView(headRef, { once: true, margin: "-80px" });
+
+  return (
+    <section className="sec" id="faq">
+      <div className="container" style={{ maxWidth: 720, margin: "0 auto" }}>
+        <motion.div
+          ref={headRef}
+          initial={{ opacity: 0, y: 24 }}
+          animate={headInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.2, 0.7, 0.3, 1] }}
+          style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 48 }}
+        >
+          <div className="eyebrow">
+            <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
+            <span>Questions fréquentes</span>
+          </div>
+          <h2 className="section-h">
+            Tout ce qu&apos;on te demande<br />
+            <span className="dim">avant de s&apos;inscrire.</span>
+          </h2>
+        </motion.div>
+
+        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          {ITEMS.map((it, i) => (
+            <FAQItem key={i} item={it} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
