@@ -49,7 +49,7 @@ export default function Nav() {
           borderBottom: `1px solid ${scrolled ? "rgba(0,0,0,0.05)" : "transparent"}`,
           transition: "background .3s ease, border-color .3s ease, backdrop-filter .3s ease",
         }}>
-        <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", height: 68 }}>
+        <div className="container nav-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", height: 68 }}>
           {/* Logo */}
           <a href="/" className="nav-logo" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
             <Image src="/studra-logo.png" alt="Studra" width={40} height={40} priority unoptimized />
@@ -149,6 +149,7 @@ export default function Nav() {
           .nav-links-desktop { display: none !important; }
           .nav-cta-desktop { display: none !important; }
           .nav-burger { display: inline-flex !important; }
+          .nav-grid { grid-template-columns: 1fr auto !important; }
         }
       `}</style>
     </>
