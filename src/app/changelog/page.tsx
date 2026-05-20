@@ -23,6 +23,27 @@ const TAG_COLORS: Record<Entry['tag'], string> = {
 
 const entries: Entry[] = [
   {
+    date: '20 mai 2026',
+    tag: 'Nouvelle fonctionnalité',
+    title: 'Page Bac avec intégration Pronote',
+    items: [
+      'Connexion à Pronote via identifiants ou QR code pour récupérer automatiquement tes notes',
+      'Affichage des notes par période et par matière',
+      'Simulateur de moyenne bac avec calcul des coefficients',
+      'Accès bêta protégé par mot de passe (hash SHA-256 en cookie, jamais de mot de passe en clair)',
+    ],
+  },
+  {
+    date: '20 mai 2026',
+    tag: 'Amélioration',
+    title: 'Refonte de la landing page',
+    items: [
+      'Mise à jour du hero, des tarifs, de la FAQ et du footer',
+      'Nouvelles pages légales (CGU, CGV, politique de confidentialité) redessinées',
+      'Améliorations des pages de connexion et d\'inscription',
+    ],
+  },
+  {
     date: '17 mai 2026',
     tag: 'Nouvelle fonctionnalité',
     title: 'Profil utilisateur dans la sidebar et campagnes email',
