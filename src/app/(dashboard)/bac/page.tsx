@@ -1,8 +1,20 @@
 import { cookies } from 'next/headers'
 import { createHash } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
+import { decryptToken } from '@/lib/crypto'
 import { BacClient } from './client'
 import { BacGate } from './bac-gate'
+
+function decodeRawData(rawData: unknown): unknown {
+  if (typeof rawData !== 'string') return rawData
+
+  const decrypted = decryptToken(rawData)
+  try {
+    return JSON.parse(decrypted) as unknown
+  } catch {
+    return null
+  }
+}
 
 export default async function BacPage() {
   const cookieStore = await cookies()
@@ -27,10 +39,18 @@ export default async function BacPage() {
         .maybeSingle()
     : { data: null }
 
+  const initialConnection = connection
+    ? {
+        ...connection,
+        username: decryptToken(connection.username),
+        raw_data: decodeRawData(connection.raw_data),
+      }
+    : null
+
   return (
     <BacClient
       initialConnection={
-        connection as {
+        initialConnection as {
           instance_url: string
           username: string
           last_synced_at: string | null

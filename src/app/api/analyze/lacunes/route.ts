@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { analyzeLacunes } from '@/lib/openai'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 import type { LacuneCard } from '@/types'
 
 export async function GET() {
@@ -8,6 +9,11 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const rateLimit = await checkAiRateLimit(user.id, 'analyze-lacunes')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
+  }
 
   // Aggregate reviews per flashcard
   const { data: reviews } = await supabase

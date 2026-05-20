@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { socrateResponse } from '@/lib/openai'
-import { checkRateLimit } from '@/lib/rate-limit'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 import type { SocrateMessage } from '@/types'
 
 const MAX_USER_MESSAGE = 2000
@@ -16,12 +16,9 @@ export async function POST(
 
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
-  const allowed = await checkRateLimit(user.id, 'socrate:message', 120, 3600)
-  if (!allowed) {
-    return NextResponse.json(
-      { error: 'Trop de messages. Réessayez dans une heure.' },
-      { status: 429 },
-    )
+  const rateLimit = await checkAiRateLimit(user.id, 'socrate-message')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
   }
 
   const { sessionId } = await params

@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { socrateDiagnosis } from '@/lib/openai'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 import type { SocrateMessage } from '@/types'
+
+const MAX_USER_TEXT = 50_000
 
 export async function POST(
   _request: Request,
@@ -11,6 +14,11 @@ export async function POST(
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const rateLimit = await checkAiRateLimit(user.id, 'socrate-diagnose')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
+  }
 
   const { sessionId } = await params
 
@@ -24,6 +32,16 @@ export async function POST(
   if (!session) return NextResponse.json({ error: 'Session introuvable' }, { status: 404 })
 
   const history = session.messages as SocrateMessage[]
+  const userTextLength = history
+    .filter((message) => message.role === 'user')
+    .reduce((total, message) => total + message.content.length, 0)
+
+  if (userTextLength > MAX_USER_TEXT) {
+    return NextResponse.json(
+      { error: `Texte utilisateur trop long (max ${MAX_USER_TEXT} caractères).` },
+      { status: 400 },
+    )
+  }
 
   if (history.length < 4) {
     return NextResponse.json(

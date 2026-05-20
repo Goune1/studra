@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase/server'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 import type {
   BacCoefficientKey,
   BacConfidence,
@@ -14,6 +15,7 @@ import type { RawPeriod } from '@/lib/pronote/parse-grades'
 export const runtime = 'nodejs'
 
 const openai = new OpenAI()
+const MAX_SUBJECTS = 20
 
 interface SubjectCandidate {
   id: string
@@ -197,6 +199,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
+  const rateLimit = await checkAiRateLimit(user.id, 'bac-identify')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
+  }
+
   let body: { rawData?: unknown }
   try {
     body = await request.json() as { rawData?: unknown }
@@ -209,7 +216,7 @@ export async function POST(request: Request) {
   }
 
   const rawData = body.rawData as RawPeriod[]
-  const subjectNames = extractSubjectNames(rawData)
+  const subjectNames = extractSubjectNames(rawData).slice(0, MAX_SUBJECTS)
 
   if (subjectNames.length === 0) {
     return NextResponse.json({ error: 'Aucune matière Pronote détectée' }, { status: 400 })

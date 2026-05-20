@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { decryptToken, encryptToken } from '@/lib/crypto'
 import { createSessionHandle, loginToken, gradesOverview, TabLocation, AccountKind } from 'pawnote'
 import type { Fetcher } from '@literate.ink/utilities'
 
@@ -64,13 +65,16 @@ export async function POST() {
   let rawData: unknown
   let newRefreshToken: string
   try {
+    const username = decryptToken(connection.username)
+    const refreshToken = decryptToken(connection.refresh_token)
+
     // Fix 2 : API Pawnote correcte
     const handle = createSessionHandle(pronoteNodeFetcher)
     const refresh = await loginToken(handle, {
       url: connection.instance_url,
       kind: toAccountKind(connection.account_kind),
-      username: connection.username,
-      token: connection.refresh_token,
+      username,
+      token: refreshToken,
       deviceUUID: connection.device_uuid,
     })
 
@@ -112,8 +116,8 @@ export async function POST() {
   const { error: dbError } = await supabase
     .from('pronote_connections')
     .update({
-      refresh_token: newRefreshToken,
-      raw_data: rawData,
+      refresh_token: encryptToken(newRefreshToken),
+      raw_data: encryptToken(JSON.stringify(rawData)),
       last_synced_at: now,
       updated_at: now,
     })

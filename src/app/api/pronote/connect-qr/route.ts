@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { encryptToken } from '@/lib/crypto'
 import { createSessionHandle, loginQrCode } from 'pawnote'
 import type { Fetcher } from '@literate.ink/utilities'
 import jsQR from 'jsqr'
@@ -185,9 +186,9 @@ export async function POST(request: Request) {
     {
       user_id: user.id,
       instance_url: refresh.url,
-      username: refresh.username,
+      username: encryptToken(refresh.username),
       account_kind: String(refresh.kind),
-      refresh_token: refresh.token,
+      refresh_token: encryptToken(refresh.token),
       device_uuid: deviceUUID,
       updated_at: new Date().toISOString(),
     },

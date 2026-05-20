@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { encryptToken } from '@/lib/crypto'
 import { createSessionHandle, loginCredentials, AccountKind } from 'pawnote'
 
 export const runtime = 'nodejs'
@@ -71,9 +72,9 @@ export async function POST(request: Request) {
       {
         user_id: user.id,
         instance_url: instanceUrl,
-        username,
+        username: encryptToken(username),
         account_kind: 'student',
-        refresh_token: refreshToken,
+        refresh_token: encryptToken(refreshToken),
         device_uuid: deviceUUID,
         updated_at: new Date().toISOString(),
       },

@@ -1,23 +1,22 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { socrateResponse } from '@/lib/openai'
-import { checkRateLimit } from '@/lib/rate-limit'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 
 const MAX_SOURCE = 100_000
 const MAX_TITLE = 200
 
 export async function POST(request: Request) {
   const supabase = await createClient()
+  const supabaseAdmin = getSupabaseAdmin()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
-  const allowed = await checkRateLimit(user.id, 'generate', 30, 3600)
-  if (!allowed) {
-    return NextResponse.json(
-      { error: 'Trop de générations. Réessayez dans une heure.' },
-      { status: 429 },
-    )
+  const rateLimit = await checkAiRateLimit(user.id, 'socrate-session')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
   }
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
   let currentGenerations = profile.generations_used_this_month
   if (monthDiff >= 1) {
     currentGenerations = 0
-    await supabase.from('profiles').update({
+    await supabaseAdmin.from('profiles').update({
       generations_used_this_month: 0,
       generations_reset_at: now.toISOString(),
     }).eq('id', user.id)
@@ -79,7 +78,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Erreur lors de la création' }, { status: 500 })
   }
 
-  await supabase.from('profiles').update({
+  await supabaseAdmin.from('profiles').update({
     generations_used_this_month: currentGenerations + 1,
   }).eq('id', user.id)
 

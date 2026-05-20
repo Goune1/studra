@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { createClient } from '@/lib/supabase/server'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 
 export const maxDuration = 30
 
 const openai = new OpenAI()
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const SORRY_RE = /\b(i cannot|i am unable|unable to|no text visible|i'm unable|cannot extract|i can't|i don't see any text)\b/i
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const rateLimit = await checkAiRateLimit(user.id, 'extract-image')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
+  }
 
   let formData: FormData
   try {
@@ -22,6 +29,10 @@ export async function POST(req: NextRequest) {
 
   const image = formData.get('image') as Blob | null
   if (!image) return NextResponse.json({ error: 'Missing image field' }, { status: 400 })
+
+  if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
+    return NextResponse.json({ error: 'Unsupported image type' }, { status: 415 })
+  }
 
   if (image.size > 5 * 1024 * 1024) {
     return NextResponse.json({ error: 'Image too large (max 5 MB)' }, { status: 413 })
@@ -44,12 +55,12 @@ export async function POST(req: NextRequest) {
           content: [
             {
               type: 'image_url',
-              image_url: { url: `data:image/jpeg;base64,${base64}`, detail: 'high' },
+              image_url: { url: `data:${image.type};base64,${base64}`, detail: 'high' },
             },
           ],
         },
       ],
-      max_tokens: 4096,
+      max_tokens: 2048,
     })
 
     const text = (response.choices[0]?.message?.content ?? '').trim()

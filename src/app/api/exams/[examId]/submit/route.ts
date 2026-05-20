@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { evaluateOpenAnswer } from '@/lib/openai'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 import type { ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen, ExamAnswer } from '@/types'
 
 export async function POST(request: Request, { params }: { params: Promise<{ examId: string }> }) {
@@ -9,6 +10,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ exa
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const rateLimit = await checkAiRateLimit(user.id, 'exam-submit')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
+  }
 
   const { data: exam } = await supabase
     .from('exams')

@@ -1,15 +1,25 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { evaluateFreeRecall } from '@/lib/openai'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
+
+const MAX_USER_TEXT = 50_000
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   const supabase = await createClient()
+  const supabaseAdmin = getSupabaseAdmin()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const rateLimit = await checkAiRateLimit(user.id, 'recall-evaluate')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
+  }
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
   if (!profile) return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 })
@@ -23,7 +33,7 @@ export async function POST(
   let currentGenerations = profile.generations_used_this_month
   if (monthDiff >= 1) {
     currentGenerations = 0
-    await supabase.from('profiles').update({
+    await supabaseAdmin.from('profiles').update({
       generations_used_this_month: 0,
       generations_reset_at: now.toISOString(),
     }).eq('id', user.id)
@@ -43,6 +53,12 @@ export async function POST(
   if (typeof userText !== 'string') {
     return NextResponse.json({ error: 'Texte manquant' }, { status: 400 })
   }
+  if (userText.length > MAX_USER_TEXT) {
+    return NextResponse.json(
+      { error: `Texte trop long (max ${MAX_USER_TEXT} caractères).` },
+      { status: 400 },
+    )
+  }
 
   const { data: session } = await supabase
     .from('free_recall_sessions')
@@ -61,7 +77,7 @@ export async function POST(
     score: evaluation.score,
   }).eq('id', sessionId)
 
-  await supabase.from('profiles').update({
+  await supabaseAdmin.from('profiles').update({
     generations_used_this_month: currentGenerations + 1,
   }).eq('id', user.id)
 

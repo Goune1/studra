@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateStudyPlanSchedule } from '@/lib/openai'
+import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
 import { buildSchedule } from '@/lib/scheduler'
 import { adjustMasteryWithFSRS, resolvePlanContents } from '@/lib/study-plan'
 import type { StudyPlan } from '@/types'
@@ -12,6 +13,11 @@ export async function POST(
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const rateLimit = await checkAiRateLimit(user.id, 'study-plan-regenerate')
+  if (!rateLimit.allowed) {
+    return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
+  }
 
   const { planId } = await params
 

@@ -24,6 +24,17 @@ const TAG_COLORS: Record<Entry['tag'], string> = {
 const entries: Entry[] = [
   {
     date: '20 mai 2026',
+    tag: 'Sécurité',
+    title: 'Correctifs de sécurité critiques',
+    items: [
+      'Blocage de l\'escalade de privilèges sur les profils utilisateur et les abonnements Pro',
+      'Limite dure de 200 appels IA par jour et par utilisateur, avec protection anti-burst par endpoint',
+      'Mise à jour de Next.js vers 16.2.6 pour corriger les vulnérabilités critiques connues',
+      'Chiffrement applicatif AES-256-GCM des identifiants et données Pronote stockés en base',
+    ],
+  },
+  {
+    date: '20 mai 2026',
     tag: 'Nouvelle fonctionnalité',
     title: 'Page Bac avec intégration Pronote',
     items: [

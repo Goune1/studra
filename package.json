@@ -21,7 +21,7 @@
     "framer-motion": "^12.39.0",
     "jsqr": "^1.4.0",
     "lucide-react": "^1.7.0",
-    "next": "16.2.2",
+    "next": "16.2.6",
     "openai": "^6.33.0",
     "pawnote": "^1.6.2",
     "pdf-parse": "^1.1.1",
@@ -45,7 +45,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.2",
+    "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
