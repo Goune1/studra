@@ -142,7 +142,7 @@ export async function POST(request: Request) {
       },
       pin,
       deviceUUID,
-    })) as QrRefresh
+    })) as unknown as QrRefresh
   } catch (err) {
     const message = err instanceof Error ? err.message.toLowerCase() : ''
     if (message.includes('pin') || message.includes('code')) {
