@@ -633,3 +633,37 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ====================== LANDING V2 — FONT OVERRIDES ====================== */
+/* Remap Tailwind font-* utilities to landing-v2 fonts */
+.landing-v2 .font-serif { font-family: var(--font-geist), system-ui, sans-serif !important; }
+.landing-v2 .font-mono  { font-family: var(--font-geist-mono), monospace !important; }
+
+/* ====================== LANDING V2 — LEGAL PAGES ====================== */
+.landing-v2 .legal-toc-link { color: var(--ink-500); transition: color 0.15s; text-decoration: none; }
+.landing-v2 .legal-toc-link:hover { color: var(--ink); }
+
+/* ====================== LANDING V2 — DARK TOKEN OVERRIDES ====================== */
+/* Remap old dark-system classes when used inside .landing-v2 (blog, SEO, changelog) */
+.landing-v2 .bg-bg            { background-color: var(--bg) !important; }
+.landing-v2 .text-fg          { color: var(--ink) !important; }
+.landing-v2 .text-fg-dim      { color: var(--ink-700) !important; }
+.landing-v2 .text-fg-mute     { color: var(--ink-500) !important; }
+.landing-v2 .text-accent      { color: var(--accent) !important; }
+.landing-v2 .hover\:text-fg:hover { color: var(--ink) !important; }
+.landing-v2 .border-line      { border-color: var(--ink-200) !important; }
+.landing-v2 .border-line\/50  { border-color: rgba(228,228,231,0.5) !important; }
+.landing-v2 .bg-line          { background-color: var(--ink-200) !important; }
+.landing-v2 .bg-fg-dim        { background-color: var(--ink-400) !important; }
+.landing-v2 .from-surface     { --tw-gradient-from: var(--bg-elev) var(--tw-gradient-from-position) !important; }
+.landing-v2 .to-bg-2          { --tw-gradient-to: var(--bg) var(--tw-gradient-to-position) !important; }
+.landing-v2 .border-accent\/30        { border-color: rgba(31,77,63,0.3) !important; }
+.landing-v2 .bg-accent\/\[0\.08\]     { background-color: var(--accent-soft) !important; }
+.landing-v2 .hover\:border-accent\/40:hover { border-color: rgba(31,77,63,0.4) !important; }
+.landing-v2 .hover\:bg-white\/\[0\.02\]:hover { background-color: rgba(0,0,0,0.015) !important; }
+.landing-v2 .faq-plus         { border-color: var(--ink-200) !important; }
+.landing-v2 .faq-plus::before,
+.landing-v2 .faq-plus::after  { background: var(--ink) !important; }
+.landing-v2 .faq[open] .faq-plus { background: var(--accent) !important; border-color: var(--accent) !important; }
+.landing-v2 .tick             { background: rgba(31,77,63,0.1) !important; border-color: rgba(31,77,63,0.4) !important; }
+.landing-v2 .tick::after      { border-color: var(--accent) !important; }

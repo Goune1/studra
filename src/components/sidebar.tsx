@@ -19,6 +19,7 @@ import {
   PenLine,
   Scroll,
   CalendarDays,
+  GraduationCap,
   Sparkles,
   Settings,
   LogOut,
@@ -46,6 +47,7 @@ const navItems: NavItem[] = [
   { href: '/recall',      label: 'Rappel libre',  Icon: PenLine,        color: '#8B5CF6' },
   { href: '/annales',     label: 'Annales',       Icon: Scroll,         color: '#F97316' },
   { href: '/lacunes',     label: 'Lacunes',       Icon: Target },
+  { href: '/bac',         label: 'Notes Pronote', Icon: GraduationCap, color: '#06B6D4' },
 ]
 
 

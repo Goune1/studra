@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { List, X } from "@phosphor-icons/react";
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/client";
 
 const LINKS = [
   { label: "Fonctionnalités", href: "#features" },
@@ -15,6 +16,15 @@ const LINKS = [
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    createClient().auth.getUser().then(({ data }) => {
+      if (!cancelled && data.user) setLoggedIn(true);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -41,7 +51,7 @@ export default function Nav() {
         }}>
         <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", height: 68 }}>
           {/* Logo */}
-          <a href="#" className="nav-logo" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
+          <a href="/" className="nav-logo" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
             <Image src="/studra-logo.png" alt="Studra" width={40} height={40} priority unoptimized />
             <span>Studra</span>
           </a>
@@ -59,8 +69,14 @@ export default function Nav() {
 
           {/* CTAs + burger */}
           <div style={{ display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
-            <a href="#" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>Se connecter</a>
-            <a href="#" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>Essayer gratuitement</a>
+            {loggedIn ? (
+              <a href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>Accéder à l&apos;app</a>
+            ) : (
+              <>
+                <a href="/login" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>Se connecter</a>
+                <a href="/register" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>Essayer gratuitement</a>
+              </>
+            )}
             <button
               className="nav-burger"
               aria-label="Menu"
@@ -89,7 +105,7 @@ export default function Nav() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 4px", height: 48 }}>
-              <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
+              <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
                 <Image src="/studra-logo.png" alt="Studra" width={40} height={40} unoptimized />
                 <span>Studra</span>
               </a>
@@ -115,8 +131,14 @@ export default function Nav() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 0 24px" }}>
-              <a href="#" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Se connecter</a>
-              <a href="#" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Essayer gratuitement</a>
+              {loggedIn ? (
+                <a href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Accéder à l&apos;app</a>
+              ) : (
+                <>
+                  <a href="/login" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Se connecter</a>
+                  <a href="/register" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Essayer gratuitement</a>
+                </>
+              )}
             </div>
           </motion.div>
         )}

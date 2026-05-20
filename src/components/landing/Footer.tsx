@@ -2,9 +2,33 @@ import Image from "next/image";
 
 const COLS = [
   { brand: true },
-  { title: "Produit", links: ["Fonctionnalités", "Tarifs", "Méthode", "Changelog"] },
-  { title: "Ressources", links: ["Blog", "Guide du bac", "Aide"] },
-  { title: "Légal", links: ["CGU", "Confidentialité", "RGPD", "Mentions légales"] },
+  {
+    title: "Produit",
+    links: [
+      { label: "Formats",        href: "#features" },
+      { label: "Fonctionnalités", href: "#features" },
+      { label: "Tarifs",         href: "#tarifs" },
+      { label: "Changelog",      href: "/changelog" },
+    ],
+  },
+  {
+    title: "Fonctionnalités",
+    links: [
+      { label: "Flashcards IA",       href: "/flashcards-ia" },
+      { label: "Fiches de révision IA", href: "/fiches-de-revision-ia" },
+      { label: "Répétition espacée",   href: "/repetition-espacee" },
+      { label: "Examens blancs IA",    href: "/examen-blanc-ia" },
+      { label: "Blog",                 href: "/blog" },
+    ],
+  },
+  {
+    title: "Légal",
+    links: [
+      { label: "CGU",             href: "/cgu" },
+      { label: "CGV",             href: "/cgv" },
+      { label: "Confidentialité", href: "/confidentialite" },
+    ],
+  },
 ] as const;
 
 function Footer() {
@@ -16,7 +40,7 @@ function Footer() {
             <div key={i} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {"brand" in col ? (
                 <>
-                  <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", marginBottom: 12 }}>
+                  <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", marginBottom: 12 }}>
                     <Image src="/studra-logo.png" alt="Studra" width={40} height={40} unoptimized />
                     <span>Studra</span>
                   </a>
@@ -29,9 +53,9 @@ function Footer() {
                   <div className="mono" style={{ fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--ink-500)", fontWeight: 500 }}>{col.title}</div>
                   <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
                     {col.links.map((l) => (
-                      <li key={l}>
-                        <a href="#" className="footer-link">
-                          {l}
+                      <li key={l.label}>
+                        <a href={l.href} className="footer-link">
+                          {l.label}
                         </a>
                       </li>
                     ))}
@@ -44,12 +68,6 @@ function Footer() {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 28, borderTop: "1px solid var(--ink-200)", fontSize: 13, color: "var(--ink-500)", flexWrap: "wrap", gap: 12 }}>
           <div>© 2026 Studra. Tous droits réservés.</div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-            <span>Made in France</span>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#0055A4", display: "inline-block" }} />
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#FFFFFF", border: "1px solid rgba(0,0,0,.1)", display: "inline-block" }} />
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#EF4135", display: "inline-block" }} />
-          </div>
         </div>
       </div>
 

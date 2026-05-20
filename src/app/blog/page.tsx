@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Nav } from '@/components/landing/Nav'
+import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 import { blogPosts } from '@/lib/blog-posts'
 
@@ -34,7 +34,7 @@ const breadcrumbLd = {
 
 export default function BlogPage() {
   return (
-    <div className="bg-bg text-fg min-h-screen">
+    <div className="landing-v2 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}

@@ -1,4 +1,4 @@
-import { ChangelogNav } from '@/components/landing/ChangelogNav'
+import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 
 export const metadata = {
@@ -216,8 +216,8 @@ const entries: Entry[] = [
 
 export default function ChangelogPage() {
   return (
-    <div className="bg-bg text-fg min-h-screen">
-      <ChangelogNav />
+    <div className="landing-v2 min-h-screen">
+      <Nav />
       <main>
         <div className="max-w-2xl mx-auto px-6 py-20">
           <h1 className="text-3xl font-bold text-fg mb-2">Changelog</h1>

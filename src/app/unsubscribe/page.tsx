@@ -29,17 +29,14 @@ export default async function UnsubscribePage({ searchParams }: SearchParams) {
 
   return (
     <UnsubscribeLayout>
-      <div className="text-center">
-        <div className="mb-4 text-4xl">✓</div>
-        <h1 className="mb-2 text-xl font-semibold text-gray-900">Désinscription confirmée</h1>
-        <p className="mb-6 text-sm text-gray-500 leading-relaxed">
-          Tu ne recevras plus d'emails marketing de Studra.<br />
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ marginBottom: 16, fontSize: 36 }}>✓</div>
+        <h1 style={{ marginBottom: 8, fontSize: 20, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.015em' }}>Désinscription confirmée</h1>
+        <p style={{ marginBottom: 24, fontSize: 14, color: 'var(--ink-500)', lineHeight: 1.6 }}>
+          Tu ne recevras plus d&apos;emails marketing de Studra.<br />
           Tu peux toujours gérer tes préférences depuis ton compte.
         </p>
-        <Link
-          href="/dashboard"
-          className="inline-block rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
-        >
+        <Link href="/dashboard" className="btn btn-primary" style={{ display: 'inline-flex', justifyContent: 'center' }}>
           Retour au tableau de bord
         </Link>
       </div>
@@ -49,10 +46,10 @@ export default async function UnsubscribePage({ searchParams }: SearchParams) {
 
 function UnsubscribeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-        <div className="mb-6 text-center">
-          <span className="text-lg font-bold tracking-tight text-gray-900">Studra</span>
+    <div className="landing-v2" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px' }}>
+      <div style={{ width: '100%', maxWidth: 400, borderRadius: 20, border: '1px solid var(--ink-200)', background: 'var(--bg-elev)', padding: 40, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+        <div style={{ marginBottom: 24, textAlign: 'center' }}>
+          <span style={{ fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Studra</span>
         </div>
         {children}
       </div>
@@ -62,9 +59,9 @@ function UnsubscribeLayout({ children }: { children: React.ReactNode }) {
 
 function ErrorMessage({ text }: { text: string }) {
   return (
-    <div className="text-center">
-      <div className="mb-4 text-4xl">✗</div>
-      <p className="text-sm text-red-600">{text}</p>
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ marginBottom: 16, fontSize: 36 }}>✗</div>
+      <p style={{ fontSize: 14, color: '#dc2626' }}>{text}</p>
     </div>
   )
 }

@@ -1,19 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { trackLogin } from '@/lib/analytics'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const isPro = searchParams.get('plan') === 'pro'
   const supabase = createClient()
+
+  async function redirectAfterLogin() {
+    if (isPro) {
+      const res = await fetch('/api/billing/checkout', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok && data.url) {
+        window.location.href = data.url
+        return
+      }
+      toast.error(data.error ?? 'Erreur lors du checkout')
+    }
+    router.push('/dashboard')
+    router.refresh()
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -31,16 +47,16 @@ export default function LoginPage() {
       trackLogin(data.user.id, data.user.email ?? email, 'email')
     }
 
-    router.push('/dashboard')
-    router.refresh()
+    await redirectAfterLogin()
   }
 
   async function handleGoogleLogin() {
     setGoogleLoading(true)
+    const next = isPro ? '/upgrade' : '/dashboard'
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=${next}`,
       },
     })
     if (error) {
@@ -117,11 +133,19 @@ export default function LoginPage() {
 
         <p className="text-center mt-6 text-gray-400">
           Pas encore de compte ?{' '}
-          <Link href="/register" className="text-violet-400 hover:text-violet-300 transition-colors">
+          <Link href={isPro ? '/register?plan=pro' : '/register'} className="text-violet-400 hover:text-violet-300 transition-colors">
             S&apos;inscrire
           </Link>
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

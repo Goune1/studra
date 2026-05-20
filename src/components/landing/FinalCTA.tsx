@@ -36,7 +36,7 @@ export default function FinalCTA() {
             transition={{ delay: 0.12, duration: 0.8, ease: [0.2, 0.7, 0.3, 1] }}
             style={{ display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}
           >
-            <a href="#" className="btn btn-primary" style={{ padding: "20px 32px", fontSize: 16, borderRadius: 12 }}>
+            <a href="/register" className="btn btn-primary" style={{ padding: "20px 32px", fontSize: 16, borderRadius: 12 }}>
               Commencer maintenant
               <ArrowRight size={16} />
             </a>

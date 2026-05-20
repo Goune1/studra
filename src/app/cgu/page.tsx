@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Nav } from '@/components/landing/Nav'
+import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 
 const LAST_UPDATED = '10 avril 2026'
@@ -164,32 +164,28 @@ Conformément aux dispositions du Code de la consommation relatives au règlemen
 
 export default function CGUPage() {
   return (
-    <div className="bg-[#0A0A0F] text-gray-100 min-h-screen">
+    <div className="landing-v2 min-h-screen">
       <Nav />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-28 pb-20">
 
         {/* Header */}
         <div className="mb-12">
-          <p className="font-mono text-xs text-indigo-400 uppercase tracking-widest mb-4">Légal</p>
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-4">
+          <p className="mono text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--accent)' }}>Légal</p>
+          <h1 className="text-4xl font-bold tracking-tight mb-4" style={{ color: 'var(--ink)', letterSpacing: '-0.02em' }}>
             Conditions Générales d&apos;Utilisation
           </h1>
-          <p className="text-gray-500 text-sm font-mono">
+          <p className="mono text-sm" style={{ color: 'var(--ink-500)' }}>
             Dernière mise à jour : {LAST_UPDATED}
           </p>
         </div>
 
         {/* Sommaire */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-12">
-          <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Sommaire</p>
+        <div className="rounded-2xl p-6 mb-12" style={{ border: '1px solid var(--ink-200)', background: 'var(--bg-elev)' }}>
+          <p className="mono text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--ink-500)' }}>Sommaire</p>
           <nav className="grid sm:grid-cols-2 gap-2">
             {sections.map((s) => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                className="text-sm text-gray-400 hover:text-white transition-colors font-mono"
-              >
+              <a key={s.id} href={`#${s.id}`} className="mono text-sm legal-toc-link">
                 {s.title}
               </a>
             ))}
@@ -200,10 +196,10 @@ export default function CGUPage() {
         <div className="space-y-12">
           {sections.map((s) => (
             <section key={s.id} id={s.id} className="scroll-mt-24">
-              <h2 className="text-lg font-semibold tracking-tight text-white mb-4 pb-3 border-b border-white/10">
+              <h2 className="text-lg font-semibold mb-4 pb-3" style={{ color: 'var(--ink)', borderBottom: '1px solid var(--ink-200)', letterSpacing: '-0.01em' }}>
                 {s.title}
               </h2>
-              <div className="text-gray-400 text-sm leading-relaxed whitespace-pre-line">
+              <div className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--ink-700)' }}>
                 {s.content}
               </div>
             </section>
@@ -211,11 +207,11 @@ export default function CGUPage() {
         </div>
 
         {/* Back to top */}
-        <div className="mt-16 pt-8 border-t border-white/10 flex items-center justify-between">
-          <Link href="/" className="font-mono text-xs text-gray-600 hover:text-gray-300 transition-colors">
+        <div className="mt-16 pt-8 flex items-center justify-between" style={{ borderTop: '1px solid var(--ink-200)' }}>
+          <Link href="/" className="mono text-xs transition-colors" style={{ color: 'var(--ink-500)' }}>
             ← Retour à l&apos;accueil
           </Link>
-          <a href="#" className="font-mono text-xs text-gray-600 hover:text-gray-300 transition-colors">
+          <a href="#" className="mono text-xs transition-colors" style={{ color: 'var(--ink-500)' }}>
             Haut de page ↑
           </a>
         </div>

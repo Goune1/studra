@@ -73,8 +73,8 @@ export default function FAQ() {
             <span>Questions fréquentes</span>
           </div>
           <h2 className="section-h">
-            Tout ce qu&apos;on te demande<br />
-            <span className="dim">avant de s&apos;inscrire.</span>
+            Tout ce que tu peux te demander<br />
+            <span className="dim">avant de t&apos;inscrire.</span>
           </h2>
         </motion.div>
 

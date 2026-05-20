@@ -6,16 +6,16 @@ import { Check } from "@phosphor-icons/react";
 
 const FREE = {
   name: "Free", price: "0", desc: "Pour tester et réviser une matière.",
-  cta: "Commencer gratuitement", ctaStyle: "btn-outline",
+  cta: "Commencer gratuitement", ctaStyle: "btn-outline", href: "/register",
   features: ["Import texte et PDF", "3 decks de flashcards", "Fiches illimitées", "Examens blancs · 2 par semaine", "Mode Socrate · limité", "Planning basique"],
 };
 const PRO = {
   name: "Pro", price: "5", desc: "Pour préparer un bac, un concours, un examen sérieux.",
-  cta: "Passer à Pro", ctaStyle: "btn-primary", recommended: true,
+  cta: "Passer à Pro", ctaStyle: "btn-primary", recommended: true, href: "/register?plan=pro",
   features: ["Tout le plan Free", "Flashcards illimitées", "Import YouTube et image", "Analyse des lacunes", "Annales adaptatives", "Planning avancé", "Examens blancs illimités", "Mode Socrate illimité"],
 };
 
-function PlanCard({ plan, index }: { plan: typeof FREE & { recommended?: boolean }; index: number }) {
+function PlanCard({ plan, index }: { plan: typeof FREE & { recommended?: boolean; href: string }; index: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
@@ -51,7 +51,7 @@ function PlanCard({ plan, index }: { plan: typeof FREE & { recommended?: boolean
         <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--ink-700)", maxWidth: "36ch" }}>{plan.desc}</p>
       </div>
 
-      <a href="#" className={`btn ${plan.ctaStyle}`} style={{ width: "100%", padding: "14px 20px", justifyContent: "center" }}>{plan.cta}</a>
+      <a href={plan.href} className={`btn ${plan.ctaStyle}`} style={{ width: "100%", padding: "14px 20px", justifyContent: "center" }}>{plan.cta}</a>
 
       <div style={{ height: 1, background: "var(--ink-200)" }} />
 

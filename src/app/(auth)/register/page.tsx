@@ -1,20 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { trackSignupAttempt, trackSignupSuccess, trackSignupError } from '@/lib/analytics'
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const isPro = searchParams.get('plan') === 'pro'
   const supabase = createClient()
+
+  async function redirectAfterSignup() {
+    if (isPro) {
+      const res = await fetch('/api/billing/checkout', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok && data.url) {
+        window.location.href = data.url
+        return
+      }
+      toast.error(data.error ?? 'Erreur lors du checkout')
+    }
+    router.push('/dashboard')
+  }
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
@@ -36,7 +51,6 @@ export default function RegisterPage() {
       return
     }
 
-    // Connecter l'utilisateur après création
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
     if (signInError) {
       toast.error(signInError.message)
@@ -49,15 +63,16 @@ export default function RegisterPage() {
     }
 
     toast.success('Compte créé !')
-    router.push('/dashboard')
+    await redirectAfterSignup()
   }
 
   async function handleGoogleLogin() {
     setGoogleLoading(true)
+    const next = isPro ? '/upgrade' : '/dashboard'
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=${next}`,
       },
     })
     if (error) {
@@ -138,18 +153,26 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-colors"
             >
-              {loading ? 'Création...' : 'Créer mon compte'}
+              {loading ? (isPro ? 'Création et redirection vers le paiement...' : 'Création...') : 'Créer mon compte'}
             </button>
           </form>
         </div>
 
         <p className="text-center mt-6 text-gray-400">
           Déjà un compte ?{' '}
-          <Link href="/login" className="text-violet-400 hover:text-violet-300 transition-colors">
+          <Link href={isPro ? '/login?plan=pro' : '/login'} className="text-violet-400 hover:text-violet-300 transition-colors">
             Se connecter
           </Link>
         </p>
       </div>
     </div>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   )
 }

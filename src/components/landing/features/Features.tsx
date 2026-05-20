@@ -90,8 +90,8 @@ export default function Features() {
         </div>
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
-          <a href="#" className="btn btn-outline">
-            Voir toutes les fonctionnalités <ArrowRight size={14} />
+          <a href="/blog" className="btn btn-outline">
+            Voir toutes les fonctionnalités en détail <ArrowRight size={14} />
           </a>
         </div>
       </div>

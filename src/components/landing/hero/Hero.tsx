@@ -71,7 +71,7 @@ export default function Hero() {
 
             <FadeUp delay={0.3}>
               <div className="hero-ctas" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                <a href="#" className="btn btn-primary hero-cta-primary">Commencer gratuitement</a>
+                <a href="/register" className="btn btn-primary hero-cta-primary">Commencer gratuitement</a>
               </div>
             </FadeUp>
 

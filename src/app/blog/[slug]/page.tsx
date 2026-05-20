@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Nav } from '@/components/landing/Nav'
+import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 import { blogPosts, getBlogPost, type ContentBlock } from '@/lib/blog-posts'
 
@@ -150,7 +150,7 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   return (
-    <div className="bg-bg text-fg min-h-screen">
+    <div className="landing-v2 min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
