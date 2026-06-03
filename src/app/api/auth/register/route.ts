@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendWelcomeEmail } from '@/lib/resend'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { getAffiliateByCode, attributeReferral } from '@/lib/affiliate'
+import { cookies } from 'next/headers'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const GENERIC_ERROR = 'Inscription impossible. Vérifiez vos informations ou réessayez plus tard.'
@@ -51,6 +53,16 @@ export async function POST(request: Request) {
   }
 
   await sendWelcomeEmail(email).catch(console.error)
+
+  // Attribution d'affiliation si un cookie de parrainage est présent
+  const cookieStore = await cookies()
+  const refCode = cookieStore.get('studra_ref')?.value
+  if (refCode && data.user) {
+    const affiliate = await getAffiliateByCode(refCode).catch(() => null)
+    if (affiliate) {
+      await attributeReferral(affiliate.id, data.user.id).catch(console.error)
+    }
+  }
 
   return NextResponse.json({ user: { id: data.user.id, email: data.user.email } })
 }

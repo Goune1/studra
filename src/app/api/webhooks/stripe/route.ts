@@ -3,6 +3,10 @@ import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { sendWelcomeProEmail, sendSubscriptionCancelledEmail } from '@/lib/resend'
 import { PostHog } from 'posthog-node'
+import {
+  createCommissionForInvoice,
+  refundCommission,
+} from '@/lib/affiliate'
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-03-31.basil' })
@@ -13,6 +17,36 @@ function getSupabaseAdmin() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
+}
+
+/** Retrouve l'utilisateur Supabase depuis un customer Stripe, puis son affilié éventuel */
+async function getAffiliateForCustomer(
+  supabaseAdmin: ReturnType<typeof getSupabaseAdmin>,
+  customerId: string
+): Promise<{ userId: string; affiliateId: string; commissionRate: number } | null> {
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('id')
+    .eq('stripe_customer_id', customerId)
+    .maybeSingle()
+
+  if (!profile) return null
+
+  const { data: referral } = await supabaseAdmin
+    .from('affiliate_referrals')
+    .select('affiliate_id, affiliates(commission_rate, status)')
+    .eq('referred_user_id', profile.id)
+    .maybeSingle()
+
+  if (!referral || !referral.affiliates) return null
+  const aff = (Array.isArray(referral.affiliates) ? referral.affiliates[0] : referral.affiliates) as unknown as { commission_rate: number; status: string }
+  if (aff.status !== 'active') return null
+
+  return {
+    userId: profile.id,
+    affiliateId: referral.affiliate_id,
+    commissionRate: Number(aff.commission_rate),
+  }
 }
 
 export async function POST(request: Request) {
@@ -68,6 +102,31 @@ export async function POST(request: Request) {
       break
     }
 
+    case 'invoice.paid': {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const invoice = event.data.object as any
+      // Ne traiter que les abonnements (pas les paiements one-time)
+      if (!invoice.subscription || !invoice.customer) break
+      // Ignorer les factures à 0 (essais gratuits)
+      if (!invoice.amount_paid || invoice.amount_paid === 0) break
+
+      const customerId = invoice.customer as string
+      const affiliateInfo = await getAffiliateForCustomer(supabaseAdmin, customerId)
+      if (!affiliateInfo) break
+
+      const amountRevenue = (invoice.amount_paid as number) / 100
+
+      await createCommissionForInvoice({
+        affiliateId: affiliateInfo.affiliateId,
+        referredUserId: affiliateInfo.userId,
+        stripeInvoiceId: invoice.id as string,
+        stripeSubscriptionId: invoice.subscription as string,
+        amountRevenue,
+        commissionRate: affiliateInfo.commissionRate,
+      })
+      break
+    }
+
     case 'customer.subscription.updated': {
       const subscription = event.data.object as Stripe.Subscription
       const userId = subscription.metadata?.user_id
@@ -108,6 +167,15 @@ export async function POST(request: Request) {
         properties: { reason: null },
       })
       await ph.shutdown()
+      break
+    }
+
+    case 'charge.refunded': {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const charge = event.data.object as any
+      const invoiceId = charge.invoice as string | null
+      if (!invoiceId) break
+      await refundCommission(invoiceId)
       break
     }
   }

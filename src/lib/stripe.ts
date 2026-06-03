@@ -6,7 +6,11 @@ function getStripe() {
   })
 }
 
-export async function createCheckoutSession(userId: string, email: string): Promise<string> {
+export async function createCheckoutSession(
+  userId: string,
+  email: string,
+  referralCode?: string
+): Promise<string> {
   const stripe = getStripe()
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
@@ -19,9 +23,15 @@ export async function createCheckoutSession(userId: string, email: string): Prom
       },
     ],
     subscription_data: {
-      metadata: { user_id: userId },
+      metadata: {
+        user_id: userId,
+        ...(referralCode ? { referral_code: referralCode } : {}),
+      },
     },
-    metadata: { user_id: userId },
+    metadata: {
+      user_id: userId,
+      ...(referralCode ? { referral_code: referralCode } : {}),
+    },
     client_reference_id: userId,
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=true`,

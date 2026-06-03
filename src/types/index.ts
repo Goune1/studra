@@ -369,3 +369,88 @@ export interface ContentItem {
   type: 'fiche' | 'deck'
   source_content: string
 }
+
+// ── Affiliate system ──────────────────────────────────────────────────────────
+
+export type AffiliateStatus = 'active' | 'suspended'
+export type PaymentMethod = 'paypal' | 'bank_transfer'
+export type CommissionStatus = 'pending' | 'approved' | 'payable' | 'paid' | 'cancelled' | 'refunded'
+export type PayoutStatus = 'pending' | 'paid' | 'failed'
+
+export interface Affiliate {
+  id: string
+  user_id: string
+  referral_code: string
+  commission_rate: number
+  status: AffiliateStatus
+  first_name: string
+  last_name: string
+  contact_email: string
+  payment_method: PaymentMethod | null
+  paypal_email: string | null
+  iban: string | null
+  bic: string | null
+  account_holder_name: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AffiliateClick {
+  id: string
+  affiliate_id: string
+  visitor_id: string | null
+  ip_hash: string | null
+  user_agent: string | null
+  created_at: string
+}
+
+export interface AffiliateReferral {
+  id: string
+  affiliate_id: string
+  referred_user_id: string
+  created_at: string
+}
+
+export interface AffiliateCommission {
+  id: string
+  affiliate_id: string
+  referred_user_id: string
+  stripe_invoice_id: string
+  stripe_subscription_id: string | null
+  amount_revenue: number
+  amount_commission: number
+  status: CommissionStatus
+  payout_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AffiliatePayout {
+  id: string
+  affiliate_id: string
+  amount: number
+  payment_method: string
+  payment_reference: string | null
+  status: PayoutStatus
+  paid_at: string | null
+  created_at: string
+}
+
+export interface AffiliateSettings {
+  id: 1
+  minimum_payout_threshold: number
+  default_commission_rate: number
+  updated_at: string
+}
+
+export interface AffiliateStats {
+  total_clicks: number
+  total_referrals: number
+  active_subscribers: number
+  total_revenue: number
+  total_commission: number
+  commission_pending: number
+  commission_approved: number
+  commission_payable: number
+  commission_paid: number
+}

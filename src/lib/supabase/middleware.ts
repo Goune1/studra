@@ -63,7 +63,8 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/annales') ||
     pathname.startsWith('/planning') ||
     pathname.startsWith('/settings') ||
-    pathname.startsWith('/billing')
+    pathname.startsWith('/billing') ||
+    pathname.startsWith('/affiliate')
 
   if (isDashboardRoute && !user) {
     const url = request.nextUrl.clone()

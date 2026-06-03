@@ -9,14 +9,16 @@ import {
   Settings,
   ArrowLeft,
   Mail,
+  Share2,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { icon: Users,      label: 'Membres',        href: '/admin'             },
-  { icon: CreditCard, label: 'Paiements',      href: '/admin/paiements'   },
-  { icon: Zap,        label: 'Générations IA', href: '/admin/generations' },
-  { icon: Mail,       label: 'Emails',         href: '/admin/emails'      },
-  { icon: Settings,   label: 'Paramètres',     href: '/admin/settings'    },
+  { icon: Users,      label: 'Membres',        href: '/admin'              },
+  { icon: CreditCard, label: 'Paiements',      href: '/admin/paiements'    },
+  { icon: Share2,     label: 'Affiliés',       href: '/admin/affiliates'   },
+  { icon: Zap,        label: 'Générations IA', href: '/admin/generations'  },
+  { icon: Mail,       label: 'Emails',         href: '/admin/emails'       },
+  { icon: Settings,   label: 'Paramètres',     href: '/admin/settings'     },
 ]
 
 export function Sidebar() {

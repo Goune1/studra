@@ -6,6 +6,8 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { PostHogProvider } from './providers'
+import { Suspense } from 'react'
+import { AffiliateTracker } from '@/components/affiliate/AffiliateTracker'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,7 +52,7 @@ const dmSerif = DM_Serif_Display({
 export const metadata: Metadata = {
   metadataBase: new URL('https://studra.fr'),
   title: {
-    default: "Studra – Révision intelligente avec l'IA",
+    default: "Studra – Révise grâce a des flashcards et des fiches IA",
     template: '%s | Studra',
   },
   description:
@@ -122,6 +124,9 @@ export default function RootLayout({
       >
         <PostHogProvider>
           <ThemeProvider>
+            <Suspense fallback={null}>
+              <AffiliateTracker />
+            </Suspense>
             {children}
           </ThemeProvider>
         </PostHogProvider>

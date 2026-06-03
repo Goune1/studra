@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { sendWelcomeEmail } from '@/lib/resend'
+import { getAffiliateByCode, attributeReferral } from '@/lib/affiliate'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -19,6 +21,16 @@ export async function GET(request: Request) {
         const isNewUser = Math.abs(lastSignIn - createdAt) < 60_000
         if (isNewUser) {
           sendWelcomeEmail(user.email).catch(console.error)
+
+          // Attribution d'affiliation pour les nouveaux inscrits via OAuth
+          const cookieStore = await cookies()
+          const refCode = cookieStore.get('studra_ref')?.value
+          if (refCode && user.id) {
+            const affiliate = await getAffiliateByCode(refCode).catch(() => null)
+            if (affiliate) {
+              await attributeReferral(affiliate.id, user.id).catch(console.error)
+            }
+          }
         }
       }
       return NextResponse.redirect(`${origin}${safePath}`)

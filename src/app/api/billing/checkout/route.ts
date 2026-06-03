@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createCheckoutSession } from '@/lib/stripe'
+import { cookies } from 'next/headers'
 
 export async function POST() {
   const supabase = await createClient()
@@ -11,7 +12,9 @@ export async function POST() {
   }
 
   try {
-    const url = await createCheckoutSession(user.id, user.email!)
+    const cookieStore = await cookies()
+    const referralCode = cookieStore.get('studra_ref')?.value
+    const url = await createCheckoutSession(user.id, user.email!, referralCode)
     return NextResponse.json({ url })
   } catch (err) {
     console.error('Stripe checkout error:', err)
