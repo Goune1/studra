@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     locale: 'fr_FR',
     url: 'https://studra.fr',
     siteName: 'Studra',
-    title: "Studra – Révision intelligente avec l'IA",
+    title: "Studra – Révise grâce a des flashcards et des fiches IA",
     description:
       'Génère des flashcards, fiches de révision, schémas et examens depuis ton cours en moins de 10 secondes.',
     images: [
@@ -95,13 +95,13 @@ export const metadata: Metadata = {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: "Studra – Révision intelligente avec l'IA",
+        alt: "Studra – Révise grâce a des flashcards et des fiches IA",
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Studra – Révision intelligente avec l'IA",
+    title: "Studra – Révise grâce a des flashcards et des fiches IA",
     description:
       'Génère des flashcards, fiches de révision, schémas et examens depuis ton cours en moins de 10 secondes.',
     images: ['/opengraph-image'],
