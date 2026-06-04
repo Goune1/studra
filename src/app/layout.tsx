@@ -52,7 +52,7 @@ const dmSerif = DM_Serif_Display({
 export const metadata: Metadata = {
   metadataBase: new URL('https://studra.fr'),
   title: {
-    default: "Studra – Révise grâce a des flashcards et des fiches IA",
+    default: "Studra – Révise grâce à des flashcards et des fiches IA",
     template: '%s | Studra',
   },
   description:
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     locale: 'fr_FR',
     url: 'https://studra.fr',
     siteName: 'Studra',
-    title: "Studra – Révise grâce a des flashcards et des fiches IA",
+    title: "Studra – Révise grâce à des flashcards et des fiches IA",
     description:
       'Génère des flashcards, fiches de révision, schémas et examens depuis ton cours en moins de 10 secondes.',
     images: [
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Studra – Révise grâce a des flashcards et des fiches IA",
+    title: "Studra – Révise grâce à des flashcards et des fiches IA",
     description:
       'Génère des flashcards, fiches de révision, schémas et examens depuis ton cours en moins de 10 secondes.',
     images: ['/opengraph-image'],

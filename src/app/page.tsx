@@ -13,7 +13,7 @@ import FinalCTA from '@/components/landing/FinalCTA'
 import Footer   from '@/components/landing/Footer'
 
 export const metadata: Metadata = {
-  title: "Studra – Révise grâce a des flashcards et des fiches IA",
+  title: "Studra – Révise grâce à des flashcards et des fiches IA",
   description:
     "Colle ton cours. Studra le transforme en flashcards, fiches, schémas et examens blancs. Le moteur de répétition espacée s'occupe du reste.",
   alternates: {
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     languages: { fr: 'https://studra.fr' },
   },
   openGraph: {
-    title: "Studra – Révise grâce a des flashcards et des fiches IA",
+    title: "Studra – Révise grâce à des flashcards et des fiches IA",
     description:
       "Colle ton cours. Studra le transforme en flashcards, fiches, schémas et examens blancs. Le moteur de répétition espacée s'occupe du reste.",
     url: 'https://studra.fr',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Studra – Révise grâce a des flashcards et des fiches IA",
+    title: "Studra – Révise grâce à des flashcards et des fiches IA",
     description:
       "Colle ton cours. Studra le transforme en flashcards, fiches, schémas et examens blancs. Le moteur de répétition espacée s'occupe du reste.",
   },
