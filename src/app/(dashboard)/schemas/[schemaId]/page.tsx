@@ -5,6 +5,7 @@ import SchemaEditor from './SchemaEditorClient'
 import { normalizeSchemaData } from '@/components/schema/utils/adapter'
 import { formatDate } from '@/lib/utils'
 import { GitBranch } from 'lucide-react'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#10B981'
 
@@ -42,10 +43,20 @@ export default async function SchemaPage({ params }: { params: Promise<{ schemaI
             {nodeCount} nœuds · {edgeCount} relations
           </span>
         </div>
-        <span className="text-xs text-[#475569] tabular-nums shrink-0 hidden md:block"
-          style={{ fontFamily: 'var(--font-mono, monospace)' }}>
-          {formatDate(schema.created_at)}
-        </span>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-xs text-[#475569] tabular-nums hidden md:block"
+            style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+            {formatDate(schema.created_at)}
+          </span>
+          <DeleteEntityButton
+            table="schemas"
+            id={schema.id}
+            entityLabel="ce schéma"
+            variant="button"
+            color={COLOR}
+            redirectTo="/schemas"
+          />
+        </div>
       </div>
 
       <div className="flex-1 rounded-2xl overflow-hidden border" style={{ borderColor: 'var(--border)', background: 'var(--app-bg)' }}>

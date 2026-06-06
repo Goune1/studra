@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { ClipboardCheck, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Exam, ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen, ExamSession } from '@/types'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#EF4444'
 
@@ -135,6 +136,17 @@ export default function ExamPage() {
               style={{ background: COLOR }}>
               Commencer l&apos;examen →
             </button>
+
+            <div className="mt-4 flex justify-center">
+              <DeleteEntityButton
+                table="exams"
+                id={exam.id}
+                entityLabel="cet examen"
+                variant="button"
+                color={COLOR}
+                redirectTo="/exams"
+              />
+            </div>
           </div>
 
           {/* Right: past sessions */}

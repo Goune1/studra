@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { FicheViewer } from '@/components/fiche-viewer'
 import { FileText, Clock, Type, Calendar, Layers } from 'lucide-react'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#3B82F6'
 
@@ -117,6 +118,17 @@ export default async function FichePage({ params }: { params: Promise<{ ficheId:
                 <p className="text-[10px] text-[#64748B] mt-0.5">Depuis cette fiche →</p>
               </div>
             </Link>
+
+            {fiche.user_id === user!.id && (
+              <DeleteEntityButton
+                table="fiches"
+                id={fiche.id}
+                entityLabel="cette fiche"
+                variant="button"
+                color={COLOR}
+                redirectTo="/fiches"
+              />
+            )}
           </div>
         </div>
       </div>
