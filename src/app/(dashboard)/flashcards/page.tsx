@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Layers, Plus, Search } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { trackFlashcardsOpen } from '@/lib/analytics'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#F59E0B'
 
@@ -150,7 +151,12 @@ export default function FlashcardsPage() {
       ) : (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((deck, i) => (
-            <DeckCard key={deck.id} deck={deck} index={i} />
+            <DeckCard
+              key={deck.id}
+              deck={deck}
+              index={i}
+              onDeleted={(id) => setDecks((prev) => prev.filter((d) => d.id !== id))}
+            />
           ))}
         </div>
       )}
@@ -158,20 +164,33 @@ export default function FlashcardsPage() {
   )
 }
 
-function DeckCard({ deck, index }: { deck: Deck; index: number }) {
+function DeckCard({ deck, index, onDeleted }: { deck: Deck; index: number; onDeleted: (id: string) => void }) {
   const [hovered, setHovered] = useState(false)
 
   return (
-    <Link href={`/flashcards/${deck.id}`}
+    <div
+      className="relative group/card animate-fade-up"
+      style={{ animationDelay: `${index * 40}ms` }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="block rounded-2xl p-5 transition-all duration-200 animate-fade-up hover:-translate-y-0.5"
-      style={{
-        background: 'var(--surface)',
-        border: `1px solid ${hovered ? COLOR + '40' : 'var(--border)'}`,
-        animationDelay: `${index * 40}ms`,
-      }}>
-      <div className="flex items-start justify-between gap-3 mb-4">
+    >
+      <div className="absolute top-3 right-3 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
+        <DeleteEntityButton
+          table="decks"
+          id={deck.id}
+          entityLabel="ce deck"
+          variant="icon"
+          color={COLOR}
+          onDeleted={onDeleted}
+        />
+      </div>
+      <Link href={`/flashcards/${deck.id}`}
+        className="block rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5"
+        style={{
+          background: 'var(--surface)',
+          border: `1px solid ${hovered ? COLOR + '40' : 'var(--border)'}`,
+        }}>
+      <div className="flex items-start justify-between gap-3 mb-4 transition-[padding] duration-200 group-hover/card:pr-9">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
           style={{ background: COLOR + '15' }}>
           <Layers size={18} style={{ color: COLOR }} />
@@ -200,6 +219,7 @@ function DeckCard({ deck, index }: { deck: Deck; index: number }) {
           {formatDate(deck.created_at)}
         </span>
       </div>
-    </Link>
+      </Link>
+    </div>
   )
 }

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { AlignLeft, PlusCircle, Search, ChevronDown } from 'lucide-react'
 import { EmptyState } from '@/components/content/EmptyState'
 import type { Timeline, TimelineEvent } from '@/types'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#8B5CF6'
 const MATIERES = ['Tous', 'SES', 'HGGSP', 'Maths', 'Histoire', 'Physique', 'Autre']
@@ -144,13 +145,28 @@ export default function TimelinesPage() {
             const events = (timeline.generated_data?.events ?? []) as TimelineEvent[]
             const range = dateRange(events)
             return (
-              <Link key={timeline.id} href={`/timelines/${timeline.id}`}
-                className="group flex flex-col rounded-2xl border overflow-hidden transition-all duration-200 hover:-translate-y-0.5 animate-fade-up"
-                style={{ background: 'var(--surface)', borderColor: 'var(--border)', animationDelay: `${i * 40}ms`, borderLeft: `4px solid ${COLOR}` }}
+              <div
+                key={timeline.id}
+                className="relative group/card animate-fade-up"
+                style={{ animationDelay: `${i * 40}ms` }}
+              >
+                <div className="absolute top-3 right-3 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
+                  <DeleteEntityButton
+                    table="timelines"
+                    id={timeline.id}
+                    entityLabel="cette frise"
+                    variant="icon"
+                    color={COLOR}
+                    onDeleted={(id) => setTimelines((prev) => prev.filter((t) => t.id !== id))}
+                  />
+                </div>
+              <Link href={`/timelines/${timeline.id}`}
+                className="group flex flex-col rounded-2xl border overflow-hidden transition-all duration-200 hover:-translate-y-0.5"
+                style={{ background: 'var(--surface)', borderColor: 'var(--border)', borderLeft: `4px solid ${COLOR}` }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = COLOR + '50'; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 20px ${COLOR}12` }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
                 <div className="flex flex-col flex-1 p-5">
-                  <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex items-start justify-between gap-2 mb-3 transition-[padding] duration-200 group-hover/card:pr-9">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: COLOR + '15' }}>
                       <AlignLeft size={15} style={{ color: COLOR }} />
                     </div>
@@ -177,6 +193,7 @@ export default function TimelinesPage() {
                   <span className="text-[10px] font-semibold group-hover:text-purple-300 transition-colors" style={{ color: COLOR }}>Ouvrir →</span>
                 </div>
               </Link>
+              </div>
             )
           })}
           {!loading && filtered.length === 0 && timelines.length > 0 && (

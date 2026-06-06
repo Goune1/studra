@@ -7,6 +7,7 @@ import { FileText, PlusCircle, Search, ChevronDown } from 'lucide-react'
 import { EmptyState } from '@/components/content/EmptyState'
 import type { Fiche } from '@/types'
 import { trackFichesOpen } from '@/lib/analytics'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#3B82F6'
 const MATIERES = ['Tous', 'SES', 'HGGSP', 'Maths', 'Histoire', 'Physique', 'Autre']
@@ -169,14 +170,27 @@ export default function FichesPage() {
           {filtered.map((fiche, i) => {
             const wc = wordCount(fiche.generated_content)
             return (
-              <Link
+              <div
                 key={fiche.id}
+                className="relative group/card animate-fade-up"
+                style={{ animationDelay: `${i * 40}ms` }}
+              >
+                <div className="absolute top-3 right-3 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
+                  <DeleteEntityButton
+                    table="fiches"
+                    id={fiche.id}
+                    entityLabel="cette fiche"
+                    variant="icon"
+                    color={COLOR}
+                    onDeleted={(id) => setFiches((prev) => prev.filter((f) => f.id !== id))}
+                  />
+                </div>
+                <Link
                 href={`/fiches/${fiche.id}`}
-                className="group flex flex-col rounded-2xl border overflow-hidden transition-all duration-200 hover:-translate-y-0.5 animate-fade-up"
+                className="group flex flex-col rounded-2xl border overflow-hidden transition-all duration-200 hover:-translate-y-0.5"
                 style={{
                   background: 'var(--surface)',
                   borderColor: 'var(--border)',
-                  animationDelay: `${i * 40}ms`,
                   borderLeft: `4px solid ${COLOR}`,
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = COLOR + '50'; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 20px ${COLOR}12` }}
@@ -184,7 +198,7 @@ export default function FichesPage() {
               >
                 <div className="flex flex-col flex-1 p-5">
                   {/* Top row */}
-                  <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="flex items-start justify-between gap-2 mb-3 transition-[padding] duration-200 group-hover/card:pr-9">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: COLOR + '15' }}>
                       <FileText size={15} style={{ color: COLOR }} />
                     </div>
@@ -234,6 +248,7 @@ export default function FichesPage() {
                   </span>
                 </div>
               </Link>
+              </div>
             )
           })}
 

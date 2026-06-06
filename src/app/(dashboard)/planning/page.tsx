@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Plus, CalendarDays, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { StudyPlan } from '@/types'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#6366f1'
 
@@ -78,10 +79,20 @@ export default function PlanningListPage() {
               Math.round((new Date(plan.exam_date + 'T00:00:00').getTime() - nowMs) / 86_400_000),
             )
             return (
+              <div key={plan.id} className="relative group/card">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
+                  <DeleteEntityButton
+                    table="study_plans"
+                    id={plan.id}
+                    entityLabel="ce planning"
+                    variant="icon"
+                    color={COLOR}
+                    onDeleted={(id) => setPlans((prev) => prev.filter((p) => p.id !== id))}
+                  />
+                </div>
               <Link
-                key={plan.id}
                 href={`/planning/${plan.id}`}
-                className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-all hover:-translate-y-0.5 block"
+                className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-[transform,padding] duration-200 hover:-translate-y-0.5 group-hover/card:pr-12"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
                 <div
@@ -112,6 +123,7 @@ export default function PlanningListPage() {
                   <CheckCircle2 size={16} className="shrink-0" style={{ color: '#10B981' }} />
                 )}
               </Link>
+              </div>
             )
           })}
         </div>
