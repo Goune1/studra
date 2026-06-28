@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { formatDate } from '@/lib/utils'
 import { Layers, BookOpen } from 'lucide-react'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#F59E0B'
 
@@ -46,6 +47,14 @@ export default async function DeckPage({ params }: { params: Promise<{ deckId: s
           </h1>
 
           <div className="flex gap-3 shrink-0">
+            <DeleteEntityButton
+              table="decks"
+              id={deck.id}
+              entityLabel="ce deck"
+              variant="button"
+              color={COLOR}
+              redirectTo="/flashcards"
+            />
             <Link href={`/flashcards/${deckId}/study`}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:opacity-90"
               style={{ background: COLOR }}>

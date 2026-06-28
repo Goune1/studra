@@ -5,6 +5,7 @@ import { TimelineViewer } from '@/components/timeline-viewer'
 import { formatDate } from '@/lib/utils'
 import type { TimelineData } from '@/types'
 import { AlignLeft } from 'lucide-react'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#8B5CF6'
 
@@ -44,9 +45,19 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
 
   return (
     <div className="max-w-350">
-      <Link href="/timelines" className="inline-flex items-center gap-1.5 text-xs text-[#475569] hover:text-white transition-colors mb-6">
-        <AlignLeft size={12} />← Mes frises
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/timelines" className="inline-flex items-center gap-1.5 text-xs text-[#475569] hover:text-white transition-colors">
+          <AlignLeft size={12} />← Mes frises
+        </Link>
+        <DeleteEntityButton
+          table="timelines"
+          id={timeline.id}
+          entityLabel="cette frise"
+          variant="button"
+          color={COLOR}
+          redirectTo="/timelines"
+        />
+      </div>
 
       {/* Header */}
       <div className="mb-6">

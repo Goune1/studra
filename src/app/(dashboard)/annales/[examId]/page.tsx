@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ChevronDown, ChevronUp, Printer } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { GeneratedPastExam, AnnaleQuestion, AnnaleAnswer } from '@/types'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#EF4444'
 
@@ -196,6 +197,14 @@ export default function AnnalesExamPage() {
           >
             <Printer size={15} />
           </button>
+          <DeleteEntityButton
+            table="generated_past_exams"
+            id={exam.id}
+            entityLabel="cette annale"
+            variant="button"
+            color={COLOR}
+            redirectTo="/annales"
+          />
         </div>
       </div>
 

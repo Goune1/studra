@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { Plus, Scroll } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { GeneratedPastExam } from '@/types'
+import { DeleteEntityButton } from '@/components/DeleteEntityButton'
+
+const COLOR = '#EF4444'
 
 export default function AnnalesListPage() {
   const [exams, setExams] = useState<GeneratedPastExam[]>([])
@@ -70,28 +73,39 @@ export default function AnnalesListPage() {
       ) : (
         <div className="space-y-3">
           {exams.map((exam) => (
-            <Link
-              key={exam.id}
-              href={`/annales/${exam.id}`}
-              className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-all hover:-translate-y-0.5 block"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-            >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: '#EF444415' }}
+            <div key={exam.id} className="relative group/card">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
+                <DeleteEntityButton
+                  table="generated_past_exams"
+                  id={exam.id}
+                  entityLabel="cette annale"
+                  variant="icon"
+                  color={COLOR}
+                  onDeleted={(id) => setExams((prev) => prev.filter((e) => e.id !== id))}
+                />
+              </div>
+              <Link
+                href={`/annales/${exam.id}`}
+                className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-[transform,padding] duration-200 hover:-translate-y-0.5 group-hover/card:pr-12"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
-                <Scroll size={18} style={{ color: '#EF4444' }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>
-                  {exam.title}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-                  {exam.questions_json.length} questions ·{' '}
-                  {new Date(exam.created_at).toLocaleDateString('fr-FR')}
-                </p>
-              </div>
-            </Link>
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: '#EF444415' }}
+                >
+                  <Scroll size={18} style={{ color: '#EF4444' }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>
+                    {exam.title}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
+                    {exam.questions_json.length} questions ·{' '}
+                    {new Date(exam.created_at).toLocaleDateString('fr-FR')}
+                  </p>
+                </div>
+              </Link>
+            </div>
           ))}
         </div>
       )}
