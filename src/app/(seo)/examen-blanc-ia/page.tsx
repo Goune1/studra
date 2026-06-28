@@ -7,7 +7,6 @@ export const metadata: Metadata = {
     '7 QCM et 3 questions ouvertes générés par IA depuis ton cours, corrigés avec feedback détaillé. Entraîne-toi dans les conditions réelles de l\'épreuve.',
   alternates: {
     canonical: 'https://studra.fr/examen-blanc-ia',
-    languages: { fr: 'https://studra.fr/examen-blanc-ia' },
   },
   openGraph: {
     title: 'Génère un examen blanc depuis ton cours en un clic | Studra',

@@ -7,7 +7,6 @@ export const metadata: Metadata = {
     'Crée des fiches de révision structurées en quelques secondes depuis n\'importe quel cours. Titres, définitions, points clés générés par IA.',
   alternates: {
     canonical: 'https://studra.fr/fiches-de-revision-ia',
-    languages: { fr: 'https://studra.fr/fiches-de-revision-ia' },
   },
   openGraph: {
     title: 'Générateur de fiches de révision IA | Studra',

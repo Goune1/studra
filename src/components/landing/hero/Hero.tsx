@@ -7,13 +7,9 @@ const ease = [0.2, 0.7, 0.3, 1] as [number, number, number, number];
 
 function FadeUp({ delay, children }: { delay: number; children: React.ReactNode }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.7, ease }}
-    >
+    <div className="fade-up" style={{ animationDelay: `${delay}s` }}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -96,6 +92,23 @@ export default function Hero() {
       </div>
 
       <style>{`
+        .fade-up {
+          opacity: 0;
+          transform: translateY(24px);
+          animation: fade-up-kf 0.7s cubic-bezier(.2,.7,.3,1) forwards;
+          animation-fill-mode: forwards;
+        }
+        @keyframes fade-up-kf {
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .fade-up {
+            opacity: 1;
+            transform: none;
+            animation: none;
+          }
+        }
+
         .ebb-curve {
           stroke-dasharray: 2400;
           stroke-dashoffset: 2400;

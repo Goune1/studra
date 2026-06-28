@@ -23,11 +23,6 @@ const websiteSchema = {
   url: 'https://studra.fr',
   name: 'Studra',
   description: "Révision intelligente avec l'IA",
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: 'https://studra.fr/blog?q={search_term_string}',
-    'query-input': 'required name=search_term_string',
-  },
 }
 
 const softwareApplicationSchema = {

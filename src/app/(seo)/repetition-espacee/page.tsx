@@ -2,15 +2,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Répétition espacée gratuite avec IA — Mémorise plus en moins de temps | Studra',
+  title: 'Répétition espacée IA — FSRS 5 | Studra',
   description:
     'Studra utilise l\'algorithme FSRS 5 pour planifier tes révisions au moment optimal. Mémorise durablement sans effort inutile. Gratuit, sans installation.',
   alternates: {
     canonical: 'https://studra.fr/repetition-espacee',
-    languages: { fr: 'https://studra.fr/repetition-espacee' },
   },
   openGraph: {
-    title: 'Répétition espacée gratuite avec IA — Mémorise plus en moins de temps | Studra',
+    title: 'Répétition espacée IA — FSRS 5 | Studra',
     description:
       'Studra utilise l\'algorithme FSRS 5 pour planifier tes révisions au moment optimal. Mémorise durablement sans effort inutile. Gratuit, sans installation.',
     url: 'https://studra.fr/repetition-espacee',

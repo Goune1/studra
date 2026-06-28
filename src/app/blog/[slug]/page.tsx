@@ -21,7 +21,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: post.description,
     alternates: {
       canonical: `https://studra.fr/blog/${post.slug}`,
-      languages: { fr: `https://studra.fr/blog/${post.slug}` },
     },
     openGraph: {
       title: post.title,
@@ -36,6 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: post.title,
       description: post.description,
+      images: [`https://studra.fr/blog/${post.slug}/opengraph-image`],
     },
   }
 }
@@ -133,6 +133,8 @@ export default async function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.description,
     datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
+    image: `https://studra.fr/blog/${post.slug}/opengraph-image`,
     inLanguage: 'fr',
     author: { '@type': 'Organization', name: 'Studra' },
     publisher: { '@type': 'Organization', name: 'Studra', url: 'https://studra.fr' },

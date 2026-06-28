@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Instrument_Serif, JetBrains_Mono, DM_Serif_Display, DM_Sans, Geist, Geist_Mono } from 'next/font/google'
+import { Inter, Instrument_Serif, JetBrains_Mono, DM_Sans, Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
 import { Analytics } from '@vercel/analytics/next'
@@ -42,13 +42,6 @@ const dmSans = DM_Sans({
   weight: ['400', '500', '600'],
 })
 
-const dmSerif = DM_Serif_Display({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-dm-serif',
-  style: ['normal', 'italic'],
-})
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://studra.fr'),
   title: {
@@ -56,7 +49,7 @@ export const metadata: Metadata = {
     template: '%s | Studra',
   },
   description:
-    "Studra génère des flashcards, fiches de révision, schémas conceptuels, frises chronologiques et examens depuis ton cours, PDF ou vidéo YouTube — en moins de 10 secondes. Propulsé par l'IA.",
+    "Studra transforme ton cours en flashcards, fiches et examens blancs en 10 secondes. Répétition espacée FSRS 5. Gratuit.",
   keywords: [
     'révision intelligente',
     'flashcards IA',
@@ -119,7 +112,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
       <body
-        className={`${inter.className} ${displayFont.variable} ${monoFont.variable} ${dmSerif.variable} ${dmSans.variable} ${geist.variable} ${geistMono.variable} min-h-screen`}
+        className={`${inter.className} ${displayFont.variable} ${monoFont.variable} ${dmSans.variable} ${geist.variable} ${geistMono.variable} min-h-screen`}
         style={{ background: 'var(--app-bg)', color: 'var(--text-1)', transition: 'background 0.2s, color 0.2s' }}
       >
         <PostHogProvider>

@@ -2,12 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Créer des flashcards avec l\'IA depuis un PDF ou un cours | Studra',
+  title: 'Créer des flashcards IA depuis un cours | Studra',
   description:
     'Génère automatiquement des flashcards depuis ton cours, PDF ou vidéo YouTube. Algorithme FSRS 5 pour une mémorisation optimale. Alternative IA à Anki et Quizlet.',
   alternates: {
     canonical: 'https://studra.fr/flashcards-ia',
-    languages: { fr: 'https://studra.fr/flashcards-ia' },
   },
   openGraph: {
     title: 'Créer des flashcards avec l\'IA depuis un PDF ou un cours | Studra',

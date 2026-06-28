@@ -5,12 +5,11 @@ import { Footer } from '@/components/landing/Footer'
 import { blogPosts } from '@/lib/blog-posts'
 
 export const metadata: Metadata = {
-  title: 'Blog Studra — Méthodes de révision, flashcards IA et science de la mémoire',
+  title: 'Blog Studra — Méthodes de révision et flashcards IA',
   description:
     'Guides pratiques et articles de fond sur la répétition espacée, FSRS, les flashcards IA et les meilleures méthodes de révision pour étudiants.',
   alternates: {
     canonical: 'https://studra.fr/blog',
-    languages: { fr: 'https://studra.fr/blog' },
   },
   openGraph: {
     title: 'Blog Studra — Méthodes de révision et science de la mémoire',

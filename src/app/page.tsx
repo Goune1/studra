@@ -9,6 +9,7 @@ import Features from '@/components/landing/features/Features'
 import Method   from '@/components/landing/Method'
 import Pricing  from '@/components/landing/Pricing'
 import FAQ      from '@/components/landing/FAQ'
+import { SeoLinks } from '@/components/landing/SeoLinks'
 import FinalCTA from '@/components/landing/FinalCTA'
 import Footer   from '@/components/landing/Footer'
 
@@ -18,7 +19,6 @@ export const metadata: Metadata = {
     "Colle ton cours. Studra le transforme en flashcards, fiches, schémas et examens blancs. Le moteur de répétition espacée s'occupe du reste.",
   alternates: {
     canonical: 'https://studra.fr',
-    languages: { fr: 'https://studra.fr' },
   },
   openGraph: {
     title: "Studra – Révise grâce à des flashcards et des fiches IA",
@@ -52,6 +52,7 @@ export default function LandingPage() {
         <Method />
         <Pricing />
         <FAQ />
+        <SeoLinks />
         <FinalCTA />
       </main>
       <Footer />

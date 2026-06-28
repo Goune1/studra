@@ -70,7 +70,7 @@ export default function OgImage() {
               }}
             />
             <span style={{ color: '#818cf8', fontSize: 16, letterSpacing: 2 }}>
-              Propulsé par GPT-5 nano
+              Propulsé par l&apos;IA
             </span>
           </div>
 

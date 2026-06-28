@@ -24,6 +24,8 @@ export default function robots(): MetadataRoute.Robots {
           '/annales/',
           '/planning/',
           '/upgrade/',
+          '/bac/',
+          '/unsubscribe/',
         ],
       },
     ],
