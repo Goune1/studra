@@ -25,12 +25,50 @@ export function identifyUser(userId: string, email: string) {
 // ACQUISITION FUNNEL
 // -------------------
 
-export function trackLandingView(source?: string) {
+// UTMs capturés à l'arrivée sur la landing, persistés pour la durée de la session
+// onglet afin de pouvoir les rattacher aux events plus loin dans le funnel
+// (signup_attempted / signup_completed / signup_failed), sans backend ni lib tierce.
+const UTM_STORAGE_KEY = 'studra_utm'
+
+type StoredUTM = {
+  utm_source: string | null
+  utm_medium: string | null
+  utm_campaign: string | null
+  landing_referrer: string | null
+}
+
+function storeUTM(utm: StoredUTM) {
   if (typeof window === 'undefined') return
   try {
+    sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm))
+  } catch {}
+}
+
+function getStoredUTM(): Partial<StoredUTM> {
+  if (typeof window === 'undefined') return {}
+  try {
+    const raw = sessionStorage.getItem(UTM_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+export function trackLandingView(utm?: { source?: string; medium?: string; campaign?: string }) {
+  if (typeof window === 'undefined') return
+  try {
+    const stored: StoredUTM = {
+      utm_source: utm?.source ?? null,
+      utm_medium: utm?.medium ?? null,
+      utm_campaign: utm?.campaign ?? null,
+      landing_referrer: document.referrer || null,
+    }
+    storeUTM(stored)
     posthog.capture('landing_viewed', {
-      referrer: document.referrer || null,
-      utm_source: source ?? null,
+      referrer: stored.landing_referrer,
+      utm_source: stored.utm_source,
+      utm_medium: stored.utm_medium,
+      utm_campaign: stored.utm_campaign,
     })
   } catch {}
 }
@@ -56,19 +94,19 @@ export function trackSignupPageView(from: string) {
 }
 
 export function trackSignupAttempt(method: 'email' | 'google' | 'github') {
-  capture('signup_attempted', { method })
+  capture('signup_attempted', { method, ...getStoredUTM() })
 }
 
 export function trackSignupSuccess(userId: string, email: string, method: 'email' | 'google' | 'github') {
   if (typeof window === 'undefined') return
   try {
     posthog.identify(userId, { email, signup_method: method })
-    posthog.capture('signup_completed', { method })
+    posthog.capture('signup_completed', { method, ...getStoredUTM() })
   } catch {}
 }
 
 export function trackSignupError(error_code: string) {
-  capture('signup_failed', { error_code })
+  capture('signup_failed', { error_code, ...getStoredUTM() })
 }
 
 export function trackLogin(userId: string, email: string, method: 'email' | 'google' | 'github') {

@@ -68,6 +68,7 @@ function RegisterForm() {
 
   async function handleGoogleLogin() {
     setGoogleLoading(true)
+    trackSignupAttempt('google')
     const next = isPro ? '/upgrade' : '/dashboard'
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -76,6 +77,7 @@ function RegisterForm() {
       },
     })
     if (error) {
+      trackSignupError(error.message ?? 'oauth_redirect_error')
       toast.error(error.message)
       setGoogleLoading(false)
     }

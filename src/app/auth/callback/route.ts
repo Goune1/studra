@@ -15,10 +15,11 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       const user = data.session?.user ?? data.user
+      let isNewUser = false
       if (user?.email) {
         const createdAt = new Date(user.created_at).getTime()
         const lastSignIn = new Date(user.last_sign_in_at ?? user.created_at).getTime()
-        const isNewUser = Math.abs(lastSignIn - createdAt) < 60_000
+        isNewUser = Math.abs(lastSignIn - createdAt) < 60_000
         if (isNewUser) {
           sendWelcomeEmail(user.email).catch(console.error)
 
@@ -33,7 +34,15 @@ export async function GET(request: Request) {
           }
         }
       }
-      return NextResponse.redirect(`${origin}${safePath}`)
+      // Cette route serveur n'a pas accès à posthog-js. On signale au client, via un
+      // simple param de redirection, qu'il s'agit d'un nouvel inscrit OAuth, pour que
+      // le client déclenche signup_completed + identify() exactement une fois
+      // (cf. OAuthSignupTracker dans providers.tsx). Aucune route/endpoint créé.
+      const redirectUrl = new URL(`${origin}${safePath}`)
+      if (isNewUser) {
+        redirectUrl.searchParams.set('signup', 'oauth')
+      }
+      return NextResponse.redirect(redirectUrl)
     }
   }
 

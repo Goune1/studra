@@ -8,8 +8,11 @@ export function LandingTracker() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const utmSource = searchParams.get('utm_source') ?? undefined
-    trackLandingView(utmSource)
+    trackLandingView({
+      source: searchParams.get('utm_source') ?? undefined,
+      medium: searchParams.get('utm_medium') ?? undefined,
+      campaign: searchParams.get('utm_campaign') ?? undefined,
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
