@@ -18,6 +18,8 @@ export default function MockupWindow() {
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Legitimate external sync: read the media query and subscribe to changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setReduced(mq.matches);
     const h = () => setReduced(mq.matches);
     mq.addEventListener("change", h);
@@ -25,6 +27,8 @@ export default function MockupWindow() {
   }, []);
 
   useEffect(() => {
+    // Timer-driven scene animation (external system); reduced-motion pins a single scene.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (reduced) { setScene(2); return; }
     let i = 0;
     let t: ReturnType<typeof setTimeout>;

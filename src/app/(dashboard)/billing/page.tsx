@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/checkout-button'
 import { ManageSubscriptionButton } from '@/components/manage-subscription-button'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+
+const COLOR = '#1F4D3F'
 
 export default async function BillingPage() {
   const supabase = await createClient()
@@ -12,25 +15,41 @@ export default async function BillingPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Abonnement</h1>
+      {/* Header */}
+      <div className="mb-8 animate-fade-up">
+        <Eyebrow className="mb-2">Compte</Eyebrow>
+        <h1 className="section-h">Abonnement</h1>
+      </div>
 
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-8 mb-6">
+      <div
+        className="rounded-2xl p-8 mb-6 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '40ms' }}
+      >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold">Plan actuel</h2>
-            <p className="text-gray-400 text-sm mt-1">Votre abonnement Studra</p>
+            <h2 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>Plan actuel</h2>
+            <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>Votre abonnement Studra</p>
           </div>
-          <span className={`px-4 py-2 rounded-full font-semibold ${isPro ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30' : 'bg-gray-500/20 text-gray-400'}`}>
+          <span
+            className="mono px-3 py-1.5 rounded-full text-xs font-semibold"
+            style={isPro
+              ? { background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}30` }
+              : { background: 'var(--surface-2)', color: 'var(--ink-500)', border: '1px solid var(--border)' }
+            }
+          >
             {isPro ? 'Pro' : 'Gratuit'}
           </span>
         </div>
 
         {!isPro && (
-          <div className="mb-6 p-4 rounded-xl bg-orange-500/10 border border-orange-500/20">
-            <p className="text-orange-400 text-sm">
+          <div
+            className="mb-6 p-4 rounded-xl"
+            style={{ background: 'var(--accent-soft)', border: `1px solid ${COLOR}25` }}
+          >
+            <p className="text-sm" style={{ color: COLOR }}>
               {generationsLeft === 0
-                ? '⚠️ Vous avez utilisé toutes vos générations ce mois-ci.'
-                : `💡 Il vous reste ${generationsLeft} génération${generationsLeft! > 1 ? 's' : ''} ce mois-ci.`}
+                ? 'Tu as utilisé toutes tes générations ce mois-ci.'
+                : `Il te reste ${generationsLeft} génération${generationsLeft! > 1 ? 's' : ''} ce mois-ci.`}
             </p>
           </div>
         )}
@@ -42,11 +61,11 @@ export default async function BillingPage() {
             { label: 'Générations par mois', value: isPro ? 'Illimitées' : '5' },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
-              <span className="text-gray-300">{item.label}</span>
+              <span className="text-sm" style={{ color: 'var(--ink-700)' }}>{item.label}</span>
               {item.value ? (
-                <span className="text-white font-medium">{item.value}</span>
+                <span className="mono text-sm font-medium" style={{ color: 'var(--ink)' }}>{item.value}</span>
               ) : (
-                <span className={item.included ? 'text-green-400' : 'text-gray-600'}>
+                <span style={{ color: item.included ? COLOR : 'var(--ink-400)' }}>
                   {item.included ? '✓' : '✗'}
                 </span>
               )}
@@ -54,11 +73,7 @@ export default async function BillingPage() {
           ))}
         </div>
 
-        {!isPro ? (
-          <CheckoutButton />
-        ) : (
-          <ManageSubscriptionButton />
-        )}
+        {!isPro ? <CheckoutButton /> : <ManageSubscriptionButton />}
       </div>
     </div>
   )

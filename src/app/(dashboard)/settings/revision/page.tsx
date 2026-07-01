@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Brain, TrendingUp, Calendar, Layers, Settings2 } from 'lucide-react'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+
+const COLOR = '#1F4D3F'
 
 interface FsrsStats {
   dueToday: number
@@ -55,28 +58,34 @@ export default function RevisionSettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 pb-12">
-      <div className="flex items-center gap-3">
-        <Link href="/settings"
-          className="p-2 rounded-lg transition-colors hover:bg-white/5"
-          style={{ color: 'var(--text-3)' }}>
+      {/* Header */}
+      <div className="flex items-center gap-3 animate-fade-up">
+        <Link
+          href="/settings"
+          className="p-2 rounded-lg transition-colors hover:bg-black/5"
+          style={{ color: 'var(--ink-500)' }}
+        >
           <ArrowLeft size={16} />
         </Link>
         <div>
-          <h1 className="text-xl font-semibold text-white">Répétition espacée (FSRS)</h1>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-4)' }}>
+          <Eyebrow className="mb-1">Paramètres</Eyebrow>
+          <h1 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
+            Répétition espacée (FSRS)
+          </h1>
+          <p className="mono text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
             Free Spaced Repetition Scheduler · algorithme par défaut.
           </p>
         </div>
       </div>
 
-      {/* ── KPI cards ──────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* KPI cards */}
+      <div className="grid grid-cols-2 gap-3 animate-fade-up" style={{ animationDelay: '60ms' }}>
         {[
           {
             icon: Layers,
             label: 'À réviser aujourd\'hui',
             value: stats ? String(stats.dueToday) : '…',
-            color: stats?.dueToday ? '#F59E0B' : '#22C55E',
+            color: stats?.dueToday ? '#F59E0B' : '#10B981',
           },
           {
             icon: TrendingUp,
@@ -88,20 +97,23 @@ export default function RevisionSettingsPage() {
             icon: Brain,
             label: 'Révisions totales',
             value: stats ? String(stats.totalReviews) : '…',
-            color: '#8B5CF6',
+            color: COLOR,
           },
           {
             icon: Settings2,
             label: 'Cartes totales',
             value: stats ? String(stats.totalCards) : '…',
-            color: '#64748B',
+            color: 'var(--ink-500)',
           },
         ].map(({ icon: Icon, label, value, color }) => (
-          <div key={label} className="rounded-2xl p-5 border"
-            style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+          <div
+            key={label}
+            className="rounded-2xl p-5"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+          >
             <div className="flex items-center gap-2 mb-3">
               <Icon size={14} style={{ color }} />
-              <span className="text-[10px] uppercase tracking-wider font-mono" style={{ color: 'var(--text-4)' }}>
+              <span className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
                 {label}
               </span>
             </div>
@@ -112,37 +124,44 @@ export default function RevisionSettingsPage() {
         ))}
       </div>
 
-      {/* ── Card state breakdown ────────────────────────────────────────────── */}
+      {/* Card state breakdown */}
       {stats && (
-        <div className="rounded-2xl border p-5 space-y-3"
-          style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-          <p className="text-[10px] font-mono uppercase tracking-wider" style={{ color: 'var(--text-4)' }}>
+        <div
+          className="rounded-2xl p-5 space-y-3 animate-fade-up"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
+        >
+          <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
             État des cartes
           </p>
           <div className="grid grid-cols-4 gap-2">
             {[
-              { label: 'Nouvelles',     value: stats.stateCount.new,        color: '#64748B' },
-              { label: 'Apprentissage', value: stats.stateCount.learning,   color: '#F59E0B' },
-              { label: 'Révision',      value: stats.stateCount.review,     color: '#22C55E' },
-              { label: 'Rapprentissage',value: stats.stateCount.relearning, color: '#EF4444' },
+              { label: 'Nouvelles',      value: stats.stateCount.new,        color: 'var(--ink-500)' },
+              { label: 'Apprentissage',  value: stats.stateCount.learning,   color: '#F59E0B' },
+              { label: 'Révision',       value: stats.stateCount.review,     color: '#10B981' },
+              { label: 'Rapprentissage', value: stats.stateCount.relearning, color: '#EF4444' },
             ].map(({ label, value, color }) => (
-              <div key={label} className="rounded-xl p-3 text-center"
-                style={{ background: color + '10', border: `1px solid ${color}20` }}>
+              <div
+                key={label}
+                className="rounded-xl p-3 text-center"
+                style={{ background: `${color}10`, border: `1px solid ${color}20` }}
+              >
                 <div className="text-xl font-bold tabular-nums" style={{ color }}>{value}</div>
-                <div className="text-[9px] mt-0.5 leading-tight" style={{ color: 'var(--text-4)' }}>{label}</div>
+                <div className="mono text-[9px] mt-0.5 leading-tight" style={{ color: 'var(--ink-400)' }}>{label}</div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* ── 30-day forecast ─────────────────────────────────────────────────── */}
+      {/* 30-day forecast */}
       {stats && stats.forecast.length > 0 && (
-        <div className="rounded-2xl border p-5"
-          style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div
+          className="rounded-2xl p-5 animate-fade-up"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '120ms' }}
+        >
           <div className="flex items-center gap-2 mb-4">
-            <Calendar size={14} style={{ color: '#6366f1' }} />
-            <p className="text-[10px] font-mono uppercase tracking-wider" style={{ color: 'var(--text-4)' }}>
+            <Calendar size={14} style={{ color: COLOR }} />
+            <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
               Prévision révisions · 30 prochains jours
             </p>
           </div>
@@ -157,7 +176,7 @@ export default function RevisionSettingsPage() {
                     style={{
                       height: `${height}%`,
                       minHeight: count > 0 ? 2 : 0,
-                      background: isToday ? '#F59E0B' : '#6366f130',
+                      background: isToday ? '#F59E0B' : COLOR + '30',
                       border: isToday ? '1px solid #F59E0B60' : 'none',
                     }}
                   />
@@ -166,26 +185,28 @@ export default function RevisionSettingsPage() {
             })}
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-[9px] font-mono" style={{ color: 'var(--text-4)' }}>Aujourd&apos;hui</span>
-            <span className="text-[9px] font-mono" style={{ color: 'var(--text-4)' }}>J+30</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>Aujourd&apos;hui</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>J+30</span>
           </div>
         </div>
       )}
 
-      {/* ── Settings ────────────────────────────────────────────────────────── */}
-      <div className="rounded-2xl border p-5 space-y-5"
-        style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-        <p className="text-[10px] font-mono uppercase tracking-wider" style={{ color: 'var(--text-4)' }}>
+      {/* Settings */}
+      <div
+        className="rounded-2xl p-5 space-y-5 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '150ms' }}
+      >
+        <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
           Paramètres
         </p>
 
         {/* Retention slider */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-medium text-white">
+            <label className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
               Rétention cible
             </label>
-            <span className="font-mono text-sm" style={{ color: '#3B82F6' }}>
+            <span className="mono text-sm font-semibold" style={{ color: COLOR }}>
               {Math.round(draftRetention * 100)}%
             </span>
           </div>
@@ -194,13 +215,14 @@ export default function RevisionSettingsPage() {
             min={70} max={98} step={1}
             value={Math.round(draftRetention * 100)}
             onChange={(e) => setDraftRetention(parseInt(e.target.value) / 100)}
-            className="w-full accent-blue-500"
+            className="w-full"
+            style={{ accentColor: COLOR }}
           />
           <div className="flex justify-between mt-1">
-            <span className="text-[9px] font-mono" style={{ color: 'var(--text-4)' }}>70% · moins de révisions</span>
-            <span className="text-[9px] font-mono" style={{ color: 'var(--text-4)' }}>98% · plus de révisions</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>70% · moins de révisions</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>98% · plus de révisions</span>
           </div>
-          <p className="text-[10px] mt-1.5" style={{ color: 'var(--text-4)' }}>
+          <p className="text-[10px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
             Probabilité de rappel souhaitée lors de chaque révision. 90% est le réglage recommandé.
           </p>
         </div>
@@ -208,10 +230,10 @@ export default function RevisionSettingsPage() {
         {/* Max interval */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-medium text-white">
+            <label className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
               Intervalle maximum
             </label>
-            <span className="font-mono text-sm" style={{ color: 'var(--text-2)' }}>
+            <span className="mono text-sm" style={{ color: 'var(--ink-700)' }}>
               {draftInterval >= 365
                 ? `${Math.round(draftInterval / 365)} an${Math.round(draftInterval / 365) > 1 ? 's' : ''}`
                 : `${draftInterval} j`}
@@ -222,14 +244,16 @@ export default function RevisionSettingsPage() {
             min={30} max={36500}
             value={draftInterval}
             onChange={(e) => setDraftInterval(Math.max(30, Math.min(36500, parseInt(e.target.value) || 36500)))}
-            className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+            className="w-full px-3 py-2 rounded-xl text-sm outline-none transition-colors"
             style={{
               background: 'var(--surface-2)',
               border: '1px solid var(--border)',
-              color: 'var(--text-1)',
+              color: 'var(--ink)',
             }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
           />
-          <p className="text-[10px] mt-1.5" style={{ color: 'var(--text-4)' }}>
+          <p className="text-[10px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
             Intervalle maximal entre deux révisions, en jours (défaut : 36 500 j ≈ 100 ans).
           </p>
         </div>
@@ -237,32 +261,36 @@ export default function RevisionSettingsPage() {
         <button
           onClick={saveSettings}
           disabled={saving || !settings || (draftRetention === settings.desired_retention && draftInterval === settings.maximum_interval)}
-          className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-40"
-          style={{ background: '#3B82F6' }}>
+          className="btn btn-primary w-full"
+        >
           {saving ? 'Sauvegarde…' : 'Enregistrer les paramètres'}
         </button>
       </div>
 
-      {/* ── Algorithm info ──────────────────────────────────────────────────── */}
-      <div className="rounded-2xl border p-5"
-        style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-        <p className="text-[10px] font-mono uppercase tracking-wider mb-3" style={{ color: 'var(--text-4)' }}>
+      {/* Algorithm info */}
+      <div
+        className="rounded-2xl p-5 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '180ms' }}
+      >
+        <p className="mono text-[10px] uppercase tracking-wider mb-3" style={{ color: 'var(--ink-400)' }}>
           Algorithme
         </p>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-white">Paramètres</span>
-            <span className="font-mono text-xs px-2 py-0.5 rounded"
-              style={{ background: '#3B82F615', color: '#3B82F6', border: '1px solid #3B82F620' }}>
+            <span className="text-sm" style={{ color: 'var(--ink)' }}>Paramètres</span>
+            <span
+              className="mono text-xs px-2 py-0.5 rounded"
+              style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}20` }}
+            >
               Standards FSRS v5
             </span>
           </div>
-          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-4)' }}>
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-400)' }}>
             Studra utilise les paramètres FSRS v5 par défaut, validés sur des millions de révisions.
             La personnalisation algorithmique basée sur votre historique sera disponible dans une prochaine mise à jour.
           </p>
           {settings && settings.total_reviews > 0 && (
-            <p className="text-[10px] font-mono" style={{ color: 'var(--text-4)' }}>
+            <p className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>
               {settings.total_reviews} révision{settings.total_reviews > 1 ? 's' : ''} enregistrée{settings.total_reviews > 1 ? 's' : ''}
             </p>
           )}

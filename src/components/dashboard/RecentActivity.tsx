@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { RecentItem, ToolType } from '@/lib/dashboard/queries'
 
 const TYPE_LABEL: Record<ToolType, string> = {
@@ -7,14 +8,6 @@ const TYPE_LABEL: Record<ToolType, string> = {
   schema: 'Schéma',
   frise: 'Frise',
   examen: 'Examen',
-}
-
-const TYPE_COLOR: Record<ToolType, string> = {
-  flashcards: '#7C7AE8',
-  fiche: '#5BB8BD',
-  schema: '#E8A87C',
-  frise: '#68C26A',
-  examen: '#C26868',
 }
 
 function relativeTime(dateStr: string): string {
@@ -34,30 +27,25 @@ export function RecentActivity({ items }: { items: RecentItem[] }) {
 
   return (
     <section className="mb-12">
-      <p className="text-[11px] font-medium text-zinc-600 uppercase tracking-[0.14em] mb-4">
-        Activité récente
-      </p>
+      <Eyebrow className="mb-4">Activité récente</Eyebrow>
 
-      <ul className="divide-y divide-zinc-900 border-t border-b border-zinc-900">
-        {items.map((item) => (
-          <li key={`${item.type}-${item.id}`}>
+      <ul className="border-t border-b" style={{ borderColor: 'var(--ink-200)' }}>
+        {items.map((item, i) => (
+          <li key={`${item.type}-${item.id}`} style={i > 0 ? { borderTop: '1px solid var(--ink-200)' } : undefined}>
             <Link
               href={item.href}
-              className="flex items-center gap-4 py-3 group focus:outline-none focus-visible:bg-zinc-900/50"
+              className="flex items-center gap-4 py-3 group focus:outline-none"
             >
-              <span className="flex-1 text-sm text-zinc-300 truncate group-hover:text-zinc-100 transition-colors">
+              <span className="flex-1 text-sm truncate transition-colors" style={{ color: 'var(--ink-700)' }}>
                 {item.title}
               </span>
               <span
-                className="text-[10px] font-medium px-1.5 py-0.5 rounded flex-shrink-0"
-                style={{
-                  color: TYPE_COLOR[item.type],
-                  backgroundColor: `${TYPE_COLOR[item.type]}18`,
-                }}
+                className="mono text-[10px] font-medium px-1.5 py-0.5 rounded flex-shrink-0 tracking-wide"
+                style={{ color: 'var(--accent)', backgroundColor: 'var(--accent-soft)' }}
               >
                 {TYPE_LABEL[item.type]}
               </span>
-              <span className="text-xs text-zinc-600 tabular-nums flex-shrink-0 w-24 text-right">
+              <span className="mono text-xs tabular-nums flex-shrink-0 w-24 text-right" style={{ color: 'var(--ink-400)' }}>
                 {relativeTime(item.createdAt)}
               </span>
             </Link>

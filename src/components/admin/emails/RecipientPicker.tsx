@@ -15,6 +15,8 @@ export function RecipientPicker({ value, onChange }: RecipientPickerProps) {
 
   useEffect(() => {
     const controller = new AbortController()
+    // Legitimate external sync: toggle the loading indicator while fetching recipient counts.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true)
     fetch(`/api/admin/emails/recipients?filter=${encodeURIComponent(JSON.stringify(value))}`, {
       signal: controller.signal,

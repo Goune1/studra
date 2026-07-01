@@ -83,4 +83,12 @@ Key rules to internalize:
 - Every `@slot` (parallel route) needs a `default.tsx`. Close modals with `router.back()`.
 - `error.tsx` must be `'use client'`. `global-error.tsx` must include `<html>` and `<body>`.
 
+## 6. Design system & guideline :
+
+Before writing or editing any code that is related to frontend, apply the rules in [`DESIGN.md`](./DESIGN.md)
+
+Key design rules to internalize:
+
+- Your goal is to make frontend that does not looks like AI Slop
+
 

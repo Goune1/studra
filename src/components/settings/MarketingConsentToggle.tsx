@@ -46,11 +46,10 @@ export function MarketingConsentToggle({
       aria-label="Autoriser les emails marketing"
       disabled={isPending}
       onClick={handleToggle}
-      className="group relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border p-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:ring-offset-2 focus:ring-offset-[#13131A] disabled:cursor-wait disabled:opacity-75"
+      className="group relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border p-0.5 transition-all duration-200 focus:outline-none disabled:cursor-wait disabled:opacity-75"
       style={{
-        background: enabled ? 'linear-gradient(135deg, #7C3AED, #A855F7)' : 'var(--surface-2)',
-        borderColor: enabled ? 'rgba(168, 85, 247, 0.55)' : 'var(--border-2)',
-        boxShadow: enabled ? '0 0 18px rgba(124, 58, 237, 0.22)' : 'inset 0 1px 0 rgba(255,255,255,0.04)',
+        background: enabled ? 'var(--accent)' : 'var(--surface-2)',
+        borderColor: enabled ? 'var(--accent)' : 'var(--border)',
       }}
     >
       <span
@@ -59,7 +58,7 @@ export function MarketingConsentToggle({
         }`}
       >
         {isPending ? (
-          <Loader2 size={14} className="animate-spin text-violet-600" />
+          <Loader2 size={14} className="animate-spin" style={{ color: 'var(--accent)' }} />
         ) : enabled ? (
           <Check size={14} strokeWidth={2.5} />
         ) : (

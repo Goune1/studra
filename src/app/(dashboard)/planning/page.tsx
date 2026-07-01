@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, CalendarDays, CheckCircle2 } from 'lucide-react'
+import { CalendarDays, PlusCircle, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import type { StudyPlan } from '@/types'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+import { EmptyState } from '@/components/content/EmptyState'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
+import type { StudyPlan } from '@/types'
 
-const COLOR = '#6366f1'
+const COLOR = '#1F4D3F'
 
 export default function PlanningListPage() {
   const [plans, setPlans] = useState<StudyPlan[]>([])
@@ -29,19 +31,23 @@ export default function PlanningListPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: 'var(--text-1)' }}>Planning</h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--text-2)' }}>
-            Plannings de révision générés par l&apos;IA
-          </p>
+          <Eyebrow className="mb-2">Planning</Eyebrow>
+          <div className="flex items-center gap-3">
+            <h1 className="section-h">Mes plannings</h1>
+            <span
+              className="mono text-xs px-2 py-1 rounded-full font-medium tabular-nums"
+              style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}
+            >
+              {loading ? '…' : plans.length} plan{plans.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
-        <Link
-          href="/planning/new"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5"
-          style={{ background: COLOR, color: '#fff' }}
-        >
-          <Plus size={15} /> Nouveau planning
+        <Link href="/planning/new" className="btn btn-primary shrink-0">
+          <PlusCircle size={15} />
+          Nouveau planning
         </Link>
       </div>
 
@@ -52,25 +58,14 @@ export default function PlanningListPage() {
           ))}
         </div>
       ) : plans.length === 0 ? (
-        <div
-          className="rounded-2xl p-12 text-center"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-        >
-          <CalendarDays size={32} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
-          <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-1)' }}>
-            Aucun planning créé
-          </p>
-          <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>
-            Génère un planning personnalisé jour par jour pour ton prochain examen.
-          </p>
-          <Link
-            href="/planning/new"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
-            style={{ background: COLOR + '20', color: COLOR }}
-          >
-            <Plus size={14} /> Créer mon premier planning
-          </Link>
-        </div>
+        <EmptyState
+          Icon={CalendarDays}
+          color={COLOR}
+          title="Aucun planning"
+          subtitle="Génère un planning personnalisé jour par jour pour ton prochain examen."
+          ctaLabel="Créer mon premier planning"
+          ctaHref="/planning/new"
+        />
       ) : (
         <div className="space-y-3">
           {plans.map((plan) => {
@@ -79,7 +74,7 @@ export default function PlanningListPage() {
               Math.round((new Date(plan.exam_date + 'T00:00:00').getTime() - nowMs) / 86_400_000),
             )
             return (
-              <div key={plan.id} className="relative group/card">
+              <div key={plan.id} className="relative group/card animate-fade-up">
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
                   <DeleteEntityButton
                     table="study_plans"
@@ -90,39 +85,39 @@ export default function PlanningListPage() {
                     onDeleted={(id) => setPlans((prev) => prev.filter((p) => p.id !== id))}
                   />
                 </div>
-              <Link
-                href={`/planning/${plan.id}`}
-                className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-[transform,padding] duration-200 hover:-translate-y-0.5 group-hover/card:pr-12"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: COLOR + '15' }}
+                <Link
+                  href={`/planning/${plan.id}`}
+                  className="flex items-center gap-4 px-5 py-4 rounded-2xl transition-[transform,padding] duration-200 hover:-translate-y-0.5 group-hover/card:pr-12"
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
                 >
-                  <CalendarDays size={18} style={{ color: COLOR }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>
-                    {plan.title}
-                  </p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-                    Examen le {new Date(plan.exam_date + 'T00:00:00').toLocaleDateString('fr-FR')}
-                  </p>
-                </div>
-                {daysLeft > 0 ? (
-                  <span
-                    className="text-xs px-2 py-1 rounded-lg font-semibold shrink-0"
-                    style={{
-                      background: daysLeft <= 3 ? '#EF444415' : COLOR + '15',
-                      color: daysLeft <= 3 ? '#EF4444' : COLOR,
-                    }}
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: COLOR + '15' }}
                   >
-                    J-{daysLeft}
-                  </span>
-                ) : (
-                  <CheckCircle2 size={16} className="shrink-0" style={{ color: '#10B981' }} />
-                )}
-              </Link>
+                    <CalendarDays size={18} style={{ color: COLOR }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--ink)' }}>
+                      {plan.title}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--ink-500)' }}>
+                      Examen le {new Date(plan.exam_date + 'T00:00:00').toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                  {daysLeft > 0 ? (
+                    <span
+                      className="text-xs px-2 py-1 rounded-lg font-semibold shrink-0"
+                      style={{
+                        background: daysLeft <= 3 ? '#EF444415' : COLOR + '15',
+                        color: daysLeft <= 3 ? '#EF4444' : COLOR,
+                      }}
+                    >
+                      J-{daysLeft}
+                    </span>
+                  ) : (
+                    <CheckCircle2 size={16} className="shrink-0" style={{ color: '#10B981' }} />
+                  )}
+                </Link>
               </div>
             )
           })}

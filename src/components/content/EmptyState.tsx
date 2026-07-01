@@ -19,17 +19,14 @@ export function EmptyState({ Icon, color, title, subtitle, ctaLabel, ctaHref }: 
       >
         <Icon size={40} style={{ color }} />
       </div>
-      <h2
-        className="text-2xl text-white mb-3 tracking-tight"
-        style={{  }}
-      >
+      <h2 className="text-2xl mb-3 tracking-tight" style={{ color: 'var(--ink)' }}>
         {title}
       </h2>
-      <p className="text-[#64748B] text-sm max-w-xs leading-relaxed mb-8">{subtitle}</p>
+      <p className="text-sm max-w-xs leading-relaxed mb-8" style={{ color: 'var(--ink-500)' }}>{subtitle}</p>
       <Link
         href={ctaHref}
-        className="px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:opacity-90"
-        style={{ background: color }}
+        className="px-6 py-3 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5 hover:opacity-90"
+        style={{ background: color, color: '#fff' }}
       >
         {ctaLabel}
       </Link>

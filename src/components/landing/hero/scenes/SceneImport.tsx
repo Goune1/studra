@@ -15,6 +15,8 @@ export default function SceneImport({ active }: Props) {
   const [clicking, setClicking] = useState(false);
 
   useEffect(() => {
+    // Timer-driven animation (external system): reset choreography state when inactive.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!active) { setTyped(""); setCursorPos({ x: -30, y: 50 }); setClicking(false); return; }
     let intervalId: ReturnType<typeof setInterval>;
     const t1 = setTimeout(() => setCursorPos({ x: 40, y: 60 }), 200);

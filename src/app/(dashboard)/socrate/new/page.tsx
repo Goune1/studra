@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import ContentPicker from '@/components/ContentPicker'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import { ProGate } from '@/components/pro-gate'
 import { createClient } from '@/lib/supabase/client'
 import type { ContentItem } from '@/types'
@@ -59,19 +60,15 @@ export default function SocrateNewPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-1)' }}>
-          Mode Socrate
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: 'var(--text-2)' }}>
+        <Eyebrow className="mb-2">Socrate</Eyebrow>
+        <h1 className="section-h">Mode Socrate</h1>
+        <p className="lede mt-3">
           Explique une notion à Socrate. Il t&apos;interroge par la maïeutique pour révéler ce que tu n&apos;as pas encore bien compris.
         </p>
       </div>
 
-      <div
-        className="rounded-2xl p-6 mb-4"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-      >
-        <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-2)' }}>
+      <div className="app-card p-6 mb-4">
+        <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--ink-700)' }}>
           Choisis le contenu à expliquer
         </h2>
         <ContentPicker selected={selected} onSelect={setSelected} />
@@ -80,10 +77,10 @@ export default function SocrateNewPage() {
       {selected && (
         <div
           className="rounded-xl px-4 py-3 mb-4 flex items-center gap-3"
-          style={{ background: '#34D39915', border: '1px solid #34D39930' }}
+          style={{ background: 'var(--accent-soft)', border: '1px solid rgba(31,77,63,0.2)' }}
         >
-          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: '#34D399' }} />
-          <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: 'var(--accent)' }} />
+          <span className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
             {selected.title}
           </span>
         </div>
@@ -92,13 +89,12 @@ export default function SocrateNewPage() {
       <button
         onClick={handleStart}
         disabled={!selected || loading}
-        className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 cursor-pointer"
-        style={{ background: '#34D399', color: '#fff' }}
+        className="btn btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {loading ? 'Démarrage…' : 'Démarrer la session Socrate'}
       </button>
 
-      <p className="text-xs text-center mt-3" style={{ color: 'var(--text-3)' }}>
+      <p className="text-xs text-center mt-3" style={{ color: 'var(--ink-500)' }}>
         Compte comme 1 génération sur ton quota mensuel
       </p>
     </div>

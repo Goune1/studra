@@ -6,6 +6,9 @@ import { Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 
+/** Destructive actions stay red (muted, on-system) regardless of the module accent. */
+const DANGER = '#B4503C'
+
 interface DeleteEntityButtonProps {
   table: string
   id: string
@@ -30,7 +33,6 @@ export function DeleteEntityButton({
   variant,
   onDeleted,
   redirectTo,
-  color = '#EF4444',
   stopPropagation = true,
 }: DeleteEntityButtonProps) {
   const [open, setOpen] = useState(false)
@@ -50,7 +52,10 @@ export function DeleteEntityButton({
           type="button"
           onClick={handleOpen}
           aria-label="Supprimer"
-          className="flex items-center justify-center w-8 h-8 rounded-lg transition-all hover:bg-red-500/10 hover:text-red-400 text-[#475569]"
+          className="flex items-center justify-center w-8 h-8 rounded-lg transition-all"
+          style={{ color: 'var(--ink-400)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = `${DANGER}15`; e.currentTarget.style.color = DANGER }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = ''; e.currentTarget.style.color = 'var(--ink-400)' }}
         >
           <Trash2 size={14} />
         </button>
@@ -61,8 +66,8 @@ export function DeleteEntityButton({
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5"
           style={{
             background: 'transparent',
-            border: '1px solid var(--border)',
-            color: 'var(--text-2)',
+            border: '1px solid var(--ink-200)',
+            color: DANGER,
           }}
         >
           <Trash2 size={14} />Supprimer
@@ -74,7 +79,6 @@ export function DeleteEntityButton({
           table={table}
           id={id}
           entityLabel={entityLabel}
-          color={color}
           onClose={() => setOpen(false)}
           onDeleted={onDeleted}
           redirectTo={redirectTo}
@@ -88,7 +92,6 @@ interface ConfirmDeleteDialogProps {
   table: string
   id: string
   entityLabel: string
-  color: string
   onClose: () => void
   onDeleted?: (id: string) => void
   redirectTo?: string
@@ -98,7 +101,6 @@ function ConfirmDeleteDialog({
   table,
   id,
   entityLabel,
-  color,
   onClose,
   onDeleted,
   redirectTo,
@@ -130,26 +132,26 @@ function ConfirmDeleteDialog({
     >
       <div
         className="w-full max-w-sm rounded-2xl border p-6 shadow-2xl"
-        style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
+        style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-start gap-3">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: color + '15' }}
+            style={{ background: DANGER + '15' }}
           >
-            <AlertTriangle size={16} style={{ color }} />
+            <AlertTriangle size={16} style={{ color: DANGER }} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-white">Supprimer {entityLabel} ?</h2>
-            <p className="mt-1 text-xs" style={{ color: 'var(--text-3)' }}>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>Supprimer {entityLabel} ?</h2>
+            <p className="mt-1 text-xs" style={{ color: 'var(--ink-500)' }}>
               Cette action est définitive et ne peut pas être annulée.
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg border border-red-900/50 bg-red-950/30 px-3 py-2 text-xs text-red-400">
+          <div className="mb-4 rounded-lg px-3 py-2 text-xs" style={{ border: `1px solid ${DANGER}40`, background: `${DANGER}12`, color: DANGER }}>
             {error}
           </div>
         )}
@@ -162,8 +164,8 @@ function ConfirmDeleteDialog({
             className="flex-1 rounded-lg px-4 py-2.5 text-xs font-medium transition-colors disabled:opacity-50"
             style={{
               background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              color: 'var(--text-2)',
+              border: '1px solid var(--ink-200)',
+              color: 'var(--ink-700)',
             }}
           >
             Annuler
@@ -173,7 +175,7 @@ function ConfirmDeleteDialog({
             onClick={handleConfirm}
             disabled={deleting}
             className="flex-1 rounded-lg px-4 py-2.5 text-xs font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ background: color }}
+            style={{ background: DANGER }}
           >
             {deleting && <Loader2 size={12} className="animate-spin" />}
             {deleting ? 'Suppression…' : 'Supprimer'}

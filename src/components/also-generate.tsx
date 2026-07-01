@@ -85,11 +85,11 @@ interface AlsoGenerateSectionProps {
 
 export function AlsoGenerateSection({ options, selected, onChange }: AlsoGenerateSectionProps) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-      <p className="text-sm font-medium text-gray-300 mb-3">Générer aussi depuis ce contenu</p>
+    <div className="rounded-xl p-4" style={{ border: '1px solid var(--ink-200)', background: 'var(--surface-2)' }}>
+      <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink-700)' }}>Générer aussi depuis ce contenu</p>
       <div className="flex flex-wrap gap-2">
         {options.map((key) => {
-          const { label, icon, pillColorClass } = CONTENT_TYPES[key]
+          const { label, icon } = CONTENT_TYPES[key]
           const on = selected.has(key)
           return (
             <button
@@ -97,7 +97,12 @@ export function AlsoGenerateSection({ options, selected, onChange }: AlsoGenerat
               type="button"
               data-on={on ? 'true' : 'false'}
               onClick={() => onChange(key)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${pillColorClass}`}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all"
+              style={
+                on
+                  ? { background: 'var(--accent-soft)', borderColor: 'rgba(31,77,63,0.4)', color: 'var(--accent)' }
+                  : { background: 'transparent', borderColor: 'var(--ink-200)', color: 'var(--ink-500)' }
+              }
             >
               <span>{icon}</span>
               <span>{label}</span>
@@ -107,7 +112,7 @@ export function AlsoGenerateSection({ options, selected, onChange }: AlsoGenerat
         })}
       </div>
       {selected.size > 0 && (
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs mt-2" style={{ color: 'var(--ink-500)' }}>
           Tout sera généré en parallèle depuis le même contenu.
         </p>
       )}
@@ -125,14 +130,6 @@ export interface GeneratedResource {
   color: ResultColor
 }
 
-const resultBorder: Record<ResultColor, string> = {
-  violet: 'border-violet-500/30 hover:border-violet-500/60 hover:bg-violet-500/5',
-  blue: 'border-blue-500/30 hover:border-blue-500/60 hover:bg-blue-500/5',
-  emerald: 'border-emerald-500/30 hover:border-emerald-500/60 hover:bg-emerald-500/5',
-  amber: 'border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/5',
-  rose: 'border-rose-500/30 hover:border-rose-500/60 hover:bg-rose-500/5',
-}
-
 interface GenerationResultsScreenProps {
   resources: GeneratedResource[]
   newPath: string
@@ -144,11 +141,11 @@ export function GenerationResultsScreen({ resources, newPath, newLabel = 'Créer
     <div className="max-w-3xl mx-auto">
       <div className="mb-8 text-center">
         <div className="text-5xl mb-4">🎉</div>
-        <h1 className="text-3xl font-bold">Contenu généré !</h1>
-        <p className="text-gray-400 mt-1">
+        <h1 className="section-h">Contenu généré.</h1>
+        <p className="lede mt-3">
           {resources.length > 1
-            ? `${resources.length} ressources créées depuis votre source.`
-            : 'Votre ressource a été créée avec succès.'}
+            ? `${resources.length} ressources créées depuis ta source.`
+            : 'Ta ressource a été créée avec succès.'}
         </p>
       </div>
 
@@ -157,20 +154,21 @@ export function GenerationResultsScreen({ resources, newPath, newLabel = 'Créer
           <Link
             key={r.href}
             href={r.href}
-            className={`flex items-center gap-4 p-5 rounded-2xl bg-white/5 border ${resultBorder[r.color]} transition-all group`}
+            className="app-card flex items-center gap-4 p-5 transition-all group hover:-translate-y-0.5"
+            style={{ borderColor: 'var(--ink-200)' }}
           >
             <span className="text-3xl">{r.icon}</span>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-white">{r.title}</p>
-              <p className="text-sm text-gray-400 mt-0.5">{r.description}</p>
+              <p className="font-semibold" style={{ color: 'var(--ink)' }}>{r.title}</p>
+              <p className="text-sm mt-0.5" style={{ color: 'var(--ink-500)' }}>{r.description}</p>
             </div>
-            <span className="text-gray-500 group-hover:text-white transition-colors text-lg">→</span>
+            <span className="text-lg transition-colors" style={{ color: 'var(--accent)' }}>→</span>
           </Link>
         ))}
       </div>
 
       <div className="mt-6 text-center">
-        <Link href={newPath} className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+        <Link href={newPath} className="text-sm transition-colors" style={{ color: 'var(--ink-500)' }}>
           ← {newLabel}
         </Link>
       </div>

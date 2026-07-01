@@ -5,6 +5,7 @@ import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackFlashcardsGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'schema', 'exam', 'timeline']
@@ -45,10 +46,11 @@ export default function NewFlashcardsPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Nouveau deck de flashcards</h1>
-        <p className="text-gray-400 mt-1">Collez votre cours et l&apos;IA génèrera des cartes de révision</p>
+        <Eyebrow className="mb-2">Flashcards</Eyebrow>
+        <h1 className="section-h">Nouveau deck</h1>
+        <p className="lede mt-3">Colle ton cours, l&apos;IA génère tes cartes de révision.</p>
       </div>
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+      <div className="app-card p-8">
         <ContentInputForm
           onSubmit={handleGenerate}
           submitLabel={also.size > 0 ? `✨ Générer les cartes + ${also.size} autre${also.size > 1 ? 's' : ''}` : '✨ Générer les cartes'}

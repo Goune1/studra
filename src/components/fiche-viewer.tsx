@@ -42,52 +42,43 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
     setEditing(false)
   }
 
-  const proseClasses = `prose prose-invert prose-violet max-w-none
-    prose-headings:text-white prose-headings:font-bold
-    prose-h1:text-2xl prose-h2:text-xl prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2
-    prose-p:text-gray-300
-    prose-strong:text-white
-    prose-ul:text-gray-300
-    prose-ol:text-gray-300
-    prose-li:marker:text-violet-400
-    prose-code:text-violet-300 prose-code:bg-violet-500/10 prose-code:px-1 prose-code:rounded
-    prose-blockquote:border-violet-500 prose-blockquote:text-gray-400`
+  const proseClasses = `prose prose-neutral max-w-none
+    prose-headings:font-semibold prose-headings:text-[color:var(--ink)]
+    prose-h1:text-2xl prose-h2:text-xl prose-h2:border-b prose-h2:border-[color:var(--ink-200)] prose-h2:pb-2
+    prose-p:text-[color:var(--ink-700)]
+    prose-strong:text-[color:var(--ink)]
+    prose-ul:text-[color:var(--ink-700)]
+    prose-ol:text-[color:var(--ink-700)]
+    prose-li:marker:text-[color:var(--accent)]
+    prose-code:text-[color:var(--accent)] prose-code:bg-[color:var(--accent-soft)] prose-code:px-1 prose-code:rounded
+    prose-blockquote:border-[color:var(--accent)] prose-blockquote:text-[color:var(--ink-500)]`
 
   if (editing) {
     return (
       <div>
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-          <div className="flex rounded-lg bg-white/5 border border-white/10 p-0.5 gap-0.5">
+          <div className="flex rounded-lg p-0.5 gap-0.5" style={{ background: 'var(--surface-2)', border: '1px solid var(--ink-200)' }}>
             <button
               onClick={() => setPreviewTab('edit')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                previewTab === 'edit' ? 'bg-violet-600 text-white' : 'text-gray-400 hover:text-white'
-              }`}
+              className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
+              style={previewTab === 'edit' ? { background: 'var(--accent)', color: 'var(--accent-fg)' } : { color: 'var(--ink-500)' }}
             >
               ✏️ Éditer
             </button>
             <button
               onClick={() => setPreviewTab('preview')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                previewTab === 'preview' ? 'bg-violet-600 text-white' : 'text-gray-400 hover:text-white'
-              }`}
+              className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
+              style={previewTab === 'preview' ? { background: 'var(--accent)', color: 'var(--accent-fg)' } : { color: 'var(--ink-500)' }}
             >
               👁️ Aperçu
             </button>
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={handleCancel}
-              className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white text-sm transition-colors"
-            >
+            <button onClick={handleCancel} className="btn btn-outline">
               Annuler
             </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors"
-            >
+            <button onClick={handleSave} disabled={saving} className="btn btn-primary">
               {saving ? '⟳ Sauvegarde...' : '💾 Sauvegarder'}
             </button>
           </div>
@@ -96,16 +87,19 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
         {/* Editor / Preview */}
         {previewTab === 'edit' ? (
           <div>
-            <p className="text-xs text-gray-500 mb-2">Markdown supporté : **gras**, *italique*, ## Titre, - liste, etc.</p>
+            <p className="text-xs mb-2" style={{ color: 'var(--ink-500)' }}>Markdown supporté : **gras**, *italique*, ## Titre, - liste, etc.</p>
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              className="w-full min-h-[60vh] px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors resize-y text-sm font-mono leading-relaxed"
+              className="w-full min-h-[60vh] px-4 py-3 rounded-xl outline-none transition-colors resize-y text-sm font-mono leading-relaxed"
+              style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
               spellCheck={false}
             />
           </div>
         ) : (
-          <div className="min-h-[60vh] rounded-xl bg-white/5 border border-white/10 px-6 py-5">
+          <div className="min-h-[60vh] rounded-xl px-6 py-5" style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}>
             <div className={proseClasses}>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{draft}</ReactMarkdown>
             </div>
@@ -119,10 +113,7 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
     <div>
       {ficheId && (
         <div className="flex justify-end mb-4">
-          <button
-            onClick={() => setEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-violet-500/40 hover:text-violet-300 text-gray-400 text-sm font-medium transition-colors"
-          >
+          <button onClick={() => setEditing(true)} className="btn btn-outline">
             ✏️ Modifier la fiche
           </button>
         </div>

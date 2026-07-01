@@ -17,6 +17,8 @@ export default function SceneGenerate({ active }: Props) {
   const [revealed, setRevealed] = useState(CARDS.map(() => false));
 
   useEffect(() => {
+    // Timer-driven animation (external system): reset choreography state when inactive.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!active) { setRevealed(CARDS.map(() => false)); return; }
     const ts = CARDS.map((_, i) =>
       setTimeout(() => {

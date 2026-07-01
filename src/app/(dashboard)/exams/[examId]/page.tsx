@@ -9,9 +9,9 @@ import { ClipboardCheck, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Exam, ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen, ExamSession } from '@/types'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
-const COLOR = '#EF4444'
+const COLOR = '#1F4D3F'
 
-function scoreColor(s: number) { return s >= 75 ? '#22C55E' : s >= 50 ? '#F59E0B' : '#EF4444' }
+function scoreColor(s: number) { return s >= 75 ? '#1F4D3F' : s >= 50 ? '#A8762E' : '#B4503C' }
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -61,7 +61,7 @@ export default function ExamPage() {
   if (!exam) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 rounded-full border-2 border-[#EF4444]/20 border-t-[#EF4444] animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--accent-soft)', borderTopColor: 'var(--accent)' }} />
       </div>
     )
   }
@@ -71,14 +71,14 @@ export default function ExamPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
         <div className="relative">
-          <div className="w-16 h-16 rounded-full border-2 border-[#EF4444]/15 border-t-[#EF4444] animate-spin" />
+          <div className="w-16 h-16 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--accent-soft)', borderTopColor: 'var(--accent)' }} />
           <div className="absolute inset-0 flex items-center justify-center text-xl">🤖</div>
         </div>
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-white mb-1" style={{  }}>
+          <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--ink)' }}>
             Correction en cours…
           </h2>
-          <p className="text-sm text-[#64748B]">L&apos;IA analyse vos réponses</p>
+          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>L&apos;IA analyse tes réponses</p>
         </div>
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
@@ -97,7 +97,7 @@ export default function ExamPage() {
   if (!started) {
     return (
       <div className="max-w-350">
-        <Link href="/exams" className="inline-flex items-center gap-1.5 text-xs text-[#475569] hover:text-white transition-colors mb-6">
+        <Link href="/exams" className="inline-flex items-center gap-1.5 text-xs transition-colors mb-6" style={{ color: 'var(--ink-500)' }}>
           <ClipboardCheck size={12} />← Mes examens
         </Link>
 
@@ -107,33 +107,31 @@ export default function ExamPage() {
             <div className="flex items-center gap-2 mb-3">
               {exam.subject && (
                 <span className="text-[10px] px-2.5 py-1 rounded-full font-semibold"
-                  style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25` }}>
+                  style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
                   {exam.subject}
                 </span>
               )}
             </div>
-            <h1 className="text-4xl text-white leading-tight mb-6 tracking-tight" style={{  }}>
+            <h1 className="section-h leading-tight mb-6">
               {exam.title}
             </h1>
 
             <div className="flex gap-3 mb-6">
-              <span className="text-xs px-3 py-1.5 rounded-full font-medium tabular-nums"
-                style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25`, fontFamily: 'var(--font-mono, monospace)' }}>
+              <span className="mono text-xs px-3 py-1.5 rounded-full font-medium tabular-nums"
+                style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
                 {questions.length} questions
               </span>
-              <span className="text-xs px-3 py-1.5 rounded-full font-medium tabular-nums"
-                style={{ background: 'var(--surface-2)', color: 'var(--text-2)', border: '1px solid var(--border)', fontFamily: 'var(--font-mono, monospace)' }}>
+              <span className="mono text-xs px-3 py-1.5 rounded-full font-medium tabular-nums"
+                style={{ background: 'var(--surface-2)', color: 'var(--ink-700)', border: '1px solid var(--ink-200)' }}>
                 {mcqCount} QCM · {openCount} ouvertes
               </span>
             </div>
 
-            <p className="text-sm text-[#64748B] mb-8 leading-relaxed">
-              Les QCM sont corrigés automatiquement. Les questions ouvertes sont évaluées par l&apos;IA selon votre réponse et les mots-clés attendus.
+            <p className="text-sm mb-8 leading-relaxed" style={{ color: 'var(--ink-500)' }}>
+              Les QCM sont corrigés automatiquement. Les questions ouvertes sont évaluées par l&apos;IA selon ta réponse et les mots-clés attendus.
             </p>
 
-            <button onClick={() => setStarted(true)}
-              className="w-full py-4 rounded-2xl text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:opacity-90"
-              style={{ background: COLOR }}>
+            <button onClick={() => setStarted(true)} className="btn btn-primary w-full" style={{ padding: '16px 24px', fontSize: 16, borderRadius: 16 }}>
               Commencer l&apos;examen →
             </button>
 
@@ -143,7 +141,6 @@ export default function ExamPage() {
                 id={exam.id}
                 entityLabel="cet examen"
                 variant="button"
-                color={COLOR}
                 redirectTo="/exams"
               />
             </div>
@@ -151,14 +148,14 @@ export default function ExamPage() {
 
           {/* Right: past sessions */}
           <div>
-            <p className="text-[10px] font-semibold text-[#475569] uppercase tracking-widest mb-4">
+            <p className="mono text-[10px] font-medium uppercase tracking-widest mb-4" style={{ color: 'var(--ink-400)' }}>
               Tentatives précédentes
             </p>
 
             {pastSessions.length === 0 ? (
-              <div className="rounded-2xl border p-6 text-center" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-                <p className="text-sm text-[#64748B]">Aucune tentative</p>
-                <p className="text-xs text-[#475569] mt-1">Lance ton premier examen !</p>
+              <div className="app-card p-6 text-center">
+                <p className="text-sm" style={{ color: 'var(--ink-500)' }}>Aucune tentative</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--ink-400)' }}>Lance ton premier examen !</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -167,18 +164,18 @@ export default function ExamPage() {
                   const correct = (session.answers as { is_correct: boolean }[]).filter((a) => a.is_correct).length
                   return (
                     <div key={session.id}
-                      className="rounded-2xl border p-4 animate-fade-up"
-                      style={{ background: 'var(--surface)', borderColor: 'var(--border)', animationDelay: `${i * 50}ms` }}>
+                      className="app-card p-4 animate-fade-up"
+                      style={{ animationDelay: `${i * 50}ms` }}>
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div>
                           <span className="text-3xl font-normal leading-none tracking-tight" style={{ color: sc }}>
                             {session.score}%
                           </span>
-                          <p className="text-xs text-[#64748B] mt-1 tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+                          <p className="mono text-xs mt-1 tabular-nums" style={{ color: 'var(--ink-500)' }}>
                             {correct}/{session.total_questions} correctes
                           </p>
                         </div>
-                        <span className="text-[10px] text-[#475569] tabular-nums text-right" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+                        <span className="mono text-[10px] tabular-nums text-right" style={{ color: 'var(--ink-400)' }}>
                           {formatDateTime(session.completed_at)}
                         </span>
                       </div>
@@ -207,31 +204,31 @@ export default function ExamPage() {
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--app-bg)' }}>
       {/* Top bar */}
       <div className="sticky top-0 z-20 h-14 flex items-center px-4 md:px-8 gap-4 border-b"
-        style={{ background: 'var(--app-bg)', borderColor: 'var(--border)' }}>
+        style={{ background: 'var(--app-bg)', borderColor: 'var(--ink-200)' }}>
         <button onClick={() => setStarted(false)}
-          className="flex items-center gap-1.5 text-xs text-[#475569] hover:text-white transition-colors shrink-0">
+          className="flex items-center gap-1.5 text-xs transition-colors shrink-0" style={{ color: 'var(--ink-500)' }}>
           <X size={14} />Quitter
         </button>
 
         <div className="flex-1 flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-[#475569] tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+            <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
               Question {currentIndex + 1} / {questions.length}
             </span>
-            <span className="text-[10px] text-[#475569] tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+            <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
               {Math.round(progress)}%
             </span>
           </div>
-          <div className="w-full h-1 rounded-full" style={{ background: 'var(--border)' }}>
+          <div className="w-full h-1 rounded-full" style={{ background: 'var(--ink-200)' }}>
             <div className="h-1 rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: COLOR }} />
           </div>
         </div>
 
         <span className="text-[10px] px-2 py-1 rounded-full font-semibold shrink-0"
           style={{
-            background: currentQ.type === 'mcq' ? '#3B82F615' : '#F59E0B15',
-            color: currentQ.type === 'mcq' ? '#3B82F6' : '#F59E0B',
-            border: `1px solid ${currentQ.type === 'mcq' ? '#3B82F625' : '#F59E0B25'}`,
+            background: currentQ.type === 'mcq' ? '#3E6B7A15' : '#A8762E15',
+            color: currentQ.type === 'mcq' ? '#3E6B7A' : '#A8762E',
+            border: `1px solid ${currentQ.type === 'mcq' ? '#3E6B7A25' : '#A8762E25'}`,
           }}>
           {currentQ.type === 'mcq' ? 'QCM' : 'Ouverte'}
         </span>
@@ -240,7 +237,7 @@ export default function ExamPage() {
       {/* Question area */}
       <div className="flex-1 flex items-start justify-center px-4 py-8">
         <div className="w-full max-w-2xl">
-          <p className="text-2xl text-white mb-8 leading-snug tracking-tight" style={{  }}>
+          <p className="text-2xl mb-8 leading-snug tracking-tight" style={{ color: 'var(--ink)' }}>
             {currentQ.question}
           </p>
 
@@ -252,14 +249,14 @@ export default function ExamPage() {
                   <button key={i} onClick={() => setAnswers((a) => ({ ...a, [currentQ.id]: String(i) }))}
                     className="w-full flex items-center gap-4 px-4 py-4 rounded-xl border text-left transition-all duration-150"
                     style={{
-                      background: selected ? COLOR + '12' : 'var(--surface)',
-                      borderColor: selected ? COLOR : 'var(--border)',
+                      background: selected ? 'var(--accent-soft)' : 'var(--bg-elev)',
+                      borderColor: selected ? COLOR : 'var(--ink-200)',
                     }}>
                     <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all"
-                      style={{ borderColor: selected ? COLOR : 'var(--border-2)', background: selected ? COLOR : 'transparent', color: selected ? 'var(--text-1)' : 'var(--text-4)' }}>
+                      style={{ borderColor: selected ? COLOR : 'var(--ink-200)', background: selected ? COLOR : 'transparent', color: selected ? 'var(--accent-fg)' : 'var(--ink-400)' }}>
                       {['A', 'B', 'C', 'D'][i]}
                     </div>
-                    <span className="text-sm text-[#CBD5E1]">{opt}</span>
+                    <span className="text-sm" style={{ color: 'var(--ink-700)' }}>{opt}</span>
                   </button>
                 )
               })}
@@ -272,13 +269,13 @@ export default function ExamPage() {
                 value={answers[currentQ.id] ?? ''}
                 onChange={(e) => setAnswers((a) => ({ ...a, [currentQ.id]: e.target.value }))}
                 rows={6}
-                className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-[#475569] outline-none resize-none transition-colors"
-                style={{ background: 'var(--surface-2)', border: `1px solid var(--border)` }}
-                placeholder="Rédigez votre réponse ici…"
-                onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '60')}
-                onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
+                className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none transition-colors"
+                style={{ background: 'var(--bg-elev)', border: `1px solid var(--ink-200)`, color: 'var(--ink)' }}
+                placeholder="Rédige ta réponse ici…"
+                onFocus={(e) => (e.currentTarget.style.borderColor = COLOR)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
               />
-              <p className="text-right text-[10px] text-[#475569] mt-1 tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+              <p className="mono text-right text-[10px] mt-1 tabular-nums" style={{ color: 'var(--ink-400)' }}>
                 {(answers[currentQ.id] ?? '').length} car.
               </p>
             </div>
@@ -287,7 +284,8 @@ export default function ExamPage() {
           {/* Navigation */}
           <div className="flex items-center gap-4">
             <button onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))} disabled={currentIndex === 0}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm text-[#64748B] hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed border border-[#1E1E2E] hover:border-[#2E2E45]">
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed border"
+              style={{ color: 'var(--ink-500)', borderColor: 'var(--ink-200)' }}>
               <ChevronLeft size={14} />Préc.
             </button>
 
@@ -299,21 +297,19 @@ export default function ExamPage() {
                   style={{
                     width: i === currentIndex ? '20px' : '8px',
                     height: '8px',
-                    background: i === currentIndex ? COLOR : answers[q.id] ? COLOR + '60' : 'var(--border-2)',
+                    background: i === currentIndex ? COLOR : answers[q.id] ? COLOR + '60' : 'var(--ink-200)',
                   }} />
               ))}
             </div>
 
             {!isLast ? (
               <button onClick={() => setCurrentIndex((i) => i + 1)} disabled={!answers[currentQ.id]}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:-translate-y-0.5"
-                style={{ background: COLOR }}>
+                className="btn btn-primary disabled:opacity-30 disabled:cursor-not-allowed">
                 Suiv.<ChevronRight size={14} />
               </button>
             ) : (
               <button onClick={handleSubmit} disabled={!allAnswered}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:-translate-y-0.5"
-                style={{ background: '#22C55E' }}>
+                className="btn btn-primary disabled:opacity-30 disabled:cursor-not-allowed">
                 Soumettre ✓
               </button>
             )}

@@ -4,13 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { ChevronDown } from 'lucide-react'
 import type { TimelineEvent, TimelineData } from '@/types'
 
-const categoryConfig: Record<string, { color: string; bg: string; label: string }> = {
-  politique:   { color: '#3b82f6', bg: '#1e3a5f', label: 'Politique' },
-  militaire:   { color: '#ef4444', bg: '#7f1d1d', label: 'Militaire' },
-  economique:  { color: '#f59e0b', bg: '#78350f', label: 'Économique' },
-  social:      { color: '#22c55e', bg: '#14532d', label: 'Social' },
-  culturel:    { color: '#a855f7', bg: '#4a1d96', label: 'Culturel' },
-  default:     { color: '#6b7280', bg: '#1f2937', label: 'Autre' },
+// Catégories — palette désaturée, cohérente avec le système clair
+const categoryConfig: Record<string, { color: string; label: string }> = {
+  politique:   { color: '#3E6B7A', label: 'Politique' },
+  militaire:   { color: '#B4503C', label: 'Militaire' },
+  economique:  { color: '#A8762E', label: 'Économique' },
+  social:      { color: '#1F4D3F', label: 'Social' },
+  culturel:    { color: '#7A5E8A', label: 'Culturel' },
+  default:     { color: '#6b7280', label: 'Autre' },
 }
 
 function CardContent({
@@ -18,14 +19,14 @@ function CardContent({
   config,
 }: {
   event: TimelineEvent
-  config: { color: string; bg: string; label: string }
+  config: { color: string; label: string }
 }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
     <div
-      className="cursor-pointer rounded-xl border transition-all duration-200 hover:brightness-110 overflow-hidden"
-      style={{ backgroundColor: config.bg + '70', borderColor: config.color + '40' }}
+      className="cursor-pointer rounded-xl border transition-all duration-200 hover:-translate-y-0.5 overflow-hidden"
+      style={{ backgroundColor: config.color + '0e', borderColor: config.color + '33' }}
       onClick={() => setExpanded(!expanded)}
     >
       <div className="flex items-center justify-between gap-2 px-4 pt-3 pb-2">
@@ -49,10 +50,10 @@ function CardContent({
           style={{ color: config.color + '99', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
       </div>
-      <p className="font-semibold text-white text-sm px-4 pb-3 leading-snug">{event.title}</p>
+      <p className="font-semibold text-sm px-4 pb-3 leading-snug" style={{ color: 'var(--ink)' }}>{event.title}</p>
       {expanded && event.description && (
         <div className="px-4 pb-4 pt-1 border-t" style={{ borderColor: config.color + '25' }}>
-          <p className="text-gray-300 text-xs leading-relaxed">{event.description}</p>
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-700)' }}>{event.description}</p>
         </div>
       )}
     </div>
@@ -147,9 +148,9 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
           onClick={() => setActiveFilter(null)}
           className="text-xs px-3 py-1.5 rounded-full font-medium transition-all"
           style={{
-            backgroundColor: activeFilter === null ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)',
-            color: activeFilter === null ? '#fff' : '#6b7280',
-            border: `1px solid ${activeFilter === null ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)'}`,
+            backgroundColor: activeFilter === null ? 'var(--accent-soft)' : 'transparent',
+            color: activeFilter === null ? 'var(--accent)' : 'var(--ink-500)',
+            border: `1px solid ${activeFilter === null ? 'rgba(31,77,63,0.3)' : 'var(--ink-200)'}`,
           }}
         >
           Tous
@@ -176,11 +177,11 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
       <div className="relative">
         {/* Mobile line */}
         <div className="absolute top-0 bottom-0 w-px md:hidden"
-          style={{ left: '5px', background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.1) 5%, rgba(255,255,255,0.1) 95%, transparent)' }}
+          style={{ left: '5px', background: 'linear-gradient(to bottom, transparent, var(--ink-200) 5%, var(--ink-200) 95%, transparent)' }}
         />
         {/* Desktop center line */}
         <div className="absolute top-0 bottom-0 w-px hidden md:block"
-          style={{ left: 'calc(50% - 0.5px)', background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.1) 5%, rgba(255,255,255,0.1) 95%, transparent)' }}
+          style={{ left: 'calc(50% - 0.5px)', background: 'linear-gradient(to bottom, transparent, var(--ink-200) 5%, var(--ink-200) 95%, transparent)' }}
         />
 
         <div className="pl-5 md:pl-0 space-y-4 md:space-y-5">
@@ -197,7 +198,7 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-center text-sm text-gray-500 py-10">Aucun événement dans cette catégorie.</p>
+        <p className="text-center text-sm py-10" style={{ color: 'var(--ink-400)' }}>Aucun événement dans cette catégorie.</p>
       )}
     </div>
   )

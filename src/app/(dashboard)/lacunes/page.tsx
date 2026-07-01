@@ -8,9 +8,12 @@ import { AnalysisPanel } from '@/components/lacunes/AnalysisPanel'
 import { EmptyState } from '@/components/lacunes/EmptyState'
 import { ProGate } from '@/components/pro-gate'
 import { createClient } from '@/lib/supabase/client'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { MockCard, MockStats, LacunesAnalysis } from '@/lib/lacunes/mock'
 import type { Profile } from '@/types'
 import { trackLacunesOpen, trackLacunesAnalyze } from '@/lib/analytics'
+
+const COLOR = '#1F4D3F'
 
 interface ApiResponse {
   lacunes: Array<{
@@ -48,6 +51,7 @@ export default function LacunesPage() {
     if (profile?.plan === 'pro') {
       fetchLacunes()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile])
 
   async function fetchLacunes() {
@@ -84,7 +88,7 @@ export default function LacunesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <RefreshCw size={20} className="animate-spin text-indigo-400" />
+        <RefreshCw size={20} className="animate-spin" style={{ color: COLOR }} />
       </div>
     )
   }
@@ -105,16 +109,12 @@ export default function LacunesPage() {
 
   return (
     <div className="max-w-350">
-      {/* ─── Header ─────────────────────────────────────────── */}
+      {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
         <div>
-          <h1 className="text-4xl text-white leading-tight tracking-tight">
-            Lacunes
-          </h1>
-          <p
-            className="text-xs text-[#475569] mt-1.5"
-            style={{ fontFamily: 'var(--font-mono, monospace)' }}
-          >
+          <Eyebrow className="mb-2">Lacunes</Eyebrow>
+          <h1 className="section-h">Mes points faibles</h1>
+          <p className="mono text-xs mt-2" style={{ color: 'var(--ink-400)' }}>
             Basé sur {data.stats.sessions} révisions &nbsp;·&nbsp; {data.lacunes.length} point{data.lacunes.length > 1 ? 's' : ''} faible{data.lacunes.length > 1 ? 's' : ''}
           </p>
         </div>
@@ -122,18 +122,18 @@ export default function LacunesPage() {
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-150 hover:opacity-90 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
-          style={{ background: '#818CF8' }}
+          className="btn btn-outline shrink-0"
+          style={{ padding: '10px 16px', fontSize: '13px' }}
         >
           <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
           {refreshing ? 'Analyse...' : "Relancer l'analyse"}
         </button>
       </div>
 
-      {/* ─── KPI strip ─────────────────────────────────────── */}
+      {/* KPI strip */}
       <KpiStrip stats={data.stats} />
 
-      {/* ─── Two-column layout ─────────────────────────────── */}
+      {/* Two-column layout */}
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,60fr)_minmax(0,40fr)] gap-8">
         <div className="min-w-0">
           <WeaknessCardList cards={cards} />

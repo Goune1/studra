@@ -29,10 +29,10 @@ function isAccepted(file: File) {
 }
 
 const STATUS_ICON: Record<FileStatus, React.ReactNode> = {
-  compressing: <Loader2 size={12} className="animate-spin text-gray-400" />,
-  extracting: <Loader2 size={12} className="animate-spin text-violet-400" />,
-  done: <CheckCircle size={12} className="text-emerald-400" />,
-  error: <XCircle size={12} className="text-red-400" />,
+  compressing: <Loader2 size={12} className="animate-spin" style={{ color: 'var(--ink-400)' }} />,
+  extracting: <Loader2 size={12} className="animate-spin" style={{ color: 'var(--accent)' }} />,
+  done: <CheckCircle size={12} style={{ color: 'var(--accent)' }} />,
+  error: <XCircle size={12} style={{ color: '#B4503C' }} />,
 }
 
 const STATUS_LABEL: Record<FileStatus, string> = {
@@ -155,8 +155,8 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
         onClick={() => !disabled && !busy && inputRef.current?.click()}
         className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-5 px-4 text-center transition-colors"
         style={{
-          borderColor: dragging ? '#6366f1' : 'rgba(255,255,255,0.12)',
-          background: dragging ? 'rgba(99,102,241,0.05)' : 'rgba(255,255,255,0.02)',
+          borderColor: dragging ? 'var(--accent)' : 'var(--ink-200)',
+          background: dragging ? 'var(--accent-soft)' : 'transparent',
           cursor: disabled || busy ? 'default' : 'pointer',
           opacity: disabled ? 0.5 : 1,
         }}
@@ -171,15 +171,15 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
           onChange={(e) => e.target.files && handleFiles(e.target.files)}
         />
         {busy ? (
-          <Loader2 size={20} className="animate-spin text-violet-400" />
+          <Loader2 size={20} className="animate-spin" style={{ color: 'var(--accent)' }} />
         ) : (
-          <ImageIcon size={20} className="text-gray-500" />
+          <ImageIcon size={20} style={{ color: 'var(--ink-400)' }} />
         )}
         <div>
-          <p className="text-sm font-medium text-gray-300">
+          <p className="text-sm font-medium" style={{ color: 'var(--ink-700)' }}>
             {busy ? 'Extraction en cours…' : 'Importer une photo de cours'}
           </p>
-          <p className="text-xs text-gray-600 mt-0.5">
+          <p className="text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
             JPG, PNG, WEBP, HEIC · Max {MAX_FILES} photos
           </p>
         </div>

@@ -84,6 +84,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
   const [copiedId,     setCopiedId]     = useState<string | null>(null)
 
   // reset page when filters change
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setPage(1) }, [search, planFilter, statusFilter, sortBy])
 
   const filtered = useMemo(() => {
@@ -106,7 +107,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
           default:          return 0
         }
       })
-  }, [search, planFilter, statusFilter, sortBy])
+  }, [users, search, planFilter, statusFilter, sortBy])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage))
   const safePage   = Math.min(page, totalPages)

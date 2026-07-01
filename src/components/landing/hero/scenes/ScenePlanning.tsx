@@ -26,6 +26,8 @@ export default function ScenePlanning({ active }: Props) {
   const [reveal, setReveal] = useState<string[]>([]);
 
   useEffect(() => {
+    // Timer-driven animation (external system): reset choreography state when inactive.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!active) { setReveal([]); return; }
     const all: [number, number][] = [];
     SESSIONS.forEach((day, di) => day.forEach((_, si) => all.push([di, si])));

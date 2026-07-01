@@ -5,11 +5,12 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { FileText, PlusCircle, Search, ChevronDown } from 'lucide-react'
 import { EmptyState } from '@/components/content/EmptyState'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { Fiche } from '@/types'
 import { trackFichesOpen } from '@/lib/analytics'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
-const COLOR = '#3B82F6'
+const COLOR = '#1F4D3F'
 const MATIERES = ['Tous', 'SES', 'HGGSP', 'Maths', 'Histoire', 'Physique', 'Autre']
 type SortKey = 'date_desc' | 'date_asc' | 'alpha'
 const SORT_LABELS: Record<SortKey, string> = {
@@ -72,22 +73,19 @@ export default function FichesPage() {
     <div className="max-w-350">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
-        <div className="flex items-center gap-3">
-          <h1 className="text-3xl text-white tracking-tight" style={{  }}>
-            Mes Fiches
-          </h1>
-          <span
-            className="text-xs px-2 py-1 rounded-full font-semibold tabular-nums"
-            style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25`, fontFamily: 'var(--font-mono, monospace)' }}
-          >
-            {loading ? '…' : fiches.length} fiche{fiches.length > 1 ? 's' : ''}
-          </span>
+        <div>
+          <Eyebrow className="mb-2">Fiches</Eyebrow>
+          <div className="flex items-center gap-3">
+            <h1 className="section-h">Mes fiches</h1>
+            <span
+              className="mono text-xs px-2 py-1 rounded-full font-medium tabular-nums"
+              style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}
+            >
+              {loading ? '…' : fiches.length} fiche{fiches.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
-        <Link
-          href="/fiches/new"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white shrink-0 transition-all hover:-translate-y-0.5 hover:opacity-90"
-          style={{ background: COLOR }}
-        >
+        <Link href="/fiches/new" className="btn btn-primary shrink-0">
           <PlusCircle size={15} />
           Nouvelle fiche
         </Link>
@@ -96,16 +94,16 @@ export default function FichesPage() {
       {/* Search + filters */}
       <div className="flex flex-wrap gap-2 mb-6 animate-fade-up" style={{ animationDelay: '60ms' }}>
         <div className="relative flex-1 min-w-50">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#475569]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-400)' }} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher une fiche…"
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm text-white placeholder-[#475569] outline-none transition-colors"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
-            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
           />
         </div>
 
@@ -129,8 +127,8 @@ export default function FichesPage() {
         <div className="relative">
           <button
             onClick={() => setSortOpen((o) => !o)}
-            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium text-[#94A3B8] transition-colors hover:text-white"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-colors"
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
           >
             {SORT_LABELS[sort]}
             <ChevronDown size={12} />
@@ -191,7 +189,6 @@ export default function FichesPage() {
                 style={{
                   background: 'var(--surface)',
                   borderColor: 'var(--border)',
-                  borderLeft: `4px solid ${COLOR}`,
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = COLOR + '50'; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 20px ${COLOR}12` }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
@@ -213,15 +210,12 @@ export default function FichesPage() {
                   </div>
 
                   {/* Title */}
-                  <h3
-                    className="text-base font-semibold text-white mb-2 line-clamp-2 leading-snug group-hover:text-[#93C5FD] transition-colors"
-                    style={{  }}
-                  >
+                  <h3 className="text-base font-semibold mb-2 line-clamp-2 leading-snug transition-colors" style={{ color: 'var(--ink)' }}>
                     {fiche.title}
                   </h3>
 
                   {/* Excerpt */}
-                  <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed flex-1">
+                  <p className="text-xs line-clamp-2 leading-relaxed flex-1" style={{ color: 'var(--ink-500)' }}>
                     {excerpt(fiche.generated_content)}
                   </p>
                 </div>
@@ -229,21 +223,15 @@ export default function FichesPage() {
                 {/* Footer */}
                 <div
                   className="flex items-center justify-between px-5 py-3 border-t"
-                  style={{ borderColor: 'var(--border)', background: 'var(--surface-deep)' }}
+                  style={{ borderColor: 'var(--ink-200)', background: 'var(--surface-2)' }}
                 >
-                  <span
-                    className="text-[10px] text-[#475569] tabular-nums"
-                    style={{ fontFamily: 'var(--font-mono, monospace)' }}
-                  >
+                  <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
                     {formatDate(fiche.created_at)}
                   </span>
-                  <span
-                    className="text-[10px] text-[#475569] tabular-nums"
-                    style={{ fontFamily: 'var(--font-mono, monospace)' }}
-                  >
+                  <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
                     ~{wc} mots
                   </span>
-                  <span className="text-[10px] font-semibold transition-colors group-hover:text-[#93C5FD]" style={{ color: COLOR }}>
+                  <span className="text-[10px] font-semibold" style={{ color: COLOR }}>
                     Lire →
                   </span>
                 </div>
@@ -253,7 +241,7 @@ export default function FichesPage() {
           })}
 
           {!loading && filtered.length === 0 && fiches.length > 0 && (
-            <div className="col-span-full text-center py-16 text-[#475569] text-sm">
+            <div className="col-span-full text-center py-16 text-sm" style={{ color: 'var(--ink-400)' }}>
               Aucune fiche ne correspond à votre recherche.
             </div>
           )}

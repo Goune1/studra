@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Scroll } from 'lucide-react'
+import { PlusCircle, Scroll } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import type { GeneratedPastExam } from '@/types'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+import { EmptyState } from '@/components/content/EmptyState'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
+import type { GeneratedPastExam } from '@/types'
 
-const COLOR = '#EF4444'
+const COLOR = '#1F4D3F'
 
 export default function AnnalesListPage() {
   const [exams, setExams] = useState<GeneratedPastExam[]>([])
@@ -28,19 +30,23 @@ export default function AnnalesListPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: 'var(--text-1)' }}>Annales</h1>
-          <p className="mt-1 text-sm" style={{ color: 'var(--text-2)' }}>
-            Sujets générés dans le style de tes anciennes annales
-          </p>
+          <Eyebrow className="mb-2">Annales</Eyebrow>
+          <div className="flex items-center gap-3">
+            <h1 className="section-h">Mes annales</h1>
+            <span
+              className="mono text-xs px-2 py-1 rounded-full font-medium tabular-nums"
+              style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}
+            >
+              {loading ? '…' : exams.length} sujet{exams.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
-        <Link
-          href="/annales/new"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5"
-          style={{ background: '#EF4444', color: '#fff' }}
-        >
-          <Plus size={15} /> Nouvelle annale
+        <Link href="/annales/new" className="btn btn-primary shrink-0">
+          <PlusCircle size={15} />
+          Nouvelle annale
         </Link>
       </div>
 
@@ -51,29 +57,18 @@ export default function AnnalesListPage() {
           ))}
         </div>
       ) : exams.length === 0 ? (
-        <div
-          className="rounded-2xl p-12 text-center"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-        >
-          <Scroll size={32} className="mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
-          <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-1)' }}>
-            Aucune annale générée
-          </p>
-          <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>
-            Uploade une ancienne annale et choisis un cours pour générer un nouveau sujet.
-          </p>
-          <Link
-            href="/annales/new"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
-            style={{ background: '#EF444420', color: '#EF4444' }}
-          >
-            <Plus size={14} /> Générer ma première annale
-          </Link>
-        </div>
+        <EmptyState
+          Icon={Scroll}
+          color={COLOR}
+          title="Aucune annale générée"
+          subtitle="Uploade une ancienne annale et choisis un cours pour générer un nouveau sujet dans le même style."
+          ctaLabel="Générer ma première annale"
+          ctaHref="/annales/new"
+        />
       ) : (
         <div className="space-y-3">
           {exams.map((exam) => (
-            <div key={exam.id} className="relative group/card">
+            <div key={exam.id} className="relative group/card animate-fade-up">
               <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
                 <DeleteEntityButton
                   table="generated_past_exams"
@@ -91,16 +86,16 @@ export default function AnnalesListPage() {
               >
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: '#EF444415' }}
+                  style={{ background: COLOR + '15' }}
                 >
-                  <Scroll size={18} style={{ color: '#EF4444' }} />
+                  <Scroll size={18} style={{ color: COLOR }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>
+                  <p className="text-sm font-semibold truncate" style={{ color: 'var(--ink)' }}>
                     {exam.title}
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-                    {exam.questions_json.length} questions ·{' '}
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--ink-500)' }}>
+                    {exam.questions_json.length} question{exam.questions_json.length > 1 ? 's' : ''} ·{' '}
                     {new Date(exam.created_at).toLocaleDateString('fr-FR')}
                   </p>
                 </div>

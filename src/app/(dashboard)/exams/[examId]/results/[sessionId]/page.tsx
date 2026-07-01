@@ -4,7 +4,9 @@ import { notFound } from 'next/navigation'
 import { Sparkles, Check, X, ClipboardCheck } from 'lucide-react'
 import type { ExamAnswer, ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen } from '@/types'
 
-function scoreColor(s: number) { return s >= 75 ? '#22C55E' : s >= 50 ? '#F59E0B' : '#EF4444' }
+function scoreColor(s: number) { return s >= 75 ? '#1F4D3F' : s >= 50 ? '#A8762E' : '#B4503C' }
+const OK = '#1F4D3F'
+const KO = '#B4503C'
 
 const CIRC = 2 * Math.PI * 40
 
@@ -14,7 +16,7 @@ function DonutChart({ score }: { score: number }) {
   return (
     <div className="relative" style={{ width: 96, height: 96 }}>
       <svg width={96} height={96} viewBox="0 0 96 96">
-        <circle cx={48} cy={48} r={40} fill="none" stroke="#1E1E2E" strokeWidth={8} />
+        <circle cx={48} cy={48} r={40} fill="none" stroke="var(--ink-200)" strokeWidth={8} />
         <circle cx={48} cy={48} r={40} fill="none" stroke={color} strokeWidth={8}
           strokeLinecap="round" strokeDasharray={`${fill} ${CIRC}`}
           transform="rotate(-90 48 48)"
@@ -59,7 +61,7 @@ export default async function ExamResultsPage({
     <div className="max-w-350">
       {/* Score hero */}
       <div className="rounded-2xl border p-6 md:p-8 mb-8 animate-fade-up"
-        style={{ background: 'var(--surface)', borderColor: 'var(--border)', borderLeft: `4px solid ${sc}` }}>
+        style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
         <div className="flex flex-col md:flex-row md:items-center gap-6">
           <div className="flex items-center gap-6">
             <DonutChart score={score} />
@@ -67,13 +69,13 @@ export default async function ExamResultsPage({
               <h1 className="text-5xl font-normal leading-none mb-2 tracking-tight" style={{ color: sc }}>
                 {correctCount}/{answers.length}
               </h1>
-              <p className="text-sm text-[#94A3B8]">questions correctes</p>
-              <h2 className="text-lg text-white mt-2 line-clamp-1" style={{  }}>
+              <p className="text-sm" style={{ color: 'var(--ink-500)' }}>questions correctes</p>
+              <h2 className="text-lg mt-2 line-clamp-1" style={{ color: 'var(--ink)' }}>
                 {exam.title}
               </h2>
               {exam.subject && (
                 <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold mt-2 inline-block"
-                  style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444425' }}>
+                  style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid rgba(31,77,63,0.2)' }}>
                   {exam.subject}
                 </span>
               )}
@@ -81,13 +83,10 @@ export default async function ExamResultsPage({
           </div>
 
           <div className="md:ml-auto flex gap-3 flex-wrap">
-            <Link href={`/exams/${examId}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-[#94A3B8] transition-all hover:text-white border border-[#1E1E2E] hover:border-[#2E2E45]">
+            <Link href={`/exams/${examId}`} className="btn btn-outline">
               Recommencer
             </Link>
-            <Link href="/exams"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:opacity-90"
-              style={{ background: '#EF4444' }}>
+            <Link href="/exams" className="btn btn-primary">
               <ClipboardCheck size={14} />Mes examens
             </Link>
           </div>
@@ -95,16 +94,16 @@ export default async function ExamResultsPage({
       </div>
 
       {/* Correction détaillée */}
-      <p className="text-[10px] font-semibold text-[#475569] uppercase tracking-widest mb-5">Correction détaillée</p>
+      <p className="mono text-[10px] font-medium uppercase tracking-widest mb-5" style={{ color: 'var(--ink-400)' }}>Correction détaillée</p>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* QCM column */}
         {mcqQs.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#3B82F6]">QCM</span>
-              <div className="flex-1 h-px bg-[#1E1E2E]" />
-              <span className="text-[9px] text-[#475569] tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#3E6B7A' }}>QCM</span>
+              <div className="flex-1 h-px" style={{ background: 'var(--ink-200)' }} />
+              <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
                 {mcqQs.length} questions
               </span>
             </div>
@@ -117,29 +116,29 @@ export default async function ExamResultsPage({
 
               return (
                 <div key={q.id} className="rounded-xl border p-4 animate-fade-up"
-                  style={{ background: 'var(--surface)', borderColor: ans.is_correct ? '#22C55E20' : '#EF444420', animationDelay: `${i * 40}ms` }}>
+                  style={{ background: 'var(--bg-elev)', borderColor: ans.is_correct ? `${OK}30` : `${KO}30`, animationDelay: `${i * 40}ms` }}>
                   <div className="flex items-start gap-3 mb-3">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                      style={{ background: ans.is_correct ? '#22C55E15' : '#EF444415' }}>
+                      style={{ background: ans.is_correct ? `${OK}15` : `${KO}15` }}>
                       {ans.is_correct
-                        ? <Check size={12} style={{ color: '#22C55E' }} />
-                        : <X size={12} style={{ color: '#EF4444' }} />}
+                        ? <Check size={12} style={{ color: OK }} />
+                        : <X size={12} style={{ color: KO }} />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-[9px] text-[#475569] tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>Q{i + 1}</span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#3B82F615', color: '#3B82F6' }}>QCM</span>
+                        <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>Q{i + 1}</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#3E6B7A15', color: '#3E6B7A' }}>QCM</span>
                       </div>
-                      <p className="text-sm text-white font-medium mb-3">{q.question}</p>
+                      <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink)' }}>{q.question}</p>
                       <div className="space-y-1.5 text-xs">
-                        <p style={{ color: ans.is_correct ? '#22C55E' : '#EF4444' }}>
-                          {ans.is_correct ? '✓' : '✗'} Votre réponse : <span className={ans.is_correct ? '' : 'line-through opacity-70'}>{chosen}</span>
+                        <p style={{ color: ans.is_correct ? OK : KO }}>
+                          {ans.is_correct ? '✓' : '✗'} Ta réponse : <span className={ans.is_correct ? '' : 'line-through opacity-70'}>{chosen}</span>
                         </p>
                         {!ans.is_correct && (
-                          <p style={{ color: '#22C55E' }}>✓ Bonne réponse : {correct}</p>
+                          <p style={{ color: OK }}>✓ Bonne réponse : {correct}</p>
                         )}
                         {!ans.is_correct && mcq.explanation && (
-                          <p className="text-[#64748B] italic mt-2 pt-2 border-t border-[#1E1E2E]">{mcq.explanation}</p>
+                          <p className="italic mt-2 pt-2 border-t" style={{ color: 'var(--ink-500)', borderColor: 'var(--ink-200)' }}>{mcq.explanation}</p>
                         )}
                       </div>
                     </div>
@@ -154,9 +153,9 @@ export default async function ExamResultsPage({
         {openQs.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#F59E0B]">Ouvertes</span>
-              <div className="flex-1 h-px bg-[#1E1E2E]" />
-              <span className="text-[9px] text-[#475569] tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#A8762E' }}>Ouvertes</span>
+              <div className="flex-1 h-px" style={{ background: 'var(--ink-200)' }} />
+              <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
                 {openQs.length} questions
               </span>
             </div>
@@ -167,34 +166,34 @@ export default async function ExamResultsPage({
 
               return (
                 <div key={q.id} className="rounded-xl border p-4 animate-fade-up"
-                  style={{ background: 'var(--surface)', borderColor: 'var(--border)', animationDelay: `${(mcqQs.length + i) * 40}ms` }}>
+                  style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)', animationDelay: `${(mcqQs.length + i) * 40}ms` }}>
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[9px] text-[#475569] tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+                    <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
                       Q{mcqQs.length + i + 1}
                     </span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#F59E0B15', color: '#F59E0B' }}>Ouverte</span>
-                    <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold ml-auto"
-                      style={{ background: scoreColor(aiScore * 10) + '15', color: scoreColor(aiScore * 10), fontFamily: 'var(--font-mono, monospace)' }}>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#A8762E15', color: '#A8762E' }}>Ouverte</span>
+                    <span className="mono text-[9px] px-2 py-0.5 rounded-full font-semibold ml-auto"
+                      style={{ background: scoreColor(aiScore * 10) + '15', color: scoreColor(aiScore * 10) }}>
                       {aiScore}/10
                     </span>
                   </div>
-                  <p className="text-sm text-white font-medium mb-3">{q.question}</p>
+                  <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink)' }}>{q.question}</p>
                   {ans.user_answer ? (
-                    <div className="mb-3 px-3 py-2.5 rounded-lg text-xs text-[#94A3B8] leading-relaxed"
-                      style={{ background: 'var(--surface-2)', borderLeft: '2px solid var(--border-2)' }}>
+                    <div className="mb-3 px-3 py-2.5 rounded-lg text-xs leading-relaxed"
+                      style={{ background: 'var(--surface-2)', color: 'var(--ink-700)' }}>
                       {ans.user_answer}
                     </div>
                   ) : (
-                    <p className="text-xs text-[#475569] italic mb-3">Aucune réponse</p>
+                    <p className="text-xs italic mb-3" style={{ color: 'var(--ink-400)' }}>Aucune réponse</p>
                   )}
                   {ans.feedback && (
                     <div className="px-3 py-2.5 rounded-lg text-xs leading-relaxed"
-                      style={{ background: '#818CF808', borderLeft: '2px solid #818CF840' }}>
+                      style={{ background: 'var(--accent-soft)' }}>
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Sparkles size={11} style={{ color: '#818CF8' }} />
-                        <span className="text-[10px] font-semibold" style={{ color: '#818CF8' }}>Retour IA</span>
+                        <Sparkles size={11} style={{ color: 'var(--accent)' }} />
+                        <span className="text-[10px] font-semibold" style={{ color: 'var(--accent)' }}>Retour IA</span>
                       </div>
-                      <p className="text-[#C7D2FE]">{ans.feedback}</p>
+                      <p style={{ color: 'var(--ink-700)' }}>{ans.feedback}</p>
                     </div>
                   )}
                 </div>

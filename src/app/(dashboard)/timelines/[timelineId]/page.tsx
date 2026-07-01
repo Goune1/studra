@@ -7,11 +7,11 @@ import type { TimelineData } from '@/types'
 import { AlignLeft } from 'lucide-react'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
-const COLOR = '#8B5CF6'
+const COLOR = '#1F4D3F'
 
 const CAT_COLORS: Record<string, string> = {
-  politique: '#EF4444', economique: '#F59E0B', social: '#22C55E',
-  culturel: '#8B5CF6', militaire: '#6B7280',
+  politique: '#B4503C', economique: '#A8762E', social: '#1F4D3F',
+  culturel: '#3E6B7A', militaire: '#6B7280',
 }
 
 export default async function TimelinePage({ params }: { params: Promise<{ timelineId: string }> }) {
@@ -46,7 +46,7 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
   return (
     <div className="max-w-350">
       <div className="flex items-center justify-between mb-6">
-        <Link href="/timelines" className="inline-flex items-center gap-1.5 text-xs text-[#475569] hover:text-white transition-colors">
+        <Link href="/timelines" className="inline-flex items-center gap-1.5 text-xs transition-colors" style={{ color: 'var(--ink-500)' }}>
           <AlignLeft size={12} />← Mes frises
         </Link>
         <DeleteEntityButton
@@ -54,7 +54,6 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
           id={timeline.id}
           entityLabel="cette frise"
           variant="button"
-          color={COLOR}
           redirectTo="/timelines"
         />
       </div>
@@ -68,27 +67,27 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
               {timeline.subject}
             </span>
           )}
-          <span className="text-[10px] text-[#475569] tabular-nums" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+          <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
             {formatDate(timeline.created_at)}
           </span>
         </div>
-        <h1 className="text-2xl sm:text-4xl text-white leading-tight mb-5 tracking-tight" style={{  }}>
+        <h1 className="section-h leading-tight mb-5">
           {timeline.title}
         </h1>
 
         {/* Stats strip */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
-            style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25`, fontFamily: 'var(--font-mono, monospace)' }}>
+          <span className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
+            style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
             {eventCount} événements
           </span>
-          <span className="text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
-            style={{ background: 'var(--surface-2)', color: 'var(--text-2)', border: '1px solid var(--border)', fontFamily: 'var(--font-mono, monospace)' }}>
+          <span className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
+            style={{ background: 'var(--surface-2)', color: 'var(--ink-700)', border: '1px solid var(--ink-200)' }}>
             {dateSpan}
           </span>
           {cats.map(([cat, count]) => (
-            <span key={cat} className="text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
-              style={{ background: (CAT_COLORS[cat] ?? COLOR) + '15', color: CAT_COLORS[cat] ?? COLOR, border: `1px solid ${(CAT_COLORS[cat] ?? COLOR)}25`, fontFamily: 'var(--font-mono, monospace)' }}>
+            <span key={cat} className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
+              style={{ background: (CAT_COLORS[cat] ?? COLOR) + '15', color: CAT_COLORS[cat] ?? COLOR, border: `1px solid ${(CAT_COLORS[cat] ?? COLOR)}25` }}>
               {cat.charAt(0).toUpperCase() + cat.slice(1)} {count}
             </span>
           ))}
@@ -96,7 +95,7 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
       </div>
 
       {/* Timeline viewer */}
-      <div className="rounded-2xl border overflow-hidden" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+      <div className="rounded-2xl border overflow-hidden" style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
         <TimelineViewer data={data} />
       </div>
     </div>

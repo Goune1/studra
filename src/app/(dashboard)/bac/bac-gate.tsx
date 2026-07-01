@@ -2,34 +2,33 @@
 
 import { useActionState } from 'react'
 import { GraduationCap, Lock } from 'lucide-react'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import { unlockBac } from './actions'
 
-const COLOR = '#EC4899'
+const COLOR = '#1F4D3F'
 
 export function BacGate() {
   const [error, action, pending] = useActionState(unlockBac, null)
 
   return (
     <div className="max-w-md">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
+      <div className="mb-8 animate-fade-up">
+        <div className="flex items-center gap-2 mb-2">
           <GraduationCap size={14} style={{ color: COLOR }} />
-          <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: COLOR }}>
-            Bac
-          </span>
+          <Eyebrow>Notes Pronote</Eyebrow>
         </div>
-        <h1 className="text-4xl text-white tracking-tight">Bientôt disponible</h1>
-        <p className="text-sm mt-2" style={{ color: 'var(--text-3)' }}>
+        <h1 className="section-h">Bientôt disponible</h1>
+        <p className="text-sm mt-3" style={{ color: 'var(--ink-500)' }}>
           Cette fonctionnalité est en cours de développement. Elle sera disponible prochainement pour tous les utilisateurs.
         </p>
       </div>
 
       <div
-        className="rounded-2xl border p-6"
-        style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
+        className="rounded-2xl p-6 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
       >
-        <p className="text-sm font-semibold text-white mb-4">Accès bêta</p>
-        <p className="text-xs mb-5" style={{ color: 'var(--text-3)' }}>
+        <p className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Accès bêta</p>
+        <p className="text-xs mb-5" style={{ color: 'var(--ink-500)' }}>
           Vous avez un accès anticipé ? Entrez le mot de passe pour continuer.
         </p>
 
@@ -38,7 +37,7 @@ export function BacGate() {
             <Lock
               size={13}
               className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-              style={{ color: 'var(--text-4)' }}
+              style={{ color: 'var(--ink-400)' }}
             />
             <input
               type="password"
@@ -48,17 +47,19 @@ export function BacGate() {
               autoComplete="off"
               className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
               style={{
-                background: 'var(--surface-deep, #111)',
+                background: 'var(--surface-2)',
                 border: `1px solid ${error ? '#EF444450' : 'var(--border)'}`,
-                color: '#E2E8F0',
+                color: 'var(--ink)',
               }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = error ? '#EF444450' : 'var(--border)')}
             />
           </div>
 
           {error && (
             <div
               className="rounded-xl px-4 py-3 text-sm"
-              style={{ background: '#EF444415', border: '1px solid #EF444430', color: '#FCA5A5' }}
+              style={{ background: '#EF444415', border: '1px solid #EF444430', color: '#EF4444' }}
             >
               {error}
             </div>
@@ -67,8 +68,7 @@ export function BacGate() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: COLOR }}
+            className="btn btn-primary w-full"
           >
             {pending ? 'Vérification...' : 'Accéder'}
           </button>

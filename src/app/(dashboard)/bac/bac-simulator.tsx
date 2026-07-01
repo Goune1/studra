@@ -15,7 +15,7 @@ import {
 } from '@/lib/bac/calculator'
 import { BAC_COEFFICIENTS_CC, BAC_COEFFICIENTS_TERMINAL } from '@/lib/bac/coefficients'
 
-const COLOR = '#EC4899'
+const COLOR = '#1F4D3F'
 
 interface BacSimulatorProps {
   rawData: unknown
@@ -104,9 +104,9 @@ function NoteInput({
         onChange={(event) => onChange(parseInputNote(event.target.value))}
         className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-colors"
         style={{
-          background: 'var(--surface-deep, #111)',
+          background: 'var(--surface-2)',
           border: '1px solid var(--border)',
-          color: '#E2E8F0',
+          color: 'var(--ink)',
         }}
         onFocus={(event) => (event.currentTarget.style.borderColor = COLOR + '50')}
         onBlur={(event) => (event.currentTarget.style.borderColor = 'var(--border)')}
@@ -310,7 +310,7 @@ export function BacSimulator({ rawData }: BacSimulatorProps) {
       {!identification ? (
         <div
           className="rounded-2xl border p-5"
-          style={{ background: 'var(--surface-deep, #111)', borderColor: 'var(--border)' }}
+          style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}
         >
           <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>
             Analyse tes matières Pronote pour associer les bons coefficients du bac 2026.
@@ -319,8 +319,8 @@ export function BacSimulator({ rawData }: BacSimulatorProps) {
             type="button"
             onClick={handleIdentify}
             disabled={identifying}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: COLOR }}
+            className="btn btn-primary"
+            style={{ color: '#fff' }}
           >
             {identifying ? (
               <>
@@ -340,7 +340,7 @@ export function BacSimulator({ rawData }: BacSimulatorProps) {
           {hasWarnings && (
             <div
               className="flex gap-3 rounded-xl border px-4 py-3 text-sm"
-              style={{ background: '#F59E0B10', borderColor: '#F59E0B30', color: '#FDE68A' }}
+              style={{ background: '#F59E0B10', borderColor: '#F59E0B30', color: '#92400E' }}
             >
               <AlertTriangle size={16} className="shrink-0 mt-0.5" />
               <div className="space-y-1">
@@ -358,7 +358,7 @@ export function BacSimulator({ rawData }: BacSimulatorProps) {
 
           <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: 'var(--border)' }}>
             <table className="w-full text-sm">
-              <thead style={{ background: 'var(--surface-deep, #111)' }}>
+              <thead style={{ background: 'var(--surface-2)' }}>
                 <tr className="text-left" style={{ color: 'var(--text-3)' }}>
                   <th className="px-4 py-3 font-semibold">Matière</th>
                   <th className="px-4 py-3 font-semibold">Type</th>
@@ -465,7 +465,7 @@ export function BacSimulator({ rawData }: BacSimulatorProps) {
               </div>
               <div className="flex-1">
                 <p className="text-base font-semibold text-white">Mention estimée : {calculation.mention}</p>
-                <div className="mt-3 h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div className="mt-3 h-2 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
                   <div
                     className="h-full rounded-full transition-all"
                     style={{

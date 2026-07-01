@@ -31,23 +31,22 @@ interface NavItem {
   href: string
   label: string
   Icon: LucideIcon
-  color?: string
   pro?: boolean
 }
 
 const navItems: NavItem[] = [
   { href: '/dashboard',   label: 'Dashboard',    Icon: LayoutDashboard },
-  { href: '/flashcards',  label: 'Flashcards',   Icon: Layers,         color: '#F59E0B' },
-  { href: '/fiches',      label: 'Fiches',        Icon: FileText,       color: '#3B82F6' },
-  { href: '/socrate',     label: 'Socrate',       Icon: Lightbulb,      color: '#34D399' },
-  { href: '/exams',       label: 'Examens',       Icon: ClipboardCheck, color: '#EF4444' },
-  { href: '/planning',    label: 'Planning',      Icon: CalendarDays,   color: '#6366f1' },
-  { href: '/timelines',   label: 'Frises',        Icon: AlignLeft,      color: '#8B5CF6' },
-  { href: '/schemas',     label: 'Schémas',       Icon: GitBranch,      color: '#10B981' },
-  { href: '/recall',      label: 'Rappel libre',  Icon: PenLine,        color: '#8B5CF6' },
-  { href: '/annales',     label: 'Annales',       Icon: Scroll,         color: '#F97316' },
+  { href: '/flashcards',  label: 'Flashcards',   Icon: Layers },
+  { href: '/fiches',      label: 'Fiches',        Icon: FileText },
+  { href: '/socrate',     label: 'Socrate',       Icon: Lightbulb },
+  { href: '/exams',       label: 'Examens',       Icon: ClipboardCheck },
+  { href: '/planning',    label: 'Planning',      Icon: CalendarDays },
+  { href: '/timelines',   label: 'Frises',        Icon: AlignLeft },
+  { href: '/schemas',     label: 'Schémas',       Icon: GitBranch },
+  { href: '/recall',      label: 'Rappel libre',  Icon: PenLine },
+  { href: '/annales',     label: 'Annales',       Icon: Scroll },
   { href: '/lacunes',     label: 'Lacunes',       Icon: Target },
-  { href: '/bac',         label: 'Notes Pronote', Icon: GraduationCap, color: '#06B6D4' },
+  { href: '/bac',         label: 'Notes Pronote', Icon: GraduationCap },
 ]
 
 
@@ -58,6 +57,37 @@ interface SidebarProps {
   userName: string
   userEmail: string
   userAvatar: string | null
+}
+
+function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  return (
+    <Link
+      href={item.href}
+      className="flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+      style={{
+        paddingLeft: '10px',
+        paddingRight: '12px',
+        color: active ? 'var(--ink)' : 'var(--ink-500)',
+        background: active ? 'var(--accent-soft)' : undefined,
+      }}
+      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.03)' }}
+      onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = '' }}
+    >
+      <item.Icon
+        size={15}
+        style={{ color: active ? 'var(--accent)' : 'var(--ink-400)' }}
+      />
+      <span className="flex-1">{item.label}</span>
+      {item.pro && (
+        <span
+          className="mono text-[9px] px-1.5 py-0.5 rounded-full font-medium tracking-wide"
+          style={{ color: 'var(--accent)', background: 'var(--accent-soft)' }}
+        >
+          Pro
+        </span>
+      )}
+    </Link>
+  )
 }
 
 export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvatar }: SidebarProps) {
@@ -72,6 +102,8 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
     if (prevPathname.current !== pathname) {
       prevPathname.current = pathname
       onClose()
+      // Legitimate external sync: collapse menus in reaction to a route change.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUserMenuOpen(false)
     }
   }, [pathname, onClose])
@@ -96,40 +128,6 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/')
 
-  function NavLink({ item }: { item: NavItem }) {
-    const active = isActive(item.href)
-    const accentColor = item.color ?? '#8B8580'
-
-    return (
-      <Link
-        href={item.href}
-        className={cn(
-          'flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
-          active ? '' : 'hover:bg-white/2',
-        )}
-        style={{
-          paddingLeft: '10px',
-          paddingRight: '12px',
-          borderLeft: `2px solid ${active ? accentColor : 'transparent'}`,
-          color: active ? 'var(--text-1)' : 'var(--text-2)',
-          background: active ? 'var(--border-sub)' : undefined,
-        }}
-      >
-        <item.Icon
-          size={15}
-          style={{ color: active ? accentColor : undefined }}
-          className={active ? '' : item.color ? '' : 'text-[#94A3B8]'}
-        />
-        <span className="flex-1">{item.label}</span>
-        {item.pro && (
-          <span className="text-[9px] px-1.5 py-0.5 bg-violet-500/15 text-violet-400 rounded-full font-semibold">
-            Pro
-          </span>
-        )}
-      </Link>
-    )
-  }
-
   return (
     <aside
       className={cn(
@@ -143,13 +141,14 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
       {/* Logo */}
       <div className="h-16 px-6 flex items-center justify-between border-b" style={{ borderColor: 'var(--border-sub)' }}>
         <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
-          <Image src="/logo.png" alt="Studra" width={34} height={34} />
+          <Image src="/studra-logo.png" alt="Studra" width={40} height={40} unoptimized />
           <span style={{ color: 'var(--text-1)' }}>Studra</span>
         </Link>
         {/* Close button — mobile only */}
         <button
           onClick={onClose}
-          className="md:hidden p-1.5 rounded-lg hover:bg-white/6 text-[#5A5550] hover:text-white transition-colors"
+          className="md:hidden p-1.5 rounded-lg hover:bg-black/5 transition-colors"
+          style={{ color: 'var(--ink-400)' }}
           aria-label="Fermer"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -161,13 +160,14 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
 
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => (
-          <NavLink key={item.href} item={item} />
+          <NavLink key={item.href} item={item} active={isActive(item.href)} />
         ))}
 
         {!isPro && (
           <div className="pt-3 mt-3 border-t" style={{ borderColor: 'var(--border-sub)' }}>
             <NavLink
-              item={{ href: '/upgrade', label: 'Passer Pro', Icon: Sparkles, color: '#818cf8' }}
+              item={{ href: '/upgrade', label: 'Passer Pro', Icon: Sparkles }}
+              active={isActive('/upgrade')}
             />
           </div>
         )}

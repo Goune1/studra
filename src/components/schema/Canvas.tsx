@@ -76,9 +76,12 @@ export function Canvas({
   const [connectDraft, setConnectDraft] = useState<{ sourceId: string; cursor: { x: number; y: number } } | null>(null)
   const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map())
   const pinchRef = useRef<{ dist: number; zoom: number; midScreen: { x: number; y: number } } | null>(null)
-  // Always-fresh viewport — lets wheel/drag handlers avoid stale closures without re-registering
+  // Always-fresh viewport — lets wheel/drag handlers avoid stale closures without re-registering.
+  // Synced in an effect (not during render) so we don't read/write a ref while rendering.
   const viewportRef = useRef(viewport)
-  viewportRef.current = viewport
+  useEffect(() => {
+    viewportRef.current = viewport
+  })
 
   // Resize observer
   useEffect(() => {

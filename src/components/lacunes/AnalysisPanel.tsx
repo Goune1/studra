@@ -12,6 +12,8 @@ import { ScoreRing } from './ScoreRing'
 import type { LacunesAnalysis } from '@/lib/lacunes/mock'
 import type { MockStats } from '@/lib/lacunes/mock'
 
+const COLOR = '#1F4D3F'
+
 const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
   Link: LinkIcon,
@@ -31,33 +33,29 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
 
   return (
     <div
-      className="rounded-2xl border p-6 space-y-6 sticky top-8"
+      className="rounded-2xl p-6 space-y-6 sticky top-8"
       style={{
         background: 'var(--surface)',
-        borderColor: 'var(--border)',
-        boxShadow: '0 0 40px rgba(129,140,248,0.07)',
+        border: '1px solid var(--border)',
       }}
     >
       {/* Panel header */}
       <div>
         <div className="flex items-center gap-1.5 mb-2">
-          <Sparkles size={13} style={{ color: '#818CF8' }} />
+          <Sparkles size={13} style={{ color: COLOR }} />
           <span
-            className="text-[10px] font-semibold uppercase tracking-[0.15em]"
-            style={{ color: '#818CF8' }}
+            className="mono text-[10px] font-semibold uppercase tracking-widest"
+            style={{ color: COLOR }}
           >
             Analyse IA
           </span>
         </div>
-        <h2
-          className="text-2xl text-white tracking-tight"
-          style={{  }}
-        >
+        <h2 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>
           Diagnostic
         </h2>
       </div>
 
-      {/* ─── A: Score ring ────────────────────────────────── */}
+      {/* Score ring */}
       <div className="flex justify-center py-2">
         <ScoreRing
           rate={stats.successRate}
@@ -68,19 +66,14 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
 
       <div className="h-px" style={{ background: 'var(--border)' }} />
 
-      {/* ─── B: Diagnostic ────────────────────────────────── */}
+      {/* Diagnostic */}
       <div className="space-y-3">
         {/* Summary callout */}
         <div
           className="px-4 py-3 rounded-xl"
-          style={{
-            background: '#818CF808',
-            borderLeft: '3px solid #818CF8',
-          }}
+          style={{ background: 'var(--accent-soft)' }}
         >
-          <p
-            className="text-sm text-[#C7D2FE] leading-relaxed italic"
-          >
+          <p className="text-sm leading-relaxed italic" style={{ color: 'var(--ink-700)' }}>
             {analysis.diagnostic.summary}
           </p>
         </div>
@@ -91,9 +84,9 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
             <div key={i} className="flex items-start gap-2.5">
               <div
                 className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
-                style={{ background: '#818CF8' }}
+                style={{ background: COLOR }}
               />
-              <p className="text-xs text-[#94A3B8] leading-relaxed">{bullet}</p>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-700)' }}>{bullet}</p>
             </div>
           ))}
         </div>
@@ -101,10 +94,11 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
 
       <div className="h-px" style={{ background: 'var(--border)' }} />
 
-      {/* ─── C: Conseils ──────────────────────────────────── */}
+      {/* Conseils */}
       <div className="space-y-2">
         <p
-          className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#475569] mb-3"
+          className="mono text-[10px] font-semibold uppercase tracking-widest mb-3"
+          style={{ color: 'var(--ink-400)' }}
         >
           Conseils ciblés
         </p>
@@ -114,38 +108,31 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
           return (
             <div
               key={i}
-              className="flex gap-3 px-3 py-3 rounded-xl border transition-all duration-150 hover:-translate-y-0.5 cursor-default"
+              className="flex gap-3 px-3 py-3 rounded-xl transition-all duration-150 hover:-translate-y-0.5 cursor-default"
               style={{
-                background: 'var(--surface-deep)',
-                borderColor: 'var(--border)',
-                borderLeft: '2px solid rgba(129,140,248,0.19)',
-              }}
-              onMouseEnter={(e) => {
-                ;(e.currentTarget as HTMLElement).style.borderLeftColor = 'rgba(129,140,248,0.38)'
-              }}
-              onMouseLeave={(e) => {
-                ;(e.currentTarget as HTMLElement).style.borderLeftColor = 'rgba(129,140,248,0.19)'
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border)',
               }}
             >
               <div
                 className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                style={{ background: '#818CF810' }}
+                style={{ background: COLOR + '15' }}
               >
-                <Icon size={13} style={{ color: '#818CF8' }} />
+                <Icon size={13} style={{ color: COLOR }} />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-white mb-0.5">{conseil.title}</p>
-                <p className="text-[11px] text-[#64748B] leading-relaxed">{conseil.description}</p>
+                <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--ink)' }}>{conseil.title}</p>
+                <p className="text-[11px] leading-relaxed" style={{ color: 'var(--ink-500)' }}>{conseil.description}</p>
               </div>
             </div>
           )
         })}
       </div>
 
-      {/* ─── D: Encouragement ─────────────────────────────── */}
+      {/* Encouragement */}
       <p
         className="text-xs text-center leading-relaxed italic"
-        style={{ color: '#475569' }}
+        style={{ color: 'var(--ink-500)' }}
       >
         {analysis.encouragement}
       </p>

@@ -3,9 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Upload, FileText } from 'lucide-react'
+import { Upload, FileText, Sparkles } from 'lucide-react'
 import ContentPicker from '@/components/ContentPicker'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { ContentItem } from '@/types'
+
+const COLOR = '#1F4D3F'
 
 export default function AnnalesNewPage() {
   const [examText, setExamText] = useState('')
@@ -66,31 +69,34 @@ export default function AnnalesNewPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-1)' }}>
-          Générer une annale
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: 'var(--text-2)' }}>
+      {/* Header */}
+      <div className="mb-8 animate-fade-up">
+        <Eyebrow className="mb-2">Annales</Eyebrow>
+        <h1 className="section-h">Générer une annale</h1>
+        <p className="mt-3 text-sm" style={{ color: 'var(--ink-500)' }}>
           Uploade une ancienne annale, choisis ton cours — Studra génère un nouveau sujet dans le même style avec corrigé.
         </p>
       </div>
 
       {/* Step 1: annale upload */}
       <div
-        className="rounded-2xl p-6 mb-4"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        className="rounded-2xl p-6 mb-4 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
       >
-        <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-1)' }}>
+        <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>
           1. Ancienne annale
         </h2>
-        <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>
+        <p className="text-xs mb-4" style={{ color: 'var(--ink-500)' }}>
           Dépose un PDF ou colle le texte de l&apos;examen
         </p>
 
         {/* PDF drop zone */}
         <label
           className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-6 mb-3 cursor-pointer transition-colors"
-          style={{ borderColor: examFile ? '#6366f150' : 'var(--border-2)', background: 'var(--surface-2)' }}
+          style={{
+            borderColor: examFile ? COLOR + '50' : 'var(--ink-200)',
+            background: 'var(--surface-2)',
+          }}
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault()
@@ -108,38 +114,40 @@ export default function AnnalesNewPage() {
             }}
           />
           {extracting ? (
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Extraction…</p>
+            <p className="text-sm" style={{ color: 'var(--ink-500)' }}>Extraction…</p>
           ) : examFile ? (
             <div className="flex items-center gap-2">
-              <FileText size={16} style={{ color: '#6366f1' }} />
-              <p className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>{examFile.name}</p>
+              <FileText size={16} style={{ color: COLOR }} />
+              <p className="text-sm font-medium" style={{ color: 'var(--ink)' }}>{examFile.name}</p>
             </div>
           ) : (
             <>
-              <Upload size={20} style={{ color: 'var(--text-3)' }} />
-              <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+              <Upload size={20} style={{ color: 'var(--ink-400)' }} />
+              <p className="text-sm" style={{ color: 'var(--ink-500)' }}>
                 Dépose un PDF ici ou clique pour sélectionner
               </p>
             </>
           )}
         </label>
 
-        <p className="text-xs text-center mb-2" style={{ color: 'var(--text-4)' }}>ou</p>
+        <p className="mono text-xs text-center mb-2" style={{ color: 'var(--ink-400)' }}>ou</p>
 
         <textarea
           value={examText}
           onChange={(e) => setExamText(e.target.value)}
           placeholder="Colle ici le texte de l'ancienne annale…"
           rows={6}
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
+          className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none transition-colors"
           style={{
             background: 'var(--surface-2)',
             border: '1px solid var(--border)',
-            color: 'var(--text-1)',
+            color: 'var(--ink)',
           }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
+          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
         />
         {examText.length > 0 && (
-          <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+          <p className="mono text-xs mt-1" style={{ color: 'var(--ink-500)' }}>
             {examText.length} caractères extraits
           </p>
         )}
@@ -147,13 +155,13 @@ export default function AnnalesNewPage() {
 
       {/* Step 2: course content */}
       <div
-        className="rounded-2xl p-6 mb-4"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        className="rounded-2xl p-6 mb-4 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
       >
-        <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-1)' }}>
+        <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>
           2. Cours source
         </h2>
-        <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>
+        <p className="text-xs mb-4" style={{ color: 'var(--ink-500)' }}>
           Sélectionne le cours sur lequel générer le nouveau sujet
         </p>
         <ContentPicker selected={courseContent} onSelect={setCourseContent} />
@@ -161,10 +169,10 @@ export default function AnnalesNewPage() {
 
       {/* Step 3: title */}
       <div
-        className="rounded-2xl p-5 mb-4"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        className="rounded-2xl p-5 mb-4 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '120ms' }}
       >
-        <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-1)' }}>
+        <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--ink)' }}>
           3. Titre du sujet généré
         </h2>
         <input
@@ -172,25 +180,28 @@ export default function AnnalesNewPage() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Ex: Examen — Chapitre 3 — La photosynthèse"
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+          className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors"
           style={{
             background: 'var(--surface-2)',
             border: '1px solid var(--border)',
-            color: 'var(--text-1)',
+            color: 'var(--ink)',
           }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
+          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
         />
       </div>
 
       <button
         onClick={handleGenerate}
         disabled={!canGenerate || loading}
-        className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 cursor-pointer"
-        style={{ background: '#EF4444', color: '#fff' }}
+        className="btn btn-primary w-full animate-fade-up"
+        style={{ padding: '14px', fontSize: '14px', animationDelay: '150ms' }}
       >
-        {loading ? 'Génération en cours…' : '✨ Générer le sujet'}
+        <Sparkles size={15} />
+        {loading ? 'Génération en cours…' : 'Générer le sujet'}
       </button>
 
-      <p className="text-xs text-center mt-3" style={{ color: 'var(--text-3)' }}>
+      <p className="mono text-xs text-center mt-3" style={{ color: 'var(--ink-400)' }}>
         Compte comme 1 génération sur ton quota mensuel
       </p>
     </div>

@@ -1,26 +1,26 @@
 import Link from 'next/link'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { UpcomingExam } from '@/lib/dashboard/queries'
 
 function urgencyColor(daysLeft: number): string {
-  if (daysLeft <= 3) return '#C26868'
-  if (daysLeft <= 7) return '#D4A770'
-  return '#7C7AE8'
+  if (daysLeft <= 3) return '#B4503C'
+  if (daysLeft <= 7) return '#A8762E'
+  return 'var(--accent)'
 }
 
 export function UpcomingExams({ exams }: { exams: UpcomingExam[] }) {
   if (exams.length === 0) {
     return (
       <section>
-        <p className="text-[11px] font-medium text-zinc-600 uppercase tracking-[0.14em] mb-4">
-          Prochains examens
-        </p>
-        <div className="rounded-xl border border-zinc-900 p-5 bg-zinc-950">
-          <p className="text-sm text-zinc-500">
+        <Eyebrow className="mb-4">Prochains examens</Eyebrow>
+        <div className="app-card p-5">
+          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>
             Aucun examen prévu.
           </p>
           <Link
             href="/planning/new"
-            className="inline-block mt-3 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="inline-block mt-3 text-xs transition-colors"
+            style={{ color: 'var(--accent)' }}
           >
             Créer un plan de révision →
           </Link>
@@ -31,25 +31,23 @@ export function UpcomingExams({ exams }: { exams: UpcomingExam[] }) {
 
   return (
     <section>
-      <p className="text-[11px] font-medium text-zinc-600 uppercase tracking-[0.14em] mb-4">
-        Prochains examens
-      </p>
-      <ul className="rounded-xl border border-zinc-900 bg-zinc-950 divide-y divide-zinc-900">
-        {exams.slice(0, 3).map((e) => (
-          <li key={e.planId}>
+      <Eyebrow className="mb-4">Prochains examens</Eyebrow>
+      <ul className="app-card overflow-hidden">
+        {exams.slice(0, 3).map((e, i) => (
+          <li key={e.planId} style={i > 0 ? { borderTop: '1px solid var(--ink-200)' } : undefined}>
             <Link
               href={`/planning/${e.planId}`}
-              className="flex flex-col gap-2 px-5 py-4 hover:bg-zinc-900/40 transition-colors group"
+              className="flex flex-col gap-2 px-5 py-4 transition-colors group hover:bg-black/[0.02]"
             >
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-sm text-zinc-100 font-medium truncate group-hover:text-white transition-colors">
+                <span className="text-sm font-medium truncate transition-colors" style={{ color: 'var(--ink)' }}>
                   {e.title}
                 </span>
-                <span className="text-xs tabular-nums flex-shrink-0" style={{ color: urgencyColor(e.daysLeft) }}>
+                <span className="mono text-xs tabular-nums flex-shrink-0" style={{ color: urgencyColor(e.daysLeft) }}>
                   {e.daysLeft === 0 ? "Aujourd'hui" : `J-${e.daysLeft}`}
                 </span>
               </div>
-              <div className="h-0.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+              <div className="h-0.5 w-full rounded-full overflow-hidden" style={{ background: 'var(--ink-200)' }}>
                 <div
                   className="h-full rounded-full"
                   style={{

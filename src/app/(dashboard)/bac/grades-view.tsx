@@ -11,7 +11,7 @@ import {
   type GradeValueStatus,
 } from '@/lib/pronote/parse-grades'
 
-const COLOR = '#EC4899'
+const COLOR = '#1F4D3F'
 
 interface GradesViewProps {
   rawData: unknown
@@ -94,7 +94,6 @@ function SubjectCard({
       style={{
         background: 'var(--surface)',
         borderColor: isSelected ? COLOR + '40' : 'var(--border)',
-        borderLeft: `3px solid ${subject.color}`,
       }}
     >
       {/* Subject name + averages */}
@@ -171,7 +170,7 @@ function GradeRow({ grade }: { grade: ParsedGrade }) {
             </span>
           )}
           {grade.isBonus && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: '#22C55E15', color: '#4ADE80', border: '1px solid #22C55E30' }}>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: '#22C55E15', color: '#10B981', border: '1px solid #22C55E30' }}>
               Bonus
             </span>
           )}
@@ -219,7 +218,7 @@ function SubjectDetail({
   return (
     <div
       className="rounded-2xl border px-5 pt-4 pb-2 mb-2"
-      style={{ background: 'var(--surface)', borderColor: 'var(--border)', borderLeft: `3px solid ${subject.color}` }}
+      style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
     >
       <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-3)' }}>
         Notes - {subject.subjectName}

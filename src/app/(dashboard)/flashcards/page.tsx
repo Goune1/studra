@@ -7,8 +7,12 @@ import { Layers, Plus, Search } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { trackFlashcardsOpen } from '@/lib/analytics'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+import { Badge } from '@/components/ui/Badge'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { Button } from '@/components/ui/Button'
 
-const COLOR = '#F59E0B'
+const COLOR = '#1F4D3F'
 
 interface Deck {
   id: string
@@ -58,33 +62,26 @@ export default function FlashcardsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Layers size={14} style={{ color: COLOR }} />
-            <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: COLOR }}>Flashcards</span>
-          </div>
-          <h1 className="text-4xl text-white tracking-tight" style={{  }}>
-            Mes decks
-          </h1>
+          <Eyebrow className="mb-2">Flashcards</Eyebrow>
+          <h1 className="section-h">Mes decks</h1>
         </div>
-        <Link href="/flashcards/new"
-          className="sm:ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:opacity-90 shrink-0"
-          style={{ background: COLOR }}>
+        <Button href="/flashcards/new" className="sm:ml-auto shrink-0">
           <Plus size={14} />Nouveau deck
-        </Link>
+        </Button>
       </div>
 
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
-          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-4)' }} />
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-400)' }} />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un deck…"
             className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: '#E2E8F0' }}
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
-            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
           />
         </div>
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}
@@ -129,24 +126,16 @@ export default function FlashcardsPage() {
             style={{ borderColor: COLOR + '20', borderTopColor: COLOR }} />
         </div>
       ) : filtered.length === 0 && decks.length === 0 ? (
-        <div className="rounded-2xl border p-16 text-center" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-            style={{ background: COLOR + '15' }}>
-            <Layers size={24} style={{ color: COLOR }} />
-          </div>
-          <h2 className="text-lg text-white mb-2" style={{  }}>
-            Aucun deck pour l&apos;instant
-          </h2>
-          <p className="text-sm text-[#475569] mb-6">Créez votre premier deck à partir de vos cours</p>
-          <Link href="/flashcards/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
-            style={{ background: COLOR }}>
-            <Plus size={14} />Créer un deck
-          </Link>
-        </div>
+        <EmptyState
+          Icon={Layers}
+          title="Aucun deck pour l'instant"
+          description="Crée ton premier deck à partir de tes cours."
+          actionHref="/flashcards/new"
+          actionLabel="Créer un deck"
+        />
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border p-10 text-center" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-          <p className="text-sm text-[#64748B]">Aucun résultat</p>
+        <div className="app-card p-10 text-center">
+          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>Aucun résultat</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -187,35 +176,26 @@ function DeckCard({ deck, index, onDeleted }: { deck: Deck; index: number; onDel
       <Link href={`/flashcards/${deck.id}`}
         className="block rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5"
         style={{
-          background: 'var(--surface)',
-          border: `1px solid ${hovered ? COLOR + '40' : 'var(--border)'}`,
+          background: 'var(--bg-elev)',
+          border: `1px solid ${hovered ? COLOR + '40' : 'var(--ink-200)'}`,
         }}>
       <div className="flex items-start justify-between gap-3 mb-4 transition-[padding] duration-200 group-hover/card:pr-9">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: COLOR + '15' }}>
+          style={{ background: 'var(--accent-soft)' }}>
           <Layers size={18} style={{ color: COLOR }} />
         </div>
-        {deck.subject && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
-            style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25` }}>
-            {deck.subject}
-          </span>
-        )}
+        {deck.subject && <Badge>{deck.subject}</Badge>}
       </div>
 
-      <h3 className="text-sm font-semibold text-white mb-1 line-clamp-2 leading-snug"
-        style={{  }}>
+      <h3 className="text-sm font-semibold mb-1 line-clamp-2 leading-snug" style={{ color: 'var(--ink)' }}>
         {deck.title}
       </h3>
 
-      <div className="flex items-center justify-between mt-3 pt-3 border-t"
-        style={{ borderColor: 'var(--border)' }}>
-        <span className="text-[10px] tabular-nums font-medium"
-          style={{ color: COLOR, fontFamily: 'var(--font-mono, monospace)' }}>
+      <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: 'var(--ink-200)' }}>
+        <span className="mono text-[10px] tabular-nums font-medium" style={{ color: COLOR }}>
           {deck.card_count} cartes
         </span>
-        <span className="text-[10px] tabular-nums"
-          style={{ color: 'var(--text-4)', fontFamily: 'var(--font-mono, monospace)' }}>
+        <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
           {formatDate(deck.created_at)}
         </span>
       </div>

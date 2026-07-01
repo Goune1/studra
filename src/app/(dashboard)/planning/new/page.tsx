@@ -4,15 +4,18 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
-import { Plus } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { StudyPlanContentItem } from '@/lib/openai'
 
 interface SelectableItem extends StudyPlanContentItem {
   selected: boolean
 }
 
+const COLOR = '#1F4D3F'
+
 const MASTERY_LABELS = ['', 'Très difficile', 'Difficile', 'Moyen', 'Maîtrisé', 'Très maîtrisé']
-const MASTERY_COLORS = ['', '#EF4444', '#F59E0B', '#6366f1', '#10B981', '#34D399']
+const MASTERY_COLORS = ['', '#EF4444', '#F59E0B', '#3B82F6', '#10B981', '#34D399']
 
 const TIME_OPTIONS = [30, 45, 60, 90, 120]
 
@@ -94,22 +97,22 @@ export default function PlanningNewPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-1)' }}>
-          Nouveau planning
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: 'var(--text-2)' }}>
+      {/* Header */}
+      <div className="mb-8 animate-fade-up">
+        <Eyebrow className="mb-2">Planning</Eyebrow>
+        <h1 className="section-h">Nouveau planning</h1>
+        <p className="mt-3 text-sm" style={{ color: 'var(--ink-500)' }}>
           Studra génère un plan de révision jour par jour adapté à ta maîtrise et à ton temps disponible.
         </p>
       </div>
 
       {/* Plan info */}
       <div
-        className="rounded-2xl p-6 mb-4 space-y-4"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        className="rounded-2xl p-6 mb-4 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
       >
-        <div>
-          <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-2)' }}>
+        <div className="mb-4">
+          <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--ink-700)' }}>
             Nom de l&apos;examen
           </label>
           <input
@@ -117,14 +120,16 @@ export default function PlanningNewPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ex: Bac de philosophie"
-            className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-            style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
+            className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors"
+            style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)' }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-2)' }}>
+            <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--ink-700)' }}>
               Date de l&apos;examen
             </label>
             <input
@@ -133,11 +138,11 @@ export default function PlanningNewPage() {
               min={minDate}
               onChange={(e) => setExamDate(e.target.value)}
               className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)' }}
             />
           </div>
           <div>
-            <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-2)' }}>
+            <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--ink-700)' }}>
               Temps dispo/jour
             </label>
             <div className="grid grid-cols-5 gap-1">
@@ -147,9 +152,9 @@ export default function PlanningNewPage() {
                   onClick={() => setMinutesPerDay(t)}
                   className="py-3 rounded-lg text-xs font-medium transition-all cursor-pointer"
                   style={{
-                    background: minutesPerDay === t ? '#6366f120' : 'var(--surface-2)',
-                    border: minutesPerDay === t ? '1.5px solid #6366f1' : '1px solid var(--border)',
-                    color: minutesPerDay === t ? '#6366f1' : 'var(--text-2)',
+                    background: minutesPerDay === t ? COLOR + '15' : 'var(--surface-2)',
+                    border: minutesPerDay === t ? `1.5px solid ${COLOR}` : '1px solid var(--border)',
+                    color: minutesPerDay === t ? COLOR : 'var(--ink-700)',
                   }}
                 >
                   {t}m
@@ -162,13 +167,13 @@ export default function PlanningNewPage() {
 
       {/* Content selection */}
       <div
-        className="rounded-2xl p-6 mb-4"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        className="rounded-2xl p-6 mb-4 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
       >
-        <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-1)' }}>
+        <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>
           Chapitres à réviser
         </h2>
-        <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>
+        <p className="text-xs mb-4" style={{ color: 'var(--ink-500)' }}>
           Coche les contenus et évalue ta maîtrise actuelle (1 = très difficile, 5 = maîtrisé)
         </p>
 
@@ -179,7 +184,7 @@ export default function PlanningNewPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <p className="text-sm text-center py-4" style={{ color: 'var(--text-3)' }}>
+          <p className="text-sm text-center py-4" style={{ color: 'var(--ink-500)' }}>
             Aucun contenu trouvé. Crée d&apos;abord des fiches ou des decks.
           </p>
         ) : (
@@ -189,8 +194,8 @@ export default function PlanningNewPage() {
                 key={item.id}
                 className="rounded-xl px-4 py-3 flex items-center gap-3 transition-all"
                 style={{
-                  background: item.selected ? 'var(--surface-2)' : 'transparent',
-                  border: item.selected ? '1px solid var(--border-2)' : '1px solid transparent',
+                  background: item.selected ? 'var(--accent-soft)' : 'transparent',
+                  border: item.selected ? `1px solid ${COLOR}30` : '1px solid transparent',
                 }}
               >
                 <input
@@ -198,16 +203,16 @@ export default function PlanningNewPage() {
                   checked={item.selected}
                   onChange={() => toggleItem(item.id)}
                   className="rounded cursor-pointer"
-                  style={{ accentColor: '#6366f1' }}
+                  style={{ accentColor: COLOR }}
                 />
                 <button
                   onClick={() => toggleItem(item.id)}
                   className="flex-1 text-left cursor-pointer"
                 >
-                  <p className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                  <p className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
                     {item.title}
                   </p>
-                  <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+                  <p className="text-xs" style={{ color: 'var(--ink-500)' }}>
                     {item.type === 'deck' ? 'Flashcards' : 'Fiche'}
                   </p>
                 </button>
@@ -221,8 +226,8 @@ export default function PlanningNewPage() {
                         title={MASTERY_LABELS[n]}
                         className="w-6 h-6 rounded-lg text-xs font-bold transition-all cursor-pointer"
                         style={{
-                          background: item.mastery >= n ? MASTERY_COLORS[n] + '30' : 'var(--surface)',
-                          color: item.mastery >= n ? MASTERY_COLORS[n] : 'var(--text-4)',
+                          background: item.mastery >= n ? MASTERY_COLORS[n] + '25' : 'var(--surface-2)',
+                          color: item.mastery >= n ? MASTERY_COLORS[n] : 'var(--ink-400)',
                           border: item.mastery === n ? `1.5px solid ${MASTERY_COLORS[n]}` : '1px solid var(--border)',
                         }}
                       >
@@ -240,12 +245,11 @@ export default function PlanningNewPage() {
       {/* Selected summary */}
       {selected.length > 0 && (
         <div
-          className="rounded-xl px-4 py-3 mb-4 flex items-center gap-3"
-          style={{ background: '#6366f110', border: '1px solid #6366f130' }}
+          className="rounded-xl px-4 py-3 mb-4 flex items-center gap-3 animate-fade-up"
+          style={{ background: 'var(--accent-soft)', border: `1px solid ${COLOR}30` }}
         >
-          <Plus size={14} style={{ color: '#6366f1' }} />
-          <span className="text-sm" style={{ color: 'var(--text-2)' }}>
-            <strong style={{ color: 'var(--text-1)' }}>{selected.length} contenu{selected.length > 1 ? 's' : ''}</strong> sélectionné{selected.length > 1 ? 's' : ''}
+          <span className="text-sm" style={{ color: 'var(--ink-700)' }}>
+            <strong style={{ color: 'var(--ink)' }}>{selected.length} contenu{selected.length > 1 ? 's' : ''}</strong> sélectionné{selected.length > 1 ? 's' : ''}
           </span>
         </div>
       )}
@@ -253,13 +257,14 @@ export default function PlanningNewPage() {
       <button
         onClick={handleGenerate}
         disabled={!canGenerate || loading}
-        className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 cursor-pointer"
-        style={{ background: '#6366f1', color: '#fff' }}
+        className="btn btn-primary w-full"
+        style={{ padding: '14px', fontSize: '14px' }}
       >
-        {loading ? 'Génération du planning…' : '✨ Générer mon planning'}
+        <Sparkles size={15} />
+        {loading ? 'Génération du planning…' : 'Générer mon planning'}
       </button>
 
-      <p className="text-xs text-center mt-3" style={{ color: 'var(--text-3)' }}>
+      <p className="mono text-xs text-center mt-3" style={{ color: 'var(--ink-400)' }}>
         Compte comme 1 génération sur ton quota mensuel
       </p>
     </div>

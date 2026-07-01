@@ -10,13 +10,13 @@ import Link from 'next/link'
 import { X, RotateCcw, CheckCircle, Clock } from 'lucide-react'
 import { trackFlashcardsSessionStart, trackFlashcardsSessionComplete, trackFlashcardsSessionAbandoned } from '@/lib/analytics'
 
-const COLOR = '#F59E0B'
+const COLOR = '#1F4D3F'
 
 const RATING_COLORS: Record<number, string> = {
-  1: '#EF4444',
-  2: '#F97316',
-  3: '#22C55E',
-  4: '#3B82F6',
+  1: '#B4503C',
+  2: '#A8762E',
+  3: '#1F4D3F',
+  4: '#3E6B7A',
 }
 
 interface SessionStats {
@@ -194,21 +194,19 @@ export default function StudyPage() {
       <div className="h-full flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm animate-fade-up text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            style={{ background: '#22C55E15', border: '1px solid #22C55E30' }}>
-            <CheckCircle size={28} style={{ color: '#22C55E' }} />
+            style={{ background: 'var(--accent-soft)', border: '1px solid rgba(31,77,63,0.2)' }}>
+            <CheckCircle size={28} style={{ color: 'var(--accent)' }} />
           </div>
-          <h2 className="text-lg font-semibold text-white mb-2">Tout est à jour !</h2>
-          <p className="text-sm text-[#64748B] mb-2">
+          <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--ink)' }}>Tout est à jour !</h2>
+          <p className="text-sm mb-2" style={{ color: 'var(--ink-500)' }}>
             {totalInDeck} carte{totalInDeck > 1 ? 's' : ''} dans ce deck — aucune révision due pour l&apos;instant.
           </p>
           {nextDate && (
-            <div className="flex items-center justify-center gap-2 text-xs mb-8" style={{ color: COLOR }}>
+            <div className="flex items-center justify-center gap-2 text-xs mb-8" style={{ color: 'var(--accent)' }}>
               <Clock size={12} />Prochaine révision : {nextDate}
             </div>
           )}
-          <Link href={`/flashcards/${deckId}`}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-            style={{ background: COLOR }}>
+          <Link href={`/flashcards/${deckId}`} className="btn btn-primary">
             Retour au deck
           </Link>
         </div>
@@ -221,17 +219,17 @@ export default function StudyPage() {
     const total = stats.again + stats.hard + stats.good + stats.easy
     const retained = stats.good + stats.easy
     const score = total > 0 ? Math.round((retained / total) * 100) : 0
-    const sc = score >= 75 ? '#22C55E' : score >= 50 ? '#F59E0B' : '#EF4444'
+    const sc = score >= 75 ? '#1F4D3F' : score >= 50 ? '#A8762E' : '#B4503C'
 
     return (
       <div className="h-full flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm animate-fade-up">
           <div className="rounded-2xl border p-8 text-center mb-6"
-            style={{ background: 'var(--surface)', borderLeft: `4px solid ${sc}`, borderColor: 'var(--border)' }}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest mb-3"
-              style={{ color: 'var(--text-4)' }}>Session terminée</p>
+            style={{ background: 'var(--bg-elev)', borderLeft: `4px solid ${sc}`, borderColor: 'var(--ink-200)' }}>
+            <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3"
+              style={{ color: 'var(--ink-400)' }}>Session terminée</p>
             <div className="text-6xl font-normal mb-2 tracking-tight" style={{ color: sc }}>{score}%</div>
-            <p className="text-sm text-[#64748B] mb-6 line-clamp-1">{deckTitle}</p>
+            <p className="text-sm mb-6 line-clamp-1" style={{ color: 'var(--ink-500)' }}>{deckTitle}</p>
 
             <div className="grid grid-cols-4 gap-2 mb-2">
               {([
@@ -251,14 +249,10 @@ export default function StudyPage() {
           </div>
 
           <div className="flex gap-3">
-            <button onClick={restart}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all hover:-translate-y-0.5"
-              style={{ background: 'var(--surface-2)', color: 'var(--text-2)', border: '1px solid var(--border)' }}>
+            <button onClick={restart} className="btn btn-outline flex-1">
               <RotateCcw size={13} />Recommencer
             </button>
-            <Link href={`/flashcards/${deckId}`}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 text-center"
-              style={{ background: COLOR }}>
+            <Link href={`/flashcards/${deckId}`} className="btn btn-primary flex-1">
               Retour au deck
             </Link>
           </div>
@@ -275,22 +269,21 @@ export default function StudyPage() {
     <div className="h-full flex flex-col">
       {/* Top bar */}
       <div className="shrink-0 h-14 flex items-center px-4 md:px-8 gap-4 border-b"
-        style={{ borderColor: 'var(--border)' }}>
+        style={{ borderColor: 'var(--ink-200)' }}>
         <Link href={`/flashcards/${deckId}`}
-          className="flex items-center gap-1.5 text-xs text-[#475569] hover:text-white transition-colors shrink-0">
+          className="flex items-center gap-1.5 text-xs transition-colors shrink-0"
+          style={{ color: 'var(--ink-500)' }}>
           <X size={14} />Quitter
         </Link>
 
         <div className="flex-1 flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-[#475569] tabular-nums truncate max-w-48"
-              style={{ fontFamily: 'var(--font-mono, monospace)' }}>{deckTitle}</span>
-            <span className="text-[10px] text-[#475569] tabular-nums shrink-0"
-              style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+            <span className="mono text-[10px] tabular-nums truncate max-w-48" style={{ color: 'var(--ink-400)' }}>{deckTitle}</span>
+            <span className="mono text-[10px] tabular-nums shrink-0" style={{ color: 'var(--ink-400)' }}>
               {currentIndex + 1}/{cards.length}
             </span>
           </div>
-          <div className="w-full h-1 rounded-full" style={{ background: 'var(--border)' }}>
+          <div className="w-full h-1 rounded-full" style={{ background: 'var(--ink-200)' }}>
             <div className="h-1 rounded-full transition-all duration-500"
               style={{ width: `${progress}%`, background: COLOR }} />
           </div>

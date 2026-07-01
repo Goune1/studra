@@ -14,7 +14,9 @@ export default function SceneReview({ active }: Props) {
   const [badge, setBadge] = useState(false);
 
   useEffect(() => {
+    // Timer-driven animation (external system): reset choreography state when inactive.
     if (!active) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFlipped(false); setShowButtons(false); setBadge(false);
       setCursorPos({ x: 50, y: 70 });
       return;

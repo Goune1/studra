@@ -38,14 +38,11 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h2
-            className="text-xl text-white"
-            style={{  }}
-          >
+          <h2 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>
             Cartes à retravailler
           </h2>
           <span
-            className="text-xs px-2 py-0.5 rounded-full font-semibold"
+            className="mono text-xs px-2 py-0.5 rounded-full font-semibold"
             style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444425' }}
           >
             {cards.length}
@@ -53,19 +50,21 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
         </div>
 
         {/* Sort toggle */}
-        <div className="flex items-center gap-1 p-1 rounded-xl border border-[#1E1E2E] bg-[#13131A]">
+        <div
+          className="flex items-center gap-1 p-1 rounded-xl"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
           {(Object.keys(SORT_LABELS) as SortKey[]).map((key) => (
             <button
               key={key}
               onClick={() => setSort(key)}
-              className="px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-all duration-150"
+              className="px-2.5 py-1.5 rounded-lg mono text-[10px] font-medium transition-all duration-150 cursor-pointer"
               style={{
-                background: sort === key ? 'var(--surface-2)' : 'transparent',
-                color: sort === key ? 'var(--text-1)' : 'var(--text-4)',
+                background: sort === key ? 'var(--accent-soft)' : 'transparent',
+                color: sort === key ? 'var(--accent)' : 'var(--ink-400)',
               }}
             >
-              {SORT_LABELS[key]}
-              {sort === key && key === 'failRate' ? ' ↓' : ''}
+              {SORT_LABELS[key]}{sort === key && key === 'failRate' ? ' ↓' : ''}
             </button>
           ))}
         </div>
@@ -75,10 +74,7 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
       {critical.length > 0 && (
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-2">
-            <span
-              className="text-[9px] font-bold uppercase tracking-[0.15em]"
-              style={{ color: '#EF4444' }}
-            >
+            <span className="mono text-[9px] font-bold uppercase tracking-widest" style={{ color: '#EF4444' }}>
               Critique
             </span>
             <div className="flex-1 h-px" style={{ background: '#EF444420' }} />
@@ -93,13 +89,10 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
       {watchlist.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span
-              className="text-[9px] font-bold uppercase tracking-[0.15em]"
-              style={{ color: '#475569' }}
-            >
+            <span className="mono text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--ink-400)' }}>
               À surveiller
             </span>
-            <div className="flex-1 h-px border-t border-dashed border-[#1E1E2E]" />
+            <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
           </div>
           {watchlist.map((card, i) => (
             <WeaknessCard key={card.id} card={card} index={critical.length + i} />

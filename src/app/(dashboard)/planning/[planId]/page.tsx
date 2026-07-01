@@ -22,12 +22,13 @@ import {
   Trash2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { StudyPlan, StudyPlanTask, StudyPlanTaskType } from '@/types'
 
 // ─────────────────────────────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────────────────────────────
-const COLOR = '#6366f1'
+const COLOR = '#1F4D3F'
 const DANGER = '#EF4444'
 const SUCCESS = '#10B981'
 
@@ -82,6 +83,8 @@ export default function PlanningViewPage() {
     setLoading(false)
   }, [planId, router])
 
+  // Legitimate external sync: load plan + sessions from Supabase on mount / planId change.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load() }, [load])
 
   // ── Actions ────────────────────────────────────────────────────────
@@ -194,7 +197,7 @@ export default function PlanningViewPage() {
       <Link
         href="/planning"
         className="text-xs mb-4 inline-flex items-center gap-1 hover:underline"
-        style={{ color: 'var(--text-3)' }}
+        style={{ color: 'var(--ink-500)' }}
       >
         ← Tous les plannings
       </Link>
@@ -203,9 +206,8 @@ export default function PlanningViewPage() {
       <div className="mb-6">
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold mb-1 truncate" style={{ color: 'var(--text-1)' }}>
-              {plan.title}
-            </h1>
+            <Eyebrow className="mb-1">Planning</Eyebrow>
+            <h1 className="section-h mb-1 truncate">{plan.title}</h1>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: 'var(--text-2)' }}>
               <span className="flex items-center gap-1.5">
                 <Calendar size={14} />
@@ -519,8 +521,8 @@ function TodaySessionCard({
           <Link
             href={target}
             onClick={() => { void onAction(session.id, 'start') }}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5"
-            style={{ background: COLOR, color: '#fff' }}
+            className="btn btn-primary"
+            style={{ padding: '8px 14px', fontSize: '13px' }}
           >
             <Play size={14} fill="currentColor" />
             Commencer
@@ -845,8 +847,8 @@ function EditPlanModal({
           <button
             onClick={save}
             disabled={saving || !title.trim()}
-            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 cursor-pointer"
-            style={{ background: COLOR, color: '#fff' }}
+            className="btn btn-primary flex-1"
+            style={{ padding: '10px', fontSize: '13px' }}
           >
             {saving ? 'Enregistrement…' : 'Enregistrer'}
           </button>

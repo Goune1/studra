@@ -10,7 +10,7 @@ import { ProGate } from '@/components/pro-gate'
 import type { SocrateMessage, FeynmanDiagnosis, FeynmanSession } from '@/types'
 import type { Profile } from '@/types'
 
-const COLOR = '#34D399'
+const COLOR = '#1F4D3F'
 
 export default function SocrateSessionPage() {
   const params = useParams()
@@ -193,7 +193,7 @@ export default function SocrateSessionPage() {
                   ? {
                       background: COLOR + '10',
                       border: `1px solid ${COLOR}25`,
-                      color: '#D1FAE5',
+                      color: 'var(--ink-700)',
                       borderRadius: '1rem 1rem 1rem 4px',
                     }
                   : {

@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { GraduationCap, Search, MapPin, School, User, Lock, RefreshCw, Unlink, ChevronRight, QrCode, ImageIcon, X } from 'lucide-react'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import { toast } from 'sonner'
 import { GradesView } from './grades-view'
 import { BacSimulator } from './bac-simulator'
 
-const COLOR = '#EC4899'
+const COLOR = '#1F4D3F'
 
 interface PronoteConnection {
   instance_url: string
@@ -302,19 +303,17 @@ export function BacClient({ initialConnection }: BacClientProps) {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-2">
               <GraduationCap size={14} style={{ color: COLOR }} />
-              <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: COLOR }}>
-                Bac
-              </span>
+              <Eyebrow>Notes Pronote</Eyebrow>
             </div>
-            <h1 className="text-4xl text-white tracking-tight">Mes notes Pronote</h1>
+            <h1 className="section-h">Mes notes Pronote</h1>
           </div>
           <button
             onClick={handleSync}
             disabled={syncing}
-            className="sm:ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:opacity-90 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: COLOR }}
+            className="btn btn-outline sm:ml-auto shrink-0"
+            style={{ padding: '10px 16px', fontSize: '13px' }}
           >
             <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
             {syncing ? 'Synchronisation...' : 'Synchroniser les données'}
@@ -334,21 +333,21 @@ export function BacClient({ initialConnection }: BacClientProps) {
               <School size={18} style={{ color: COLOR }} />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-semibold truncate" style={{ color: 'var(--ink)' }}>
                 {connection.instance_url}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--ink-500)' }}>
                 Identifiant : {connection.username}
               </p>
             </div>
           </div>
           {lastSyncedAt && (
-            <p className="text-xs" style={{ color: 'var(--text-4)' }}>
+            <p className="mono text-xs" style={{ color: 'var(--ink-400)' }}>
               Dernière synchronisation : {formatDate(lastSyncedAt)}
             </p>
           )}
           {!lastSyncedAt && (
-            <p className="text-xs" style={{ color: 'var(--text-4)' }}>
+            <p className="text-xs" style={{ color: 'var(--ink-400)' }}>
               Aucune synchronisation effectuée - cliquez sur "Synchroniser" pour récupérer vos notes.
             </p>
           )}
@@ -388,15 +387,13 @@ export function BacClient({ initialConnection }: BacClientProps) {
   return (
     <div className="max-w-350">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
+      <div className="mb-8 animate-fade-up">
+        <div className="flex items-center gap-2 mb-2">
           <GraduationCap size={14} style={{ color: COLOR }} />
-          <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: COLOR }}>
-            Bac
-          </span>
+          <Eyebrow>Notes Pronote</Eyebrow>
         </div>
-        <h1 className="text-4xl text-white tracking-tight">Connecter Pronote</h1>
-        <p className="text-sm mt-2" style={{ color: 'var(--text-3)' }}>
+        <h1 className="section-h">Connecter Pronote</h1>
+        <p className="text-sm mt-3" style={{ color: 'var(--ink-500)' }}>
           Récupérez vos notes directement depuis votre espace Pronote.
         </p>
       </div>
@@ -409,7 +406,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
         {!(connectMethod === 'credentials' && selectedSchool) && (
           <div
             className="flex gap-1 p-1 rounded-xl mb-5"
-            style={{ background: 'var(--surface-deep, #111)', border: '1px solid var(--border)' }}
+            style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
           >
             {(
               [
@@ -426,11 +423,11 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   setConnectError(null)
                   setQrError(null)
                 }}
-                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all"
+                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer"
                 style={
                   connectMethod === key
-                    ? { background: 'var(--surface)', color: 'var(--text-1)', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }
-                    : { color: 'var(--text-3)' }
+                    ? { background: 'var(--bg-elev)', color: 'var(--ink)', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
+                    : { color: 'var(--ink-500)' }
                 }
               >
                 <Icon size={12} />
@@ -445,7 +442,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
           <form onSubmit={handleConnectQr}>
             <div
               className="rounded-xl px-4 py-3 mb-5 text-xs space-y-1"
-              style={{ background: 'var(--surface-deep, #111)', border: '1px solid var(--border)', color: 'var(--text-3)' }}
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-3)' }}
             >
               <p className="font-semibold mb-2" style={{ color: 'var(--text-2)' }}>
                 Pour te connecter via QR code Pronote :
@@ -475,7 +472,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
                 />
                 {qrImageFile && qrImagePreview ? (
                   <div className="relative flex items-center gap-3 rounded-xl px-4 py-3 border"
-                    style={{ background: 'var(--surface-deep, #111)', borderColor: COLOR + '40' }}
+                    style={{ background: 'var(--surface-2)', borderColor: COLOR + '40' }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -518,8 +515,8 @@ export function BacClient({ initialConnection }: BacClientProps) {
                     onClick={() => qrInputRef.current?.click()}
                     className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-6 px-4 text-center transition-colors cursor-pointer"
                     style={{
-                      borderColor: qrDragging ? COLOR + '60' : 'rgba(255,255,255,0.12)',
-                      background: qrDragging ? COLOR + '08' : 'rgba(255,255,255,0.02)',
+                      borderColor: qrDragging ? COLOR + '60' : 'var(--ink-200)',
+                      background: qrDragging ? COLOR + '08' : 'var(--surface-2)',
                     }}
                   >
                     <ImageIcon size={20} className="text-gray-500" />
@@ -550,9 +547,9 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   autoComplete="one-time-code"
                   className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
                   style={{
-                    background: 'var(--surface-deep, #111)',
+                    background: 'var(--surface-2)',
                     border: '1px solid var(--border)',
-                    color: '#E2E8F0',
+                    color: 'var(--ink)',
                   }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -563,7 +560,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             {qrError && (
               <div
                 className="rounded-xl px-4 py-3 mb-4 text-sm"
-                style={{ background: '#EF444415', border: '1px solid #EF444430', color: '#FCA5A5' }}
+                style={{ background: '#EF444415', border: '1px solid #EF444430', color: '#EF4444' }}
               >
                 {qrError}
               </div>
@@ -572,8 +569,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             <button
               type="submit"
               disabled={qrConnecting || !qrImageFile || pin.length !== 4}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ background: COLOR }}
+              className="btn btn-primary w-full"
             >
               {qrConnecting ? 'Connexion en cours...' : 'Connecter via QR code'}
             </button>
@@ -598,9 +594,9 @@ export function BacClient({ initialConnection }: BacClientProps) {
                 placeholder="Nom de votre ville ou commune..."
                 className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
                 style={{
-                  background: 'var(--surface-deep, #111)',
+                  background: 'var(--surface-2)',
                   border: '1px solid var(--border)',
-                  color: '#E2E8F0',
+                  color: 'var(--ink)',
                 }}
                 onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
                 onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -705,7 +701,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             {/* School info */}
             <div
               className="flex items-center gap-3 rounded-xl px-4 py-3 mb-5"
-              style={{ background: 'var(--surface-deep, #111)', border: '1px solid var(--border)' }}
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
             >
               <School size={14} style={{ color: COLOR }} className="shrink-0" />
               <div className="min-w-0">
@@ -731,9 +727,9 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   autoComplete="username"
                   className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
                   style={{
-                    background: 'var(--surface-deep, #111)',
+                    background: 'var(--surface-2)',
                     border: '1px solid var(--border)',
-                    color: '#E2E8F0',
+                    color: 'var(--ink)',
                   }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -754,9 +750,9 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   autoComplete="current-password"
                   className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
                   style={{
-                    background: 'var(--surface-deep, #111)',
+                    background: 'var(--surface-2)',
                     border: '1px solid var(--border)',
-                    color: '#E2E8F0',
+                    color: 'var(--ink)',
                   }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -771,7 +767,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             {connectError && (
               <div
                 className="rounded-xl px-4 py-3 mb-4 text-sm"
-                style={{ background: '#EF444415', border: '1px solid #EF444430', color: '#FCA5A5' }}
+                style={{ background: '#EF444415', border: '1px solid #EF444430', color: '#EF4444' }}
               >
                 {connectError}
               </div>
@@ -780,8 +776,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             <button
               type="submit"
               disabled={connecting || !pronoteUsername || !pronotePassword}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ background: COLOR }}
+              className="btn btn-primary w-full"
             >
               {connecting ? 'Connexion en cours...' : 'Connecter Pronote'}
             </button>

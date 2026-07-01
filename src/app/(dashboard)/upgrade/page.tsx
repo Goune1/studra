@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CheckoutButton } from '@/components/checkout-button'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+
+const COLOR = '#1F4D3F'
 
 const FEATURES_FREE = [
   '5 générations IA par mois',
@@ -29,62 +32,83 @@ export default async function UpgradePage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-10">
-        <span className="font-mono text-[11px] tracking-[0.15em] uppercase text-[#818cf8]">Abonnement</span>
-        <h1 className="text-3xl font-semibold tracking-tight text-white mt-2 mb-3">
-          Passe à la vitesse supérieure
-        </h1>
+      {/* Header */}
+      <div className="mb-10 animate-fade-up">
+        <Eyebrow className="mb-2">Abonnement</Eyebrow>
+        <h1 className="section-h">Passe à la vitesse supérieure</h1>
         {overQuota ? (
-          <p className="text-[#f87171] text-sm">
+          <p className="text-sm mt-3" style={{ color: '#EF4444' }}>
             Tu as utilisé tes 5 générations ce mois-ci. Passe Pro pour continuer sans limite.
           </p>
         ) : (
-          <p className="text-zinc-400 text-sm">
-            Il te reste <strong className="text-white">{generationsLeft} génération{generationsLeft > 1 ? 's' : ''}</strong> ce mois-ci.
+          <p className="text-sm mt-3" style={{ color: 'var(--ink-700)' }}>
+            Il te reste <strong style={{ color: 'var(--ink)' }}>{generationsLeft} génération{generationsLeft > 1 ? 's' : ''}</strong> ce mois-ci.
           </p>
         )}
       </div>
 
       {/* Pricing grid */}
-      <div className="grid md:grid-cols-2 gap-4 mb-10">
+      <div className="grid md:grid-cols-2 gap-4 mb-10 animate-fade-up" style={{ animationDelay: '60ms' }}>
         {/* Free plan */}
-        <div className="rounded-2xl border border-white/8 bg-white/3 p-7 flex flex-col gap-5">
+        <div
+          className="rounded-2xl p-7 flex flex-col gap-5"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
           <div>
-            <div className="text-lg font-semibold text-white mb-1">Gratuit</div>
+            <div className="text-lg font-semibold mb-1" style={{ color: 'var(--ink)' }}>Gratuit</div>
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-semibold text-white">0&nbsp;€</span>
-              <span className="text-zinc-500 text-sm">/pour toujours</span>
+              <span className="text-4xl font-semibold" style={{ color: 'var(--ink)' }}>0&nbsp;€</span>
+              <span className="text-sm" style={{ color: 'var(--ink-500)' }}>/pour toujours</span>
             </div>
           </div>
           <ul className="flex flex-col gap-2.5 flex-1">
             {FEATURES_FREE.map((f) => (
-              <li key={f} className="flex items-center gap-2.5 text-sm text-zinc-400">
-                <span className="w-4 h-4 rounded-full flex items-center justify-center bg-white/5 text-zinc-500 text-[10px] flex-shrink-0">✓</span>
+              <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: 'var(--ink-700)' }}>
+                <span
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] flex-shrink-0"
+                  style={{ background: 'var(--surface-2)', color: 'var(--ink-400)' }}
+                >✓</span>
                 {f}
               </li>
             ))}
           </ul>
-          <div className="py-3 rounded-xl border border-white/8 text-center text-sm text-zinc-500 font-medium">
+          <div
+            className="py-3 rounded-xl text-center text-sm font-medium"
+            style={{ border: '1px solid var(--border)', color: 'var(--ink-500)' }}
+          >
             Plan actuel
           </div>
         </div>
 
         {/* Pro plan */}
-        <div className="relative rounded-2xl border border-[rgba(99,102,241,0.4)] bg-gradient-to-b from-[#15152e] to-[#0e0e1c] p-7 flex flex-col gap-5 shadow-[0_32px_64px_-32px_rgba(99,102,241,0.4)]">
-          <span className="absolute top-5 right-5 font-mono text-[10px] tracking-[0.15em] uppercase px-2.5 py-1 rounded-full bg-[rgba(99,102,241,0.2)] text-[#818cf8]">
+        <div
+          className="relative rounded-2xl p-7 flex flex-col gap-5"
+          style={{
+            background: COLOR + '08',
+            border: `1.5px solid ${COLOR}`,
+            boxShadow: `0 0 0 1px ${COLOR} inset`,
+          }}
+        >
+          <span
+            className="mono absolute top-5 right-5 text-[10px] tracking-wide uppercase px-2.5 py-1 rounded-full font-medium"
+            style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}30` }}
+          >
             Recommandé
           </span>
           <div>
-            <div className="text-lg font-semibold text-white mb-1">Pro</div>
+            <div className="text-lg font-semibold mb-1" style={{ color: 'var(--ink)' }}>Pro</div>
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-semibold text-white">4,99&nbsp;€</span>
-              <span className="text-zinc-500 text-sm">/mois</span>
+              <span className="text-4xl font-semibold" style={{ color: 'var(--ink)' }}>4,99&nbsp;€</span>
+              <span className="text-sm" style={{ color: 'var(--ink-500)' }}>/mois</span>
             </div>
           </div>
           <ul className="flex flex-col gap-2.5 flex-1">
             {FEATURES_PRO.map((f) => (
-              <li key={f} className="flex items-center gap-2.5 text-sm text-zinc-300">
-                <span className="w-4 h-4 rounded-full flex items-center justify-center bg-[rgba(99,102,241,0.2)] text-[#818cf8] text-[10px] flex-shrink-0">✓</span>
+              <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: 'var(--ink-700)' }}>
+                <span
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] flex-shrink-0"
+                  style={{ background: COLOR + '20', color: COLOR }}
+                >✓</span>
                 {f}
               </li>
             ))}
@@ -93,7 +117,10 @@ export default async function UpgradePage() {
         </div>
       </div>
 
-      <p className="text-center text-zinc-600 text-xs">
+      <p
+        className="mono text-center text-xs animate-fade-up"
+        style={{ color: 'var(--ink-400)', animationDelay: '90ms' }}
+      >
         Sans engagement · Annule en 1 clic depuis les paramètres · Paiement sécurisé via Stripe
       </p>
     </div>

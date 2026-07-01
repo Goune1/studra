@@ -17,7 +17,7 @@ export function DashboardShell({ children, isPro, userName, userEmail, userAvata
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--app-bg)' }}>
+    <div className="app-v2 min-h-screen" style={{ background: 'var(--app-bg)' }}>
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div

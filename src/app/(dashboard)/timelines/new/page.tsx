@@ -5,6 +5,7 @@ import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackFriseGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'schema', 'exam']
@@ -45,10 +46,11 @@ export default function NewTimelinePage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Nouvelle frise chronologique</h1>
-        <p className="text-gray-400 mt-1">L&apos;IA va extraire et organiser les événements de votre cours</p>
+        <Eyebrow className="mb-2">Frises</Eyebrow>
+        <h1 className="section-h">Nouvelle frise</h1>
+        <p className="lede mt-3">L&apos;IA extrait et organise les événements de ton cours.</p>
       </div>
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+      <div className="app-card p-8">
         <ContentInputForm
           onSubmit={handleGenerate}
           submitLabel={also.size > 0 ? `✨ Générer la frise + ${also.size} autre${also.size > 1 ? 's' : ''}` : '✨ Générer la frise'}

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Lightbulb, GitMerge, Globe, BookOpen, ListOrdered, X } from 'lucide-react'
 
-const COLOR = '#F59E0B'
+const COLOR = '#1F4D3F'
 
 type ExplainStyle = 'analogy' | 'example' | 'simple' | 'stepbystep'
 
@@ -86,27 +86,27 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
         <div className="card-flip-inner">
           {/* Front */}
           <div className="card-front rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <span className="text-[9px] font-bold uppercase tracking-widest"
-              style={{ color: 'var(--text-4)' }}>Question</span>
-            <p className="text-xl text-center leading-snug" style={{ color: 'var(--text-1)' }}>
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
+            <span className="mono text-[9px] font-medium uppercase tracking-widest"
+              style={{ color: 'var(--ink-400)' }}>Question</span>
+            <p className="text-xl text-center leading-snug" style={{ color: 'var(--ink)' }}>
               {question}
             </p>
-            <span className="text-[10px] mt-2" style={{ color: 'var(--text-label)' }}>
+            <span className="text-[10px] mt-2" style={{ color: 'var(--ink-400)' }}>
               [Espace] pour retourner
             </span>
           </div>
 
           {/* Back */}
           <div className="card-back rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
-            style={{ background: 'var(--surface-warn)', border: `1px solid ${COLOR}30` }}>
-            <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: COLOR }}>
+            style={{ background: 'var(--bg-elev)', border: `1px solid ${COLOR}40`, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
+            <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: COLOR }}>
               Réponse
             </span>
             {explanation ? (
               <div className="text-center space-y-2">
-                <p className="text-sm line-through opacity-40 text-white">{answer}</p>
-                <p className="text-base text-white leading-relaxed italic">{explanation}</p>
+                <p className="text-sm line-through opacity-40" style={{ color: 'var(--ink)' }}>{answer}</p>
+                <p className="text-base leading-relaxed italic" style={{ color: 'var(--ink)' }}>{explanation}</p>
                 <button onClick={(e) => { e.stopPropagation(); setExplanation(null) }}
                   className="flex items-center gap-1 text-[10px] mx-auto transition-opacity hover:opacity-70"
                   style={{ color: COLOR }}>
@@ -114,7 +114,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
                 </button>
               </div>
             ) : (
-              <p className="text-xl text-white text-center leading-snug">{answer}</p>
+              <p className="text-xl text-center leading-snug" style={{ color: 'var(--ink)' }}>{answer}</p>
             )}
           </div>
         </div>

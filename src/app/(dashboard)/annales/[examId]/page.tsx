@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ChevronDown, ChevronUp, Printer } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import type { GeneratedPastExam, AnnaleQuestion, AnnaleAnswer } from '@/types'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
+import type { GeneratedPastExam, AnnaleQuestion, AnnaleAnswer } from '@/types'
 
-const COLOR = '#EF4444'
+const COLOR = '#1F4D3F'
 
 function QuestionCard({
   q,
@@ -22,6 +23,13 @@ function QuestionCard({
   onToggle: () => void
   index: number
 }) {
+  const typeColors: Record<string, { bg: string; fg: string; label: string }> = {
+    mcq:      { bg: '#3B82F615', fg: '#3B82F6', label: 'QCM' },
+    open:     { bg: '#10B98115', fg: '#10B981', label: 'Question ouverte' },
+    default:  { bg: '#F59E0B15', fg: '#F59E0B', label: 'Cas pratique' },
+  }
+  const tc = typeColors[q.type] ?? typeColors.default
+
   return (
     <div
       className="rounded-2xl overflow-hidden"
@@ -38,23 +46,18 @@ function QuestionCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide"
-                style={{
-                  background:
-                    q.type === 'mcq' ? '#6366f115' : q.type === 'open' ? '#10B98115' : '#F59E0B15',
-                  color:
-                    q.type === 'mcq' ? '#6366f1' : q.type === 'open' ? '#10B981' : '#F59E0B',
-                }}
+                className="mono text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide"
+                style={{ background: tc.bg, color: tc.fg }}
               >
-                {q.type === 'mcq' ? 'QCM' : q.type === 'open' ? 'Question ouverte' : 'Cas pratique'}
+                {tc.label}
               </span>
               {q.points && (
-                <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+                <span className="mono text-xs" style={{ color: 'var(--ink-500)' }}>
                   {q.points} pt{q.points > 1 ? 's' : ''}
                 </span>
               )}
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-1)' }}>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>
               {q.question}
             </p>
             {q.type === 'mcq' && q.options && (
@@ -63,7 +66,7 @@ function QuestionCard({
                   <li
                     key={i}
                     className="text-sm px-3 py-2 rounded-lg"
-                    style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}
+                    style={{ background: 'var(--surface-2)', color: 'var(--ink-700)' }}
                   >
                     {opt}
                   </li>
@@ -81,7 +84,7 @@ function QuestionCard({
             className="w-full flex items-center justify-between px-5 py-3 text-xs font-medium transition-colors cursor-pointer"
             style={{
               borderTop: '1px solid var(--border)',
-              color: showAnswer ? COLOR : 'var(--text-3)',
+              color: showAnswer ? COLOR : 'var(--ink-500)',
               background: showAnswer ? COLOR + '08' : 'transparent',
             }}
           >
@@ -92,17 +95,17 @@ function QuestionCard({
           {showAnswer && (
             <div
               className="px-5 py-4 text-sm leading-relaxed"
-              style={{ background: COLOR + '05', borderTop: `1px solid ${COLOR}20`, color: 'var(--text-2)' }}
+              style={{ background: COLOR + '05', borderTop: `1px solid ${COLOR}20`, color: 'var(--ink-700)' }}
             >
               <p>{answer.answer}</p>
               {answer.key_points && answer.key_points.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs font-semibold mb-1.5" style={{ color: 'var(--text-3)' }}>
+                  <p className="mono text-xs font-semibold mb-1.5" style={{ color: 'var(--ink-500)' }}>
                     Points clés attendus
                   </p>
                   <ul className="space-y-1">
                     {answer.key_points.map((pt, i) => (
-                      <li key={i} className="text-xs flex gap-1.5" style={{ color: 'var(--text-3)' }}>
+                      <li key={i} className="text-xs flex gap-1.5" style={{ color: 'var(--ink-500)' }}>
                         <span style={{ color: COLOR }}>•</span> {pt}
                       </li>
                     ))}
@@ -160,7 +163,7 @@ export default function AnnalesExamPage() {
   if (loading || !exam) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-sm" style={{ color: 'var(--text-3)' }}>Chargement…</div>
+        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>Chargement…</div>
       </div>
     )
   }
@@ -168,31 +171,26 @@ export default function AnnalesExamPage() {
   return (
     <div className="max-w-2xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 animate-fade-up">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--text-1)' }}>
-            {exam.title}
-          </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-2)' }}>
+          <Eyebrow className="mb-2">Annales</Eyebrow>
+          <h1 className="section-h">{exam.title}</h1>
+          <p className="mono text-xs mt-2" style={{ color: 'var(--ink-500)' }}>
             {exam.questions_json.length} question{exam.questions_json.length > 1 ? 's' : ''}
           </p>
         </div>
         <div className="flex gap-2 shrink-0">
           <button
             onClick={toggleAllAnswers}
-            className="px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer"
-            style={{
-              background: showAllAnswers ? COLOR + '15' : 'var(--surface-2)',
-              color: showAllAnswers ? COLOR : 'var(--text-2)',
-              border: '1px solid var(--border)',
-            }}
+            className="btn btn-outline"
+            style={{ padding: '8px 14px', fontSize: '13px' }}
           >
             {showAllAnswers ? 'Masquer corrigés' : 'Voir corrigés'}
           </button>
           <button
             onClick={() => window.print()}
-            className="p-2 rounded-xl transition-colors cursor-pointer"
-            style={{ background: 'var(--surface-2)', color: 'var(--text-2)', border: '1px solid var(--border)' }}
+            className="btn btn-outline"
+            style={{ padding: '8px 10px' }}
             title="Imprimer"
           >
             <Printer size={15} />
@@ -213,14 +211,15 @@ export default function AnnalesExamPage() {
         {exam.questions_json.map((q, i) => {
           const answer = exam.answers_json.find((a) => a.question_id === q.id)
           return (
-            <QuestionCard
-              key={q.id}
-              q={q}
-              answer={answer}
-              showAnswer={!!showAnswers[q.id]}
-              onToggle={() => toggleAnswer(q.id)}
-              index={i + 1}
-            />
+            <div key={q.id} className="animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
+              <QuestionCard
+                q={q}
+                answer={answer}
+                showAnswer={!!showAnswers[q.id]}
+                onToggle={() => toggleAnswer(q.id)}
+                index={i + 1}
+              />
+            </div>
           )
         })}
       </div>
