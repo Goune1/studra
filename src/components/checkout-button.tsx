@@ -29,7 +29,10 @@ export function CheckoutButton() {
     <button
       onClick={handleCheckout}
       disabled={loading}
-      className="w-full py-4 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-semibold text-lg transition-colors"
+      className="w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-semibold text-lg transition-colors"
+      style={{ background: '#1F4D3F', color: '#ffffff' }}
+      onMouseEnter={e => !loading && ((e.currentTarget as HTMLButtonElement).style.background = '#2a6854')}
+      onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = '#1F4D3F')}
     >
       {loading ? 'Redirection...' : '✨ Passer en Pro — 4,99€/mois'}
     </button>
