@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { Copy, Check, Users, MousePointer, TrendingUp, Wallet } from 'lucide-react'
-import { updatePaymentMethod } from '@/app/(dashboard)/affiliate/actions'
+import { updatePaymentMethod } from '@/app/[locale]/(dashboard)/affiliate/actions'
 import type { Affiliate, AffiliateCommission, AffiliatePayout, AffiliateStats } from '@/types'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {

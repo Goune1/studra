@@ -1,0 +1,30 @@
+{
+  "common": {},
+  "landing": {},
+  "auth": {
+    "login": {},
+    "register": {}
+  },
+  "dashboard": {
+    "home": {},
+    "flashcards": {},
+    "fiches": {},
+    "schemas": {},
+    "timelines": {},
+    "exams": {},
+    "annales": {},
+    "planning": {},
+    "recall": {},
+    "socrate": {},
+    "lacunes": {},
+    "settings": {},
+    "billing": {},
+    "affiliate": {},
+    "bac": {},
+    "upgrade": {}
+  },
+  "seo": {},
+  "blog": {},
+  "legal": {},
+  "components": {}
+}

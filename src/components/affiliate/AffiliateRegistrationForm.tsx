@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { registerAffiliate } from '@/app/(dashboard)/affiliate/actions'
+import { registerAffiliate } from '@/app/[locale]/(dashboard)/affiliate/actions'
 
 export function AffiliateRegistrationForm({ userEmail }: { userEmail: string }) {
   const [method, setMethod] = useState<'paypal' | 'bank_transfer'>('paypal')
