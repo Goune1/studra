@@ -1,10 +1,8 @@
-const STEPS = [
-  { n: "01", title: "Choisis ton outil.", body: "Flashcards, fiche, schéma, frise, examen blanc, dialogue socratique. Tout sort du même cours." },
-  { n: "02", title: "Colle ton cours.", body: "Texte, PDF, image ou lien YouTube. Studra lit, structure, comprend." },
-  { n: "03", title: "Révise sans réfléchir.", body: "L'algorithme te dit quoi réviser et quand. Tu ouvres l'app, tu fais ce qui apparaît." },
-];
+import {useTranslations} from 'next-intl'
 
-function Step({ step }: { step: (typeof STEPS)[number] }) {
+type StepData = {n: string; title: string; body: string}
+
+function Step({ step }: { step: StepData }) {
   return (
     <div style={{ position: "relative", paddingTop: 64 }}>
       <div aria-hidden="true" className="mono" style={{ position: "absolute", top: -28, left: -8, fontSize: "clamp(120px, 14vw, 180px)", lineHeight: 1, fontWeight: 500, color: "#8A8A93", letterSpacing: "-.06em", pointerEvents: "none", userSelect: "none" }}>
@@ -19,22 +17,29 @@ function Step({ step }: { step: (typeof STEPS)[number] }) {
 }
 
 export default function HowItWorks() {
+  const t = useTranslations('landing.howItWorks')
+  const steps = (['choose', 'import', 'study'] as const).map((key) => ({
+    n: t(`steps.${key}.number`),
+    title: t(`steps.${key}.title`),
+    body: t(`steps.${key}.body`),
+  }))
+
   return (
     <section className="sec" id="methode-bref">
       <div className="container">
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 80, maxWidth: 720 }}>
           <div className="eyebrow">
             <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>Comment ça marche</span>
+            <span>{t('eyebrow')}</span>
           </div>
           <h2 className="section-h">
-            Trois étapes.<br />
-            <span className="dim">Pas plus.</span>
+            {t('title')}<br />
+            <span className="dim">{t('titleAccent')}</span>
           </h2>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 48 }} className="hiw-grid-responsive">
-          {STEPS.map((step) => <Step key={step.n} step={step} />)}
+          {steps.map((step) => <Step key={step.n} step={step} />)}
         </div>
       </div>
 

@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Clock } from "@phosphor-icons/react";
+import {useTranslations} from 'next-intl'
 import Cursor from "./Cursor";
 
 interface Props { active: boolean }
 
 export default function SceneReview({ active }: Props) {
+  const t = useTranslations('landing.animations.hero')
   const [flipped, setFlipped] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const [cursorPos, setCursorPos] = useState({ x: 50, y: 70 });
@@ -35,8 +37,8 @@ export default function SceneReview({ active }: Props) {
   return (
     <>
       <div style={{ marginBottom: 12 }}>
-        <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 4 }}>Révision · 03 / 22</div>
-        <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>Rappel actif</div>
+        <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 4 }}>{t('reviewTitle')}</div>
+        <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>{t('activeRecall')}</div>
       </div>
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", gap: 14, position: "relative" }}>
@@ -57,9 +59,9 @@ export default function SceneReview({ active }: Props) {
             transition: "transform .9s cubic-bezier(.6,.05,.2,.95)",
             transform: flipped ? "rotateY(-180deg)" : "rotateY(0deg)",
           }}>
-            <div className="mono" style={{ fontSize: 9, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)" }}>Question</div>
-            <div style={{ fontSize: 14, lineHeight: 1.35, color: "var(--ink)", fontWeight: 450, flex: 1 }}>Date de la prise de la Bastille ?</div>
-            <div className="mono" style={{ fontSize: 9, color: "var(--ink-400)", letterSpacing: ".1em" }}>Espace · Retourner</div>
+            <div className="mono" style={{ fontSize: 9, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)" }}>{t('question')}</div>
+            <div style={{ fontSize: 14, lineHeight: 1.35, color: "var(--ink)", fontWeight: 450, flex: 1 }}>{t('bastilleQuestion')}</div>
+            <div className="mono" style={{ fontSize: 9, color: "var(--ink-400)", letterSpacing: ".1em" }}>{t('flip')}</div>
           </div>
           {/* Back */}
           <div style={{
@@ -76,11 +78,11 @@ export default function SceneReview({ active }: Props) {
             transition: "transform .9s cubic-bezier(.6,.05,.2,.95)",
             transform: flipped ? "rotateY(0deg)" : "rotateY(180deg)",
           }}>
-            <div className="mono" style={{ fontSize: 9, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)" }}>Réponse</div>
+            <div className="mono" style={{ fontSize: 9, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)" }}>{t('answer')}</div>
             <div style={{ fontSize: 14, lineHeight: 1.35, color: "var(--ink)", flex: 1 }}>
-              <strong style={{ fontWeight: 600 }}>14 juillet 1789.</strong> Prise par les insurgés parisiens, symbole de la fin de l&apos;absolutisme.
+              <strong style={{ fontWeight: 600 }}>{t('bastilleAnswerDate')}</strong> {t('bastilleAnswerDetail')}
             </div>
-            <div className="mono" style={{ fontSize: 9, color: "var(--ink-400)", letterSpacing: ".1em" }}>Évalue ta réponse ↓</div>
+            <div className="mono" style={{ fontSize: 9, color: "var(--ink-400)", letterSpacing: ".1em" }}>{t('rate')}</div>
           </div>
         </div>
 
@@ -92,10 +94,10 @@ export default function SceneReview({ active }: Props) {
           transition: "opacity .4s, transform .5s cubic-bezier(.2,.7,.3,1)",
         }}>
           {[
-            { label: "Encore", kbd: "1", color: "#B91C1C", bg: "rgba(185,28,28,.04)", border: "rgba(185,28,28,.15)" },
-            { label: "Difficile", kbd: "2", color: "#C2410C", bg: "rgba(194,65,12,.04)", border: "rgba(194,65,12,.15)" },
-            { label: "Bien", kbd: "3", color: "#15803D", bg: clicking ? "rgba(21,128,61,.12)" : "rgba(21,128,61,.04)", border: "rgba(21,128,61,.15)", pressing: clicking },
-            { label: "Facile", kbd: "4", color: "#1D4ED8", bg: "rgba(29,78,216,.04)", border: "rgba(29,78,216,.15)" },
+            { label: t('again'), kbd: "1", color: "#B91C1C", bg: "rgba(185,28,28,.04)", border: "rgba(185,28,28,.15)" },
+            { label: t('hard'), kbd: "2", color: "#C2410C", bg: "rgba(194,65,12,.04)", border: "rgba(194,65,12,.15)" },
+            { label: t('good'), kbd: "3", color: "#15803D", bg: clicking ? "rgba(21,128,61,.12)" : "rgba(21,128,61,.04)", border: "rgba(21,128,61,.15)", pressing: clicking },
+            { label: t('easy'), kbd: "4", color: "#1D4ED8", bg: "rgba(29,78,216,.04)", border: "rgba(29,78,216,.15)" },
           ].map((btn) => (
             <button key={btn.label} style={{
               appearance: "none",
@@ -127,7 +129,7 @@ export default function SceneReview({ active }: Props) {
             animation: "badge-pop .45s cubic-bezier(.34,1.6,.64,1) backwards",
           }}>
             <Clock size={11} weight="regular" />
-            <span>Revoir dans 2 jours</span>
+            <span>{t('nextReview', {count: 2})}</span>
           </div>
         )}
       </div>

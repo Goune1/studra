@@ -1,4 +1,7 @@
+import {useTranslations} from 'next-intl'
+
 export default function AnimFiches() {
+  const t = useTranslations('landing.animations.fiche')
   const rows = Array(2).fill(null);
   return (
     <div style={{ flex: 1 }}>
@@ -6,15 +9,15 @@ export default function AnimFiches() {
         <div style={{ animation: "ficheScroll 16s linear infinite", display: "flex", flexDirection: "column", gap: 6 }}>
           {rows.map((_, n) => (
             <div key={n} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink)", letterSpacing: "-.01em", marginTop: 8 }}>III. La Révolution française</div>
-              <div style={{ fontSize: 10.5, fontWeight: 500, color: "var(--ink)", marginTop: 4 }}>1. Les causes</div>
-              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>La dette de l&apos;État après les guerres de Louis XV et XVI <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> fragilise la monarchie.</div>
-              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>Les mauvaises récoltes <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> de 1788 provoquent une flambée des prix.</div>
-              <div style={{ fontSize: 10.5, fontWeight: 500, color: "var(--ink)", marginTop: 4 }}>2. La rupture</div>
-              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>Les états généraux convoqués <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> en mai 1789.</div>
-              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>Le serment du Jeu de paume <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> radicalise les députés.</div>
-              <div style={{ fontSize: 10.5, fontWeight: 500, color: "var(--ink)", marginTop: 4 }}>3. La nuit du 4 août</div>
-              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>Abolition des privilèges et droits féodaux <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} />.</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink)", letterSpacing: "-.01em", marginTop: 8 }}>{t('title')}</div>
+              <div style={{ fontSize: 10.5, fontWeight: 500, color: "var(--ink)", marginTop: 4 }}>{t('causes')}</div>
+              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>{t('debtStart')} <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> {t('debtEnd')}</div>
+              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>{t('harvestStart')} <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> {t('harvestEnd')}</div>
+              <div style={{ fontSize: 10.5, fontWeight: 500, color: "var(--ink)", marginTop: 4 }}>{t('break')}</div>
+              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>{t('estatesStart')} <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> {t('estatesEnd')}</div>
+              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>{t('oathStart')} <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} /> {t('oathEnd')}</div>
+              <div style={{ fontSize: 10.5, fontWeight: 500, color: "var(--ink)", marginTop: 4 }}>{t('august')}</div>
+              <div style={{ fontSize: 10.5, lineHeight: 1.45, color: "var(--ink-700)" }}>{t('abolition')} <span style={{ display: "inline-block", width: 60, height: 10, background: "var(--accent-soft)", borderRadius: 2, verticalAlign: "middle", margin: "0 2px" }} />.</div>
             </div>
           ))}
         </div>

@@ -1,6 +1,363 @@
 {
   "common": {},
-  "landing": {},
+  "landing": {
+    "metadata": {
+      "title": "Studra – Ton plan de révision avec flashcards IA",
+      "description": "Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère tes supports et planifie les prochains rappels selon tes réponses."
+    },
+    "nav": {
+      "features": "Fonctionnalités",
+      "method": "Méthode",
+      "pricing": "Tarifs",
+      "faq": "FAQ",
+      "openMenu": "Ouvrir le menu",
+      "closeMenu": "Fermer le menu",
+      "mainNavigation": "Navigation principale",
+      "openApp": "Accéder à l'app",
+      "login": "Se connecter",
+      "tryFree": "Essayer gratuitement"
+    },
+    "hero": {
+      "eyebrow": "Pour les partiels, concours et examens",
+      "title": "Réviser sérieusement.",
+      "titleAccent": "Sans y passer ses nuits.",
+      "description": "Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère tes supports et planifie les prochains rappels selon tes réponses.",
+      "cta": "Commencer gratuitement",
+      "note": "Gratuit pour commencer. Pas de carte demandée."
+    },
+    "mockup": {
+      "address": "studra.fr/app",
+      "brand": "Studra",
+      "workspace": "Espace",
+      "import": "Import",
+      "decks": "Decks",
+      "review": "Révision",
+      "fiches": "Fiches",
+      "schemas": "Schémas",
+      "planning": "Planning",
+      "exams": "Examens"
+    },
+    "howItWorks": {
+      "eyebrow": "Comment ça marche",
+      "title": "Trois étapes.",
+      "titleAccent": "Pas plus.",
+      "steps": {
+        "choose": {
+          "number": "01",
+          "title": "Choisis ton outil.",
+          "body": "Flashcards, fiche, schéma, frise, examen blanc, dialogue socratique. Tout sort du même cours."
+        },
+        "import": {
+          "number": "02",
+          "title": "Colle ton cours.",
+          "body": "Texte, PDF, image ou lien YouTube. Studra lit, structure, comprend."
+        },
+        "study": {
+          "number": "03",
+          "title": "Révise sans réfléchir.",
+          "body": "L'algorithme te dit quoi réviser et quand. Tu ouvres l'app, tu fais ce qui apparaît."
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Fonctionnalités",
+      "title": "Un cours.",
+      "titleAccent": "Sept manières de le réviser.",
+      "guides": "Lire les guides de révision",
+      "cards": {
+        "flashcards": {
+          "label": "Mémorisation",
+          "title": "Flashcards",
+          "body": "Espace les révisions au bon moment. Ce que tu commences à oublier revient en premier."
+        },
+        "socrate": {
+          "label": "Dialogue",
+          "title": "Mode Socrate",
+          "body": "Une IA qui pose les bonnes questions, jusqu'à ce que tu expliques vraiment."
+        },
+        "fiches": {
+          "label": "Structure",
+          "title": "Fiches",
+          "body": "Un résumé propre, hiérarchisé, exportable. Pas un mur de surlignage."
+        },
+        "schemas": {
+          "label": "Visuel",
+          "title": "Schémas",
+          "body": "Concepts, liens, dépendances. Lisible d'un coup d'œil."
+        },
+        "exams": {
+          "label": "Évaluation",
+          "title": "Examens blancs",
+          "body": "Sujets adaptés, correction détaillée, note sur 20."
+        },
+        "planning": {
+          "label": "Organisation",
+          "title": "Planning",
+          "body": "L'algorithme décide quand. Toi, tu ouvres l'app et tu fais ce qui apparaît."
+        },
+        "recall": {
+          "label": "Rappel actif",
+          "title": "Rappel libre",
+          "body": "Écris tout ce que tu sais. Studra compare avec le cours et te montre les trous."
+        }
+      }
+    },
+    "method": {
+      "eyebrow": "La Méthode",
+      "blocks": {
+        "spacing": {
+          "title": "La répétition espacée, expliquée simplement.",
+          "body": "Ton cerveau oublie selon une courbe prévisible. Réviser juste avant d'oublier ancre l'information en mémoire long terme. Studra calcule ce moment pour chaque carte avec l'algorithme de répétition espacée le plus précis disponible aujourd'hui (FSRS-5, le même standard que la recherche en sciences cognitives)."
+        },
+        "recall": {
+          "title": "Le rappel actif, pas le surlignage.",
+          "body": "Relire ses cours ne marche pas. Se forcer à retrouver l'information sans regarder, si. Studra te met dans cette position systématiquement, sur flashcards, en rappel libre, en examen blanc."
+        },
+        "socrate": {
+          "title": "La maïeutique, version 2026.",
+          "body": "Si tu peux expliquer un concept à voix haute en répondant à des questions précises, tu l'as compris. Sinon, tu ne l'as pas compris. Le Mode Socrate met cette vérité en pratique avec une IA qui te pose les bonnes questions."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Tarifs",
+      "title": "Gratuit pour commencer.",
+      "titleAccent": "Pas cher pour aller au bout.",
+      "recommended": "Recommandé",
+      "perMonth": "par mois",
+      "free": {
+        "name": "Free",
+        "description": "Pour découvrir Studra sans carte bancaire.",
+        "cta": "Commencer gratuitement",
+        "features": {
+          "generations": "5 générations IA par mois, tous outils confondus",
+          "tools": "Flashcards, fiches, examens et schémas",
+          "imports": "Import texte et PDF",
+          "spacing": "Répétition espacée FSRS",
+          "socrate": "Mode Socrate",
+          "planning": "Planning de révision"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Pour réviser plusieurs matières sans limite de génération.",
+        "cta": "Passer à Pro",
+        "features": {
+          "free": "Tout le plan Free",
+          "generations": "Générations IA illimitées",
+          "youtube": "Import YouTube",
+          "gaps": "Analyse des lacunes",
+          "annales": "Annales adaptatives",
+          "planning": "Planning personnalisé",
+          "socrate": "Mode Socrate illimité"
+        }
+      },
+      "generationNote": "Une génération correspond à la création d'un support ou d'une analyse par IA.",
+      "usageNote": "Réviser des flashcards déjà créées ne consomme pas de génération. Annulable à tout moment, sans engagement."
+    },
+    "faq": {
+      "eyebrow": "Questions fréquentes",
+      "title": "Tout ce que tu peux te demander",
+      "titleAccent": "avant de t'inscrire.",
+      "items": {
+        "difference": {
+          "question": "C'est différent d'Anki ou de Quizlet ?",
+          "answer": "Anki ne génère rien — tu écris tes cartes à la main. Quizlet fait des QCM basiques. Studra prend ton cours et génère flashcards, fiches, schémas, examens et dialogues socratiques, le tout connecté au même algorithme de répétition espacée."
+        },
+        "accuracy": {
+          "question": "L'IA peut se tromper sur les flashcards générées ?",
+          "answer": "Oui, ça arrive. Chaque carte est éditable en un clic. On affiche un score de confiance quand la génération hésite, et tu peux corriger ou supprimer en deux secondes."
+        },
+        "privacy": {
+          "question": "Mes cours sont confidentiels ?",
+          "answer": "Tes cours te restent. On ne les utilise pas pour entraîner de modèle. Les fichiers sont chiffrés, hébergés en Europe, et tu peux tout supprimer depuis ton compte."
+        },
+        "subjects": {
+          "question": "Ça marche pour quelles matières ?",
+          "answer": "Toutes les matières textuelles fonctionnent très bien — histoire, philo, SVT, langues, droit, médecine. Pour les maths et la physique, les flashcards et les fiches sont solides ; les schémas conceptuels marchent moins bien sur des démonstrations longues."
+        },
+        "results": {
+          "question": "Combien de temps avant de voir un effet ?",
+          "answer": "Dès la première semaine, tu remarques ce que tu retiens vraiment et ce que tu pensais retenir. L'effet sur la mémoire long terme est mesurable après deux à trois semaines de sessions régulières."
+        },
+        "cancel": {
+          "question": "Je peux annuler Pro à tout moment ?",
+          "answer": "Oui, en un clic depuis les paramètres. Pas de période d'engagement. Tu gardes Pro jusqu'à la fin du mois en cours, puis tu repasses sur Free sans rien perdre."
+        },
+        "trial": {
+          "question": "Vous avez un essai gratuit ?",
+          "answer": "Le plan Free n'est pas une démo limitée dans le temps : il reste gratuit. Pour tester Pro, on rembourse les 14 premiers jours si ça ne te convient pas."
+        },
+        "teacher": {
+          "question": "Studra remplace mon prof ?",
+          "answer": "Non."
+        }
+      }
+    },
+    "seoLinks": {
+      "eyebrow": "Explorer en détail",
+      "title": "Chaque fonctionnalité expliquée en profondeur.",
+      "learnMore": "En savoir plus →",
+      "pages": {
+        "flashcards": {
+          "label": "Créer des flashcards avec l'IA",
+          "description": "Génère 10 à 25 flashcards depuis ton cours, PDF ou YouTube. Répétition espacée FSRS 5 intégrée."
+        },
+        "fiches": {
+          "label": "Générer des fiches de révision automatiques",
+          "description": "Des fiches structurées avec titres, définitions et points clés — en 15 secondes depuis n'importe quel cours."
+        },
+        "spacing": {
+          "label": "La répétition espacée avec FSRS 5",
+          "description": "L'algorithme le plus précis pour mémoriser durablement. Chaque carte modélisée individuellement."
+        },
+        "exam": {
+          "label": "Passer un examen blanc depuis son cours",
+          "description": "7 QCM + 3 questions ouvertes corrigées par IA. Feedback détaillé, score mémorisé."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Tes examens arrivent.",
+      "titleAccent": "Studra aussi.",
+      "cta": "Commencer maintenant",
+      "note": "Gratuit · sans carte"
+    },
+    "footer": {
+      "tagline": "Réviser sans y passer ses nuits.",
+      "product": "Produit",
+      "formats": "Formats",
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "changelog": "Changelog",
+      "featureColumn": "Fonctionnalités",
+      "flashcards": "Flashcards IA",
+      "fiches": "Fiches de révision IA",
+      "spacing": "Répétition espacée",
+      "exams": "Examens blancs IA",
+      "blog": "Blog",
+      "legal": "Légal",
+      "terms": "CGU",
+      "salesTerms": "CGV",
+      "privacy": "Confidentialité",
+      "copyright": "© 2026 Studra. Tous droits réservés."
+    },
+    "jsonLd": {
+      "websiteDescription": "Révision intelligente avec l'IA",
+      "softwareDescription": "Plateforme de révision IA pour étudiants : flashcards FSRS 5, fiches de révision, mode Socrate, examens blancs, planning de révision.",
+      "freeOffer": "Studra Free",
+      "proOffer": "Studra Pro",
+      "features": {
+        "flashcards": "Génération de flashcards depuis PDF",
+        "spacing": "Répétition espacée FSRS 5",
+        "fiches": "Fiches de révision automatiques",
+        "socrate": "Mode Socrate",
+        "exams": "Examens blancs IA",
+        "planning": "Planning de révision personnalisé",
+        "youtube": "Import YouTube avec transcription automatique",
+        "schemas": "Schémas conceptuels générés par IA"
+      }
+    },
+    "animations": {
+      "flashcards": {
+        "math": "Maths",
+        "history": "Histoire",
+        "chemistry": "Chimie",
+        "pythagoras": "Théorème de Pythagore",
+        "war": "Causes de la 1re GM",
+        "acid": "Acide carboxylique",
+        "due": "Dans 2j",
+        "rating": "Bien"
+      },
+      "socrate": {
+        "question1": "Tu peux me redéfinir ce qu'est une fonction affine sans tes notes ?",
+        "question2": "Pourquoi 1789 marque la fin de l'Ancien Régime, concrètement ?",
+        "question3": "Donne-moi un exemple où la mitose se déclenche dans le corps."
+      },
+      "recall": {
+        "line1": "Les causes de la Révolution sont",
+        "line2": "d'abord économiques. La dette de",
+        "line3": "l'État après les guerres et",
+        "line4": "le déficit chronique",
+        "wordCount": "{count, plural, =0 {# mot} =1 {# mot} other {# mots}}",
+        "submit": "↵ Soumettre"
+      },
+      "planning": {
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mer",
+        "thursday": "Jeu",
+        "friday": "Ven",
+        "saturday": "Sam",
+        "sunday": "Dim"
+      },
+      "exam": {
+        "progress": "Question 12 / 18",
+        "prompt": "La fonction f définie par f(x) = …",
+        "instruction": "Étudier les variations de f sur ℝ.",
+        "time": "Temps · {minutes} min"
+      },
+      "schemas": {
+        "revolution": "Révolution",
+        "causes": "Causes",
+        "actors": "Acteurs",
+        "crisis": "Crise"
+      },
+      "fiche": {
+        "title": "III. La Révolution française",
+        "causes": "1. Les causes",
+        "debtStart": "La dette de l'État après les guerres de Louis XV et XVI",
+        "debtEnd": "fragilise la monarchie.",
+        "harvestStart": "Les mauvaises récoltes",
+        "harvestEnd": "de 1788 provoquent une flambée des prix.",
+        "break": "2. La rupture",
+        "estatesStart": "Les états généraux convoqués",
+        "estatesEnd": "en mai 1789.",
+        "oathStart": "Le serment du Jeu de paume",
+        "oathEnd": "radicalise les députés.",
+        "august": "3. La nuit du 4 août",
+        "abolition": "Abolition des privilèges et droits féodaux"
+      },
+      "hero": {
+        "generateTitle": "Génération",
+        "generatedCards": "{count, plural, one {# carte — Révolution française} other {# cartes — Révolution française}}",
+        "history": "Histoire",
+        "importTitle": "Import",
+        "pasteCourse": "Coller un cours",
+        "text": "Texte",
+        "pdf": "PDF",
+        "youtube": "YouTube",
+        "characters": "caractères",
+        "characterCount": "{count, plural, one {# caractère} other {# caractères}}",
+        "generate": "Générer",
+        "courseText": "Chapitre 3 — La Révolution française.\nLes causes profondes de la crise prérévolutionnaire sont à la fois économiques, sociales et politiques. La dette de l'État, le poids des impôts indirects et les mauvaises récoltes des années 1788-1789 alimentent un mécontentement généralisé...",
+        "card1": "Quels sont les états généraux ?",
+        "card2": "Date de la prise de la Bastille ?",
+        "card3": "Qui était le ministre des finances en 1789 ?",
+        "card4": "Qu'est-ce que le tiers état ?",
+        "card5": "Pourquoi convoquer les états généraux ?",
+        "card6": "Qu'apporte la nuit du 4 août 1789 ?",
+        "planningTitle": "Planning · semaine 15",
+        "plannedSessions": "Sessions prévues",
+        "plannedTime": "4h 20 / 7h",
+        "reviewTitle": "Révision · 03 / 22",
+        "activeRecall": "Rappel actif",
+        "question": "Question",
+        "bastilleQuestion": "Date de la prise de la Bastille ?",
+        "flip": "Espace · Retourner",
+        "answer": "Réponse",
+        "bastilleAnswer": "14 juillet 1789. Prise par les insurgés parisiens, symbole de la fin de l'absolutisme.",
+        "bastilleAnswerDate": "14 juillet 1789.",
+        "bastilleAnswerDetail": "Prise par les insurgés parisiens, symbole de la fin de l'absolutisme.",
+        "rate": "Évalue ta réponse ↓",
+        "again": "Encore",
+        "hard": "Difficile",
+        "good": "Bien",
+        "easy": "Facile",
+        "nextReview": "{count, plural, one {Revoir dans # jour} other {Revoir dans # jours}}"
+      }
+    }
+  },
   "auth": {
     "login": {},
     "register": {}

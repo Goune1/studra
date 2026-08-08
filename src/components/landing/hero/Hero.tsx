@@ -1,7 +1,9 @@
-import Link from "next/link";
+import {useTranslations} from 'next-intl'
+import {Link} from '@/i18n/navigation'
 import MockupWindow from "./MockupWindow";
 
 export default function Hero() {
+  const t = useTranslations('landing.hero')
   return (
     <section style={{ position: "relative", minHeight: "100dvh", paddingTop: 96, paddingBottom: 60, display: "flex", alignItems: "center", overflowX: "hidden" }}>
       {/* Ebbinghaus forgetting curve — hidden on mobile */}
@@ -33,26 +35,25 @@ export default function Hero() {
           <div className="hero-left-order" style={{ display: "flex", flexDirection: "column", gap: 28, maxWidth: 620 }}>
             <div className="eyebrow" style={{ textAlign: "left" }}>
               <span className="eyebrow-dot" />
-              <span>Pour les partiels, concours et examens</span>
+              <span>{t('eyebrow')}</span>
             </div>
 
             <h1 className="hero-h1" style={{ margin: 0, fontSize: "clamp(40px, 6.4vw, 78px)", fontWeight: 500, letterSpacing: "-0.035em", lineHeight: 0.96 }}>
-              <span>Réviser sérieusement.</span>
+              <span>{t('title')}</span>
               <br />
-              <span className="dim">Sans y passer ses nuits.</span>
+              <span className="dim">{t('titleAccent')}</span>
             </h1>
 
             <p className="lede">
-              Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère
-              tes supports et planifie les prochains rappels selon tes réponses.
+              {t('description')}
             </p>
 
             <div className="hero-ctas" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <Link href="/register" className="btn btn-primary hero-cta-primary">Commencer gratuitement</Link>
+              <Link href="/register" className="btn btn-primary hero-cta-primary">{t('cta')}</Link>
             </div>
 
             <div style={{ fontSize: 13.5, color: "var(--ink-500)" }}>
-              Gratuit pour commencer. Pas de carte demandée.
+              {t('note')}
             </div>
           </div>
 

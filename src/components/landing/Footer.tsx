@@ -1,38 +1,40 @@
 import Image from "next/image";
-import Link from "next/link";
+import {useTranslations} from 'next-intl'
+import {Link} from '@/i18n/navigation'
 
 const COLS = [
   { brand: true },
   {
-    title: "Produit",
+    titleKey: 'product',
     links: [
-      { label: "Formats",        href: "#features" },
-      { label: "Fonctionnalités", href: "#features" },
-      { label: "Tarifs",         href: "#tarifs" },
-      { label: "Changelog",      href: "/changelog" },
+      { labelKey: 'formats',        href: "#features" },
+      { labelKey: 'features', href: "#features" },
+      { labelKey: 'pricing',         href: "#tarifs" },
+      { labelKey: 'changelog',      href: "/changelog" },
     ],
   },
   {
-    title: "Fonctionnalités",
+    titleKey: 'featureColumn',
     links: [
-      { label: "Flashcards IA",       href: "/flashcards-ia" },
-      { label: "Fiches de révision IA", href: "/fiches-de-revision-ia" },
-      { label: "Répétition espacée",   href: "/repetition-espacee" },
-      { label: "Examens blancs IA",    href: "/examen-blanc-ia" },
-      { label: "Blog",                 href: "/blog" },
+      { labelKey: 'flashcards',       href: "/flashcards-ia" },
+      { labelKey: 'fiches', href: "/fiches-de-revision-ia" },
+      { labelKey: 'spacing',   href: "/repetition-espacee" },
+      { labelKey: 'exams',    href: "/examen-blanc-ia" },
+      { labelKey: 'blog',                 href: "/blog" },
     ],
   },
   {
-    title: "Légal",
+    titleKey: 'legal',
     links: [
-      { label: "CGU",             href: "/cgu" },
-      { label: "CGV",             href: "/cgv" },
-      { label: "Confidentialité", href: "/confidentialite" },
+      { labelKey: 'terms',             href: "/cgu" },
+      { labelKey: 'salesTerms',             href: "/cgv" },
+      { labelKey: 'privacy', href: "/confidentialite" },
     ],
   },
 ] as const;
 
 function Footer() {
+  const t = useTranslations('landing.footer')
   return (
     <footer style={{ padding: "80px 0 32px", borderTop: "1px solid var(--ink-200)", background: "var(--bg)" }}>
       <div className="container">
@@ -46,18 +48,18 @@ function Footer() {
                     <span>Studra</span>
                   </Link>
                   <p style={{ margin: 0, fontSize: 14.5, color: "var(--ink-500)", lineHeight: 1.5, maxWidth: "32ch" }}>
-                    Réviser sans y passer ses nuits.
+                    {t('tagline')}
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="mono" style={{ fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--ink-500)", fontWeight: 500 }}>{col.title}</div>
+                  <div className="mono" style={{ fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--ink-500)", fontWeight: 500 }}>{t(col.titleKey)}</div>
                   <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
                     {col.links.map((l) => (
-                      <li key={l.label}>
-                        <a href={l.href} className="footer-link">
-                          {l.label}
-                        </a>
+                      <li key={l.labelKey}>
+                        <Link href={l.href} className="footer-link">
+                          {t(l.labelKey)}
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -68,7 +70,7 @@ function Footer() {
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 28, borderTop: "1px solid var(--ink-200)", fontSize: 13, color: "var(--ink-500)", flexWrap: "wrap", gap: 12 }}>
-          <div>© 2026 Studra. Tous droits réservés.</div>
+          <div>{t('copyright')}</div>
         </div>
       </div>
 

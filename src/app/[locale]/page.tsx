@@ -1,5 +1,5 @@
 import type {Locale} from 'next-intl'
-import {setRequestLocale} from 'next-intl/server'
+import {getTranslations, setRequestLocale} from 'next-intl/server'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { LandingTracker } from '@/components/landing/LandingTracker'
@@ -15,28 +15,30 @@ import { SeoLinks } from '@/components/landing/SeoLinks'
 import FinalCTA from '@/components/landing/FinalCTA'
 import Footer   from '@/components/landing/Footer'
 
-export const metadata: Metadata = {
-  title: "Studra – Ton plan de révision avec flashcards IA",
-  description:
-    "Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère tes supports et planifie les prochains rappels selon tes réponses.",
-  alternates: {
-    canonical: 'https://studra.fr',
-  },
-  openGraph: {
-    title: "Studra – Ton plan de révision avec flashcards IA",
-    description:
-      "Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère tes supports et planifie les prochains rappels selon tes réponses.",
-    url: 'https://studra.fr',
-    siteName: 'Studra',
-    locale: 'fr_FR',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: "Studra – Ton plan de révision avec flashcards IA",
-    description:
-      "Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère tes supports et planifie les prochains rappels selon tes réponses.",
-  },
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  const t = await getTranslations({locale: locale as Locale, namespace: 'landing.metadata'})
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: {
+      canonical: 'https://studra.fr',
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: 'https://studra.fr',
+      siteName: 'Studra',
+      locale: 'fr_FR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+    },
+  }
 }
 
 export default async function LandingPage({params}: {params: Promise<{locale: string}>}) {

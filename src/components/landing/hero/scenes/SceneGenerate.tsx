@@ -1,26 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {useTranslations} from 'next-intl'
 
-const CARDS = [
-  "Quels sont les états généraux ?",
-  "Date de la prise de la Bastille ?",
-  "Qui était le ministre des finances en 1789 ?",
-  "Qu'est-ce que le tiers état ?",
-  "Pourquoi convoquer les états généraux ?",
-  "Qu'apporte la nuit du 4 août 1789 ?",
-];
+const CARD_KEYS = ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'] as const
 
 interface Props { active: boolean }
 
 export default function SceneGenerate({ active }: Props) {
-  const [revealed, setRevealed] = useState(CARDS.map(() => false));
+  const t = useTranslations('landing.animations.hero')
+  const cards = CARD_KEYS.map((key) => t(key))
+  const [revealed, setRevealed] = useState(CARD_KEYS.map(() => false));
 
   useEffect(() => {
     // Timer-driven animation (external system): reset choreography state when inactive.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!active) { setRevealed(CARDS.map(() => false)); return; }
-    const ts = CARDS.map((_, i) =>
+    if (!active) { setRevealed(CARD_KEYS.map(() => false)); return; }
+    const ts = CARD_KEYS.map((_, i) =>
       setTimeout(() => {
         setRevealed((prev) => { const n = [...prev]; n[i] = true; return n; });
       }, 700 + i * 380)
@@ -31,8 +27,8 @@ export default function SceneGenerate({ active }: Props) {
   return (
     <>
       <div style={{ marginBottom: 10, flexShrink: 0 }}>
-        <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 3 }}>Génération</div>
-        <div className="gen-scene-title" style={{ fontSize: 15, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>22 cartes — Révolution française</div>
+        <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 3 }}>{t('generateTitle')}</div>
+        <div className="gen-scene-title" style={{ fontSize: 15, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>{t('generatedCards', {count: 22})}</div>
       </div>
 
       {/*
@@ -40,7 +36,7 @@ export default function SceneGenerate({ active }: Props) {
         Mobile <768px: 2×2 grid (4 cards), cards 5+6 hidden via CSS
       */}
       <div className="gen-grid-resp" style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "repeat(2, 1fr)", gap: 8 }}>
-        {CARDS.map((q, i) => (
+        {cards.map((q, i) => (
           <div key={i} className="gen-card-resp" style={{
             background: "#FFF",
             border: "1px solid rgba(0,0,0,.07)",
@@ -61,7 +57,7 @@ export default function SceneGenerate({ active }: Props) {
               <>
                 <div className="mono" style={{ fontSize: 9, color: "var(--ink-400)", letterSpacing: ".1em" }}>{String(i + 1).padStart(2, "0")}</div>
                 <div style={{ fontSize: 11, lineHeight: 1.35, color: "var(--ink)", fontWeight: 450, flex: 1 }}>{q}</div>
-                <div className="mono" style={{ fontSize: 8.5, color: "var(--accent)", background: "var(--accent-soft)", padding: "2px 6px", borderRadius: 999, alignSelf: "flex-start", textTransform: "uppercase", letterSpacing: ".1em" }}>Histoire</div>
+                <div className="mono" style={{ fontSize: 8.5, color: "var(--accent)", background: "var(--accent-soft)", padding: "2px 6px", borderRadius: 999, alignSelf: "flex-start", textTransform: "uppercase", letterSpacing: ".1em" }}>{t('history')}</div>
               </>
             )}
           </div>

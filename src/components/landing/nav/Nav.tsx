@@ -4,16 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { List, X } from "@phosphor-icons/react";
 import Image from "next/image";
-import Link from "next/link";
-
-const LINKS = [
-  { label: "Fonctionnalités", href: "#features" },
-  { label: "Méthode", href: "#methode" },
-  { label: "Tarifs", href: "#tarifs" },
-  { label: "FAQ", href: "#faq" },
-];
+import {useTranslations} from 'next-intl'
+import {Link} from '@/i18n/navigation'
 
 export default function Nav() {
+  const t = useTranslations('landing.nav')
+  const links = [
+    {label: t('features'), href: '#features'},
+    {label: t('method'), href: '#methode'},
+    {label: t('pricing'), href: '#tarifs'},
+    {label: t('faq'), href: '#faq'},
+  ]
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -101,7 +102,7 @@ export default function Nav() {
 
           {/* Links desktop */}
           <nav style={{ display: "flex", gap: 28, justifyContent: "center" }} className="nav-links-desktop">
-            {LINKS.map((l) => (
+            {links.map((l) => (
               <a key={l.href} href={l.href} style={{ fontSize: 14, fontWeight: 450, color: "var(--ink-700)", padding: "6px 2px", transition: "color .15s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "var(--ink)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "var(--ink-700)")}>
@@ -113,17 +114,17 @@ export default function Nav() {
           {/* CTAs + burger */}
           <div style={{ display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
             {loggedIn ? (
-              <a href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>Accéder à l&apos;app</a>
+              <Link href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{t('openApp')}</Link>
             ) : (
               <>
-                <a href="/login" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>Se connecter</a>
-                <a href="/register" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>Essayer gratuitement</a>
+                <Link href="/login" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>{t('login')}</Link>
+                <Link href="/register" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{t('tryFree')}</Link>
               </>
             )}
             <button
               ref={menuButtonRef}
               className="nav-burger"
-              aria-label="Ouvrir le menu"
+              aria-label={t('openMenu')}
               aria-expanded={open}
               aria-controls="mobile-navigation"
               onClick={() => setOpen(true)}
@@ -143,7 +144,7 @@ export default function Nav() {
             id="mobile-navigation"
             role="dialog"
             aria-modal="true"
-            aria-label="Navigation principale"
+            aria-label={t('mainNavigation')}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -160,13 +161,13 @@ export default function Nav() {
                 <Image src="/studra-logo.png" alt="Studra" width={40} height={40} />
                 <span>Studra</span>
               </Link>
-              <button ref={closeButtonRef} aria-label="Fermer le menu" onClick={() => setOpen(false)} style={{ appearance: "none", border: 0, background: "transparent", padding: 8, color: "var(--ink)", cursor: "pointer", borderRadius: 8 }}>
+              <button ref={closeButtonRef} aria-label={t('closeMenu')} onClick={() => setOpen(false)} style={{ appearance: "none", border: 0, background: "transparent", padding: 8, color: "var(--ink)", cursor: "pointer", borderRadius: 8 }}>
                 <X size={24} />
               </button>
             </div>
 
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, padding: "48px 8px 0" }}>
-              {LINKS.map((l, i) => (
+              {links.map((l, i) => (
                 <motion.a
                   key={l.href}
                   href={l.href}
@@ -183,11 +184,11 @@ export default function Nav() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 0 24px" }}>
               {loggedIn ? (
-                <a href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Accéder à l&apos;app</a>
+                <Link href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('openApp')}</Link>
               ) : (
                 <>
-                  <a href="/login" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Se connecter</a>
-                  <a href="/register" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Essayer gratuitement</a>
+                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('login')}</Link>
+                  <Link href="/register" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('tryFree')}</Link>
                 </>
               )}
             </div>

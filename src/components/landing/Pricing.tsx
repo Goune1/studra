@@ -1,17 +1,21 @@
-import Link from "next/link";
+import {useFormatter, useTranslations} from 'next-intl'
+import {Link} from '@/i18n/navigation'
 
-const FREE = {
-  name: "Free", price: "0", desc: "Pour découvrir Studra sans carte bancaire.",
-  cta: "Commencer gratuitement", ctaStyle: "btn-outline", href: "/register",
-  features: ["5 générations IA par mois, tous outils confondus", "Flashcards, fiches, examens et schémas", "Import texte et PDF", "Répétition espacée FSRS", "Mode Socrate", "Planning de révision"],
-};
-const PRO = {
-  name: "Pro", price: "4,99", desc: "Pour réviser plusieurs matières sans limite de génération.",
-  cta: "Passer à Pro", ctaStyle: "btn-primary", recommended: true, href: "/register?plan=pro",
-  features: ["Tout le plan Free", "Générations IA illimitées", "Import YouTube", "Analyse des lacunes", "Annales adaptatives", "Planning personnalisé", "Mode Socrate illimité"],
-};
+type Plan = {
+  name: string
+  price: number
+  desc: string
+  cta: string
+  ctaStyle: string
+  href: '/register'
+  features: string[]
+  recommended?: boolean
+  query?: {plan: string}
+}
 
-function PlanCard({ plan }: { plan: typeof FREE & { recommended?: boolean; href: string } }) {
+function PlanCard({plan}: {plan: Plan}) {
+  const t = useTranslations('landing.pricing')
+  const format = useFormatter()
   return (
     <div style={{
       position: "relative",
@@ -24,21 +28,19 @@ function PlanCard({ plan }: { plan: typeof FREE & { recommended?: boolean; href:
     }}>
       {plan.recommended && (
         <div className="mono" style={{ position: "absolute", top: 18, right: 24, fontSize: 10.5, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--accent)", fontWeight: 500 }}>
-          Recommandé
+          {t('recommended')}
         </div>
       )}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div className="mono" style={{ fontSize: 12, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--ink-500)", fontWeight: 500 }}>{plan.name}</div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-          <span style={{ fontSize: 52, fontWeight: 500, letterSpacing: "-.035em", lineHeight: 1, color: "var(--ink)", fontFeatureSettings: "'tnum'" }}>{plan.price}</span>
-          <span style={{ fontSize: 22, color: "var(--ink)", fontWeight: 500 }}>
-            €<span style={{ color: "var(--ink-500)", fontSize: 16, fontWeight: 400 }}>/mois</span>
-          </span>
+          <span style={{ fontSize: 52, fontWeight: 500, letterSpacing: "-.035em", lineHeight: 1, color: "var(--ink)", fontFeatureSettings: "'tnum'" }}>{format.number(plan.price, {style: 'currency', currency: 'EUR'})}</span>
+          <span style={{ color: "var(--ink-500)", fontSize: 16, fontWeight: 400 }}>{t('perMonth')}</span>
         </div>
         <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--ink-700)", maxWidth: "36ch" }}>{plan.desc}</p>
       </div>
 
-      <Link href={plan.href} className={`btn ${plan.ctaStyle}`} style={{ width: "100%", padding: "14px 20px", justifyContent: "center" }}>{plan.cta}</Link>
+      <Link href={{pathname: plan.href, query: plan.query}} className={`btn ${plan.ctaStyle}`} style={{ width: "100%", padding: "14px 20px", justifyContent: "center" }}>{plan.cta}</Link>
 
       <div style={{ height: 1, background: "var(--ink-200)" }} />
 
@@ -55,28 +57,38 @@ function PlanCard({ plan }: { plan: typeof FREE & { recommended?: boolean; href:
 }
 
 export default function Pricing() {
+  const t = useTranslations('landing.pricing')
+  const free: Plan = {
+    name: t('free.name'), price: 0, desc: t('free.description'), cta: t('free.cta'), ctaStyle: 'btn-outline', href: '/register',
+    features: (['generations', 'tools', 'imports', 'spacing', 'socrate', 'planning'] as const).map((key) => t(`free.features.${key}`)),
+  }
+  const pro: Plan = {
+    name: t('pro.name'), price: 4.99, desc: t('pro.description'), cta: t('pro.cta'), ctaStyle: 'btn-primary', href: '/register', query: {plan: 'pro'}, recommended: true,
+    features: (['free', 'generations', 'youtube', 'gaps', 'annales', 'planning', 'socrate'] as const).map((key) => t(`pro.features.${key}`)),
+  }
+
   return (
     <section className="sec" id="tarifs">
       <div className="container">
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 56, maxWidth: 760 }}>
           <div className="eyebrow">
             <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>Tarifs</span>
+            <span>{t('eyebrow')}</span>
           </div>
           <h2 className="section-h">
-            Gratuit pour commencer.<br />
-            <span className="dim">Pas cher pour aller au bout.</span>
+            {t('title')}<br />
+            <span className="dim">{t('titleAccent')}</span>
           </h2>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "stretch" }} className="plans-grid-responsive">
-          <PlanCard plan={FREE} />
-          <PlanCard plan={PRO} />
+          <PlanCard plan={free} />
+          <PlanCard plan={pro} />
         </div>
 
         <div style={{ marginTop: 32, textAlign: "center", fontSize: 13.5, lineHeight: 1.6, color: "var(--ink-500)" }}>
-          Une génération correspond à la création d&apos;un support ou d&apos;une analyse par IA.<br />
-          Réviser des flashcards déjà créées ne consomme pas de génération. Annulable à tout moment, sans engagement.
+          {t('generationNote')}<br />
+          {t('usageNote')}
         </div>
       </div>
 
