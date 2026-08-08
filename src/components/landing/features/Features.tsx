@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
+import Link from "next/link";
 import AnimFlashcards from "./AnimFlashcards";
 import AnimSocrate from "./AnimSocrate";
 import AnimFiches from "./AnimFiches";
@@ -90,9 +91,9 @@ export default function Features() {
         </div>
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
-          <a href="/blog" className="btn btn-outline">
-            Voir toutes les fonctionnalités en détail <ArrowRight size={14} />
-          </a>
+          <Link href="/blog" className="btn btn-outline">
+            Lire les guides de révision <ArrowRight size={14} />
+          </Link>
         </div>
       </div>
 

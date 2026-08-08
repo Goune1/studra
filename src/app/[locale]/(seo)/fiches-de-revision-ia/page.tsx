@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Générateur de fiches de révision IA | Studra',
+  title: 'Générateur de fiches de révision IA',
   description:
     'Crée des fiches de révision structurées en quelques secondes depuis n\'importe quel cours. Titres, définitions, points clés générés par IA.',
   alternates: {

@@ -13,7 +13,7 @@ export const metadata = {
   title: "Conditions Générales d'Utilisation",
   description: "Consultez les Conditions Générales d'Utilisation de Studra, la plateforme de révision intelligente propulsée par l'IA.",
   alternates: { canonical: 'https://studra.fr/cgu' },
-  robots: { index: true, follow: false },
+  robots: { index: true, follow: true },
 }
 
 const sections = [

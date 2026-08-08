@@ -89,7 +89,7 @@ export default function MockupWindow() {
               <span key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: "#E4E4E7", display: "inline-block" }} />
             ))}
           </div>
-          <div style={{ justifySelf: "center", background: "rgba(0,0,0,.04)", padding: "3px 10px", borderRadius: 6, fontSize: 11, color: "var(--ink-500)", display: "inline-flex", alignItems: "center", gap: 6, maxWidth: 200 }} className="mono">
+          <div style={{ justifySelf: "center", background: "rgba(0,0,0,.04)", padding: "3px 10px", borderRadius: 6, fontSize: 11, color: "var(--ink-700)", display: "inline-flex", alignItems: "center", gap: 6, maxWidth: 200 }} className="mono">
             <span style={{ fontSize: 9, opacity: 0.55 }}>⌁</span>
             <span>studra.fr/app</span>
           </div>
@@ -112,7 +112,7 @@ export default function MockupWindow() {
             style={{ background: "#FAFAF9", borderRight: "1px solid rgba(0,0,0,.05)", padding: "14px 10px", display: "flex", flexDirection: "column", gap: 10 }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 6px", fontSize: 13 }}>
-              <Image src="/studra-logo.png" alt="" width={18} height={18} unoptimized />
+              <Image src="/studra-logo.png" alt="" width={18} height={18} />
               <span style={{ fontWeight: 600, letterSpacing: "-.02em" }}>Studra</span>
             </div>
             <div className="mono" style={{ fontSize: 9.5, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", padding: "8px 6px 2px" }}>Espace</div>

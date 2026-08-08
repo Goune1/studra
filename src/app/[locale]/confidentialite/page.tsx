@@ -13,7 +13,7 @@ export const metadata = {
   title: 'Politique de confidentialité',
   description: "Politique de confidentialité de Studra : données collectées, finalités, droits RGPD, sous-traitants et durées de conservation.",
   alternates: { canonical: 'https://studra.fr/confidentialite' },
-  robots: { index: true, follow: false },
+  robots: { index: true, follow: true },
 }
 
 const sections = [

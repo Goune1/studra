@@ -78,7 +78,7 @@ export default function SceneReview({ active }: Props) {
           }}>
             <div className="mono" style={{ fontSize: 9, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--accent)" }}>Réponse</div>
             <div style={{ fontSize: 14, lineHeight: 1.35, color: "var(--ink)", flex: 1 }}>
-              <strong style={{ fontWeight: 600 }}>14 juillet 1789.</strong> Prise par les insurgés parisiens, symbole de la fin de l'absolutisme.
+              <strong style={{ fontWeight: 600 }}>14 juillet 1789.</strong> Prise par les insurgés parisiens, symbole de la fin de l&apos;absolutisme.
             </div>
             <div className="mono" style={{ fontSize: 9, color: "var(--ink-400)", letterSpacing: ".1em" }}>Évalue ta réponse ↓</div>
           </div>

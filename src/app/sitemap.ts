@@ -48,6 +48,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.7,
     },
+    {
+      url: `${BASE_URL}/changelog`,
+      lastModified: '2026-08-06',
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
     ...blogEntries,
     {
       url: `${BASE_URL}/cgu`,

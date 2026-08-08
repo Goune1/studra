@@ -1,9 +1,14 @@
 import type {Locale} from 'next-intl'
 import { getAdminSupabase, verifyUnsubscribeToken } from '@/lib/email-marketing'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { setRequestLocale } from 'next-intl/server'
 
-export const metadata = { title: 'Désinscription — Studra' }
+export const metadata: Metadata = {
+  title: 'Désinscription',
+  robots: { index: false, follow: false },
+  alternates: { canonical: null },
+}
 
 type SearchParams = {
   params: Promise<{ locale: string }>

@@ -4,16 +4,16 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Répétition espacée IA — FSRS 5 | Studra',
+  title: 'Répétition espacée avec FSRS',
   description:
-    'Studra utilise l\'algorithme FSRS 5 pour planifier tes révisions au moment optimal. Mémorise durablement sans effort inutile. Gratuit, sans installation.',
+    'Studra utilise FSRS pour estimer le prochain intervalle de révision à partir de tes réponses. Intervalles visibles, quatre choix et accès gratuit.',
   alternates: {
     canonical: 'https://studra.fr/repetition-espacee',
   },
   openGraph: {
-    title: 'Répétition espacée IA — FSRS 5 | Studra',
+    title: 'Répétition espacée avec FSRS | Studra',
     description:
-      'Studra utilise l\'algorithme FSRS 5 pour planifier tes révisions au moment optimal. Mémorise durablement sans effort inutile. Gratuit, sans installation.',
+      'Studra utilise FSRS pour estimer le prochain intervalle de révision à partir de tes réponses. Intervalles visibles et quatre choix.',
     url: 'https://studra.fr/repetition-espacee',
     siteName: 'Studra',
     locale: 'fr_FR',
@@ -21,24 +21,24 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Répétition espacée gratuite avec IA | Studra',
+    title: 'Répétition espacée gratuite avec FSRS | Studra',
     description:
-      'Studra utilise l\'algorithme FSRS 5 pour planifier tes révisions au moment optimal. Mémorise durablement.',
+      'Studra estime le prochain intervalle de révision à partir de tes réponses et te laisse choisir entre quatre évaluations.',
   },
 }
 
 const faqItems = [
   {
     q: "Qu'est-ce que la répétition espacée ?",
-    a: "La répétition espacée consiste à revoir une information à intervalles croissants, calculés pour coïncider avec le moment où tu vas l'oublier. Chaque révision réussie renforce la trace mémorielle et allonge l'intervalle suivant, construisant une mémoire durable avec un minimum de temps.",
+    a: "La répétition espacée consiste à revoir une information à des intervalles adaptés à tes réponses précédentes. Une réponse réussie tend à allonger l'intervalle ; un oubli rapproche la prochaine révision.",
   },
   {
-    q: "Quelle est la différence entre FSRS 5 et SM-2 (Anki) ?",
-    a: "SM-2 utilise un facteur de facilité global pour chaque carte. FSRS 5 modélise deux paramètres individuels par carte : la stabilité (durée estimée avant oubli) et la difficulté intrinsèque. FSRS est optimisé sur des millions de révisions réelles et réduit le nombre de révisions nécessaires de 15 à 20 % par rapport à SM-2.",
+    q: "Quelle est la différence entre FSRS et SM-2 ?",
+    a: "SM-2 est un algorithme historique fondé sur des heuristiques et un facteur de facilité. FSRS modélise notamment la stabilité et la difficulté de chaque carte. Anki prend aujourd'hui lui aussi en charge FSRS ; Studra l'intègre directement dans son parcours de révision.",
   },
   {
     q: "Combien de temps par jour faut-il réviser avec la répétition espacée ?",
-    a: "15 à 30 minutes de révision quotidienne avec FSRS 5 sont plus efficaces qu'une session de 3 heures le week-end. La régularité est la clé : l'algorithme planifie les cartes pour que tu ne te souviennes de rien 24h à 48h avant de l'oublier.",
+    a: "Cela dépend du nombre de cartes et de leur difficulté. L'objectif est de traiter régulièrement les cartes arrivées à échéance plutôt que d'imposer une durée quotidienne identique à tout le monde.",
   },
   {
     q: "La répétition espacée fonctionne-t-elle pour toutes les matières ?",
@@ -46,7 +46,7 @@ const faqItems = [
   },
   {
     q: "Studra est-il vraiment gratuit pour la répétition espacée ?",
-    a: "Oui. Le plan gratuit inclut l'accès complet à l'algorithme FSRS 5 avec 5 générations par mois (flashcards + répétition espacée). Le plan Pro débloque les générations illimitées et le planning de révision personnalisé.",
+    a: "Oui. Le plan gratuit inclut 5 générations IA par mois. Une fois les flashcards créées, leurs révisions avec FSRS ne consomment pas de génération supplémentaire. Le plan Pro débloque les générations IA illimitées.",
   },
 ]
 
@@ -98,11 +98,11 @@ export default async function RepetitionEspaceePage({params}: {params: Promise<{
           </nav>
           <span className="font-mono text-xs text-accent uppercase tracking-[0.18em]">Science de la mémoire</span>
           <h1 className="font-serif text-[clamp(40px,6vw,72px)] leading-[1.02] tracking-[-0.03em] mt-3.5 mb-6 max-w-[16ch]">
-            La répétition espacée scientifiquement prouvée pour mémoriser plus
+            La répétition espacée, sans boîte noire
           </h1>
           <p className="text-[18px] text-fg-dim max-w-[58ch] leading-[1.6] mb-10">
-            Studra utilise l&apos;algorithme FSRS 5 pour planifier chaque révision au moment exact où tu vas
-            oublier. Mémorisation longue durée, sans bachotage de dernière minute.
+            Studra utilise FSRS pour estimer quand revoir chaque carte. Avant de répondre, tu vois les intervalles
+            proposés et tu gardes le choix : Encore, Difficile, Bien ou Facile.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href="/register" className="btn btn-primary">
@@ -124,19 +124,19 @@ export default async function RepetitionEspaceePage({params}: {params: Promise<{
             </h2>
             <p className="text-fg-dim text-[16px] leading-[1.65] mb-5">
               En 1885, le psychologue Hermann Ebbinghaus a établi le premier modèle mathématique de l&apos;oubli.
-              Sa conclusion : sans révision, on oublie{' '}
-              <strong className="text-fg">environ 50 % d&apos;une information nouvelle en 1 heure</strong>, 70 %
-              en 24 heures, et 90 % en une semaine.
+              Ses expériences montrent surtout une tendance :{' '}
+              <strong className="text-fg">le rappel diminue avec le temps lorsqu&apos;une information n&apos;est pas revue</strong>.
+              La vitesse réelle varie selon le contenu, la personne et les conditions d&apos;apprentissage.
             </p>
             <p className="text-fg-dim text-[16px] leading-[1.65] mb-5">
-              La bonne nouvelle : chaque révision juste avant l&apos;oubli interrompt cette courbe. La trace
-              mémorielle est renforcée et la nouvelle courbe d&apos;oubli est plus lente. Après 5 à 6 révisions
-              espacées, l&apos;information est en mémoire à long terme.
+              La répétition espacée organise les rappels à des intervalles variables. Une réponse réussie permet
+              généralement d&apos;espacer davantage la carte ; un oubli la fait revenir plus tôt. Il n&apos;existe pas
+              de courbe universelle ni de nombre magique de révisions.
             </p>
             <p className="text-fg-dim text-[16px] leading-[1.65]">
-              L&apos;enjeu algorithmique est de prédire{' '}
-              <strong className="text-fg">exactement quand tu vas oublier</strong> chaque élément — et de
-              planifier la révision à ce moment précis. C&apos;est ce que fait FSRS 5, carte par carte.
+              FSRS ne lit pas ta mémoire. Il{' '}
+              <strong className="text-fg">estime un prochain intervalle</strong> à partir de l&apos;historique de la
+              carte et de l&apos;évaluation que tu choisis après chaque réponse.
             </p>
           </div>
           {/* Courbe visuelle simplifiée */}
@@ -145,43 +145,41 @@ export default async function RepetitionEspaceePage({params}: {params: Promise<{
               Effet des révisions sur la rétention
             </h3>
             {[
-              { label: 'Sans révision (J+7)', pct: 10, color: 'bg-[#ef4444]' },
-              { label: 'Après 1 révision (J+7)', pct: 40, color: 'bg-amber' },
-              { label: 'Après 3 révisions espacées', pct: 72, color: 'bg-[rgba(99,102,241,0.7)]' },
-              { label: 'Après 6 révisions FSRS', pct: 92, color: 'bg-gradient-to-r from-accent to-accent-2' },
+              { label: 'Carte nouvelle', detail: 'Révision rapprochée', width: '24%', color: 'bg-[#ef4444]' },
+              { label: 'Réponse « Difficile »', detail: 'Intervalle prudent', width: '42%', color: 'bg-amber' },
+              { label: 'Réponse « Bien »', detail: 'Intervalle allongé', width: '68%', color: 'bg-[rgba(99,102,241,0.7)]' },
+              { label: 'Réponse « Facile »', detail: 'Intervalle plus long', width: '88%', color: 'bg-gradient-to-r from-accent to-accent-2' },
             ].map((row) => (
               <div key={row.label} className="mb-5 last:mb-0">
                 <div className="flex justify-between items-center mb-1.5 text-[13px]">
                   <span className="text-fg-dim">{row.label}</span>
-                  <span className="font-mono text-fg-mute">{row.pct} %</span>
+                  <span className="font-mono text-fg-mute">{row.detail}</span>
                 </div>
                 <div className="h-2 rounded-full bg-white/[0.05] overflow-hidden">
-                  <div className={`h-full rounded-full ${row.color}`} style={{ width: `${row.pct}%` }} />
+                  <div className={`h-full rounded-full ${row.color}`} style={{ width: row.width }} />
                 </div>
               </div>
             ))}
-            <p className="text-fg-mute text-[11px] mt-6">Valeurs indicatives basées sur les modèles Ebbinghaus / FSRS</p>
+            <p className="text-fg-mute text-[11px] mt-6">Illustration conceptuelle : les intervalles réels dépendent de chaque carte.</p>
           </div>
         </div>
       </section>
 
-      {/* FSRS 5 */}
+      {/* FSRS */}
       <section className="py-20 px-7 border-b border-line">
         <div className="max-w-[1240px] mx-auto">
           <h2 className="font-serif text-[clamp(28px,4vw,44px)] tracking-[-0.02em] mb-5">
-            FSRS 5 : l&apos;algorithme le plus précis disponible aujourd&apos;hui
+            Comment FSRS choisit le prochain intervalle
           </h2>
           <div className="grid md:grid-cols-2 gap-12">
             <div>
               <p className="text-fg-dim text-[16px] leading-[1.65] mb-5">
-                SM-2, l&apos;algorithme historique d&apos;Anki, utilise un facteur de facilité global pour chaque
-                carte. Ce système produit un phénomène connu sous le nom d&apos;
-                <em className="text-fg">ease hell</em> : les cartes difficiles obtiennent des intervalles de
-                plus en plus courts, indépendamment de ta vraie progression.
+                SM-2 est un algorithme historique qui repose sur des heuristiques et un facteur de facilité.
+                FSRS utilise un modèle différent fondé sur l&apos;historique de chaque carte. Anki prend désormais
+                lui aussi en charge FSRS : ce n&apos;est donc pas une exclusivité Studra.
               </p>
               <p className="text-fg-dim text-[16px] leading-[1.65] mb-5">
-                FSRS (Free Spaced Repetition Scheduler) résout ce problème en modélisant deux variables
-                indépendantes pour chaque carte :
+                FSRS (Free Spaced Repetition Scheduler) modélise notamment deux variables pour chaque carte :
               </p>
               <ul className="space-y-3 mb-5">
                 <li className="flex items-start gap-3 text-fg-dim text-[15px]">
@@ -200,18 +198,17 @@ export default async function RepetitionEspaceePage({params}: {params: Promise<{
                 </li>
               </ul>
               <p className="text-fg-dim text-[16px] leading-[1.65]">
-                FSRS 5 a été optimisé sur des millions de révisions réelles d&apos;utilisateurs Anki. Les études
-                comparatives montrent une réduction de 15 à 20 % du nombre de révisions nécessaires pour maintenir
-                un taux de rétention de 90 %.
+                Dans Studra, les quatre boutons affichent le prochain intervalle avant ton choix. Ton évaluation
+                met ensuite à jour l&apos;état de la carte et sa prochaine date de révision.
               </p>
             </div>
             <div className="space-y-4">
               {[
-                { label: 'Version utilisée par Studra', val: 'FSRS 5 (dernière version)' },
+                { label: 'Implémentation', val: 'Bibliothèque open source ts-fsrs' },
                 { label: 'Paramètres par carte', val: '2 (stabilité S + difficulté D)' },
                 { label: 'Niveaux d\'évaluation', val: '4 (Encore / Difficile / Bien / Facile)' },
                 { label: 'Taux de rétention cible', val: '90 % par défaut' },
-                { label: 'vs SM-2', val: '−15 à −20 % de révisions à rétention égale' },
+                { label: 'Avant chaque choix', val: 'Aperçu du prochain intervalle' },
                 { label: 'Open source', val: 'Oui (github.com/open-spaced-repetition)' },
               ].map((row) => (
                 <div
@@ -240,20 +237,18 @@ export default async function RepetitionEspaceePage({params}: {params: Promise<{
           <div className="grid md:grid-cols-2 gap-5">
             <div className="bg-gradient-to-b from-surface to-bg-2 border border-line rounded-[20px] p-7">
               <span className="font-mono text-[11px] text-accent tracking-[0.15em] uppercase">Problème traditionnel</span>
-              <h3 className="font-serif text-[22px] tracking-[-0.015em] mt-3 mb-3">Créer les cartes prend des heures</h3>
+              <h3 className="font-serif text-[22px] tracking-[-0.015em] mt-3 mb-3">Créer les cartes demande un tri manuel</h3>
               <p className="text-fg-dim text-sm leading-[1.6]">
-                Avec Anki, créer 50 flashcards depuis un cours de 20 pages prend 2 à 3 heures. Ce temps de
-                création est du temps que tu ne passes pas à réviser. Et la qualité des cartes dépend entièrement
-                de ta capacité à identifier les bons concepts.
+                Avec un outil de flashcards classique, tu dois identifier les concepts, formuler chaque question
+                et saisir les réponses. Ce contrôle est utile, mais il peut ralentir le passage du cours à la pratique.
               </p>
             </div>
             <div className="bg-gradient-to-b from-[#15152e] to-[#0e0e1c] border border-[rgba(99,102,241,0.4)] rounded-[20px] p-7 shadow-[0_20px_60px_-20px_rgba(99,102,241,0.4)]">
               <span className="font-mono text-[11px] text-accent tracking-[0.15em] uppercase">Solution Studra</span>
-              <h3 className="font-serif text-[22px] tracking-[-0.015em] mt-3 mb-3">IA + FSRS 5 en 30 secondes</h3>
+              <h3 className="font-serif text-[22px] tracking-[-0.015em] mt-3 mb-3">Génération assistée + FSRS intégré</h3>
               <p className="text-fg-dim text-sm leading-[1.6]">
-                Studra génère les flashcards depuis ton cours en 10 à 30 secondes, avec FSRS 5 déjà configuré.
-                Tu n&apos;as plus qu&apos;à réviser. L&apos;algorithme planifie automatiquement chaque carte selon
-                son état dans ta mémoire. Pas de gestion manuelle.
+                Studra transforme ton cours en flashcards puis initialise leur planification FSRS. Pendant la
+                révision, chaque choix met à jour l&apos;intervalle de la carte ; tu vois ce délai avant de valider.
               </p>
             </div>
           </div>

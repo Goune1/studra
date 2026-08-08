@@ -4,7 +4,7 @@ import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 
 export const metadata = {
-  title: 'Changelog — Studra',
+  title: 'Changelog',
   description: 'Historique des mises à jour et nouvelles fonctionnalités de Studra.',
   alternates: { canonical: 'https://studra.fr/changelog' },
 }

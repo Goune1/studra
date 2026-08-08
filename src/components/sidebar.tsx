@@ -141,7 +141,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
       {/* Logo */}
       <div className="h-16 px-6 flex items-center justify-between border-b" style={{ borderColor: 'var(--border-sub)' }}>
         <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
-          <Image src="/studra-logo.png" alt="Studra" width={40} height={40} unoptimized />
+          <Image src="/studra-logo.png" alt="Studra" width={40} height={40} />
           <span style={{ color: 'var(--text-1)' }}>Studra</span>
         </Link>
         {/* Close button — mobile only */}

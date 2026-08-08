@@ -9,10 +9,12 @@ export type ContentBlock =
 export interface BlogPost {
   slug: string
   title: string
+  seoTitle?: string
   description: string
   publishedAt: string
   readingTime: string
   category: string
+  sources: { label: string; url: string }[]
   content: ContentBlock[]
   faq: { q: string; a: string }[]
 }
@@ -20,12 +22,17 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     slug: 'studra-vs-anki-vs-quizlet-comparatif',
-    title: 'Studra vs Anki vs Quizlet : comparatif complet 2025',
+    title: 'Studra vs Anki vs Quizlet : comparatif complet 2026',
+    seoTitle: 'Studra vs Anki vs Quizlet : comparatif 2026',
     description:
-      "Anki, Quizlet ou Studra ? On compare les trois outils de révision par flashcards sur la génération automatique, l'algorithme de répétition espacée, l'IA intégrée et le prix.",
+      "Studra, Anki ou Quizlet ? Compare génération IA, répétition espacée, import PDF, fonctionnalités et prix pour choisir ton outil de révision.",
     publishedAt: '2026-04-10',
     readingTime: '7 min',
     category: 'Comparatifs',
+    sources: [
+      { label: 'Dunlosky et al. (2013) — techniques d’apprentissage efficaces', url: 'https://doi.org/10.1177/1529100612453266' },
+      { label: 'Documentation Anki — FSRS', url: 'https://docs.ankiweb.net/deck-options.html#fsrs' },
+    ],
     content: [
       {
         type: 'p',
@@ -124,11 +131,16 @@ export const blogPosts: BlogPost[] = [
   {
     slug: 'comment-creer-flashcards-pdf',
     title: "Comment créer des flashcards depuis un PDF (méthode rapide avec l'IA)",
+    seoTitle: "Créer des flashcards depuis un PDF avec l'IA",
     description:
-      "Transformer un cours PDF en flashcards prend des heures manuellement. Découvre comment l'IA permet de générer des cartes question/réponse de qualité en quelques secondes.",
+      "Transforme un cours PDF en flashcards avec l'IA en quelques secondes, puis révise-les avec la répétition espacée FSRS 5.",
     publishedAt: '2026-04-12',
     readingTime: '5 min',
     category: 'Tutoriels',
+    sources: [
+      { label: 'Karpicke & Roediger (2008) — pratique de récupération', url: 'https://doi.org/10.1126/science.1152408' },
+      { label: 'Dunlosky et al. (2013) — techniques d’apprentissage efficaces', url: 'https://doi.org/10.1177/1529100612453266' },
+    ],
     content: [
       {
         type: 'p',
@@ -235,11 +247,16 @@ export const blogPosts: BlogPost[] = [
   {
     slug: 'fsrs-vs-sm2-algorithme-repetition-espacee',
     title: 'FSRS 5 vs SM-2 : quel algorithme de répétition espacée est le plus efficace ?',
+    seoTitle: 'FSRS 5 vs SM-2 : quel algorithme choisir ?',
     description:
-      "SM-2 est l'algorithme historique d'Anki. FSRS 5 est son successeur open-source. On compare les deux sur la précision, la personnalisation et les résultats expérimentaux.",
+      'FSRS 5 et SM-2 comparés sur la précision, la personnalisation et le nombre de révisions nécessaires pour mémoriser durablement.',
     publishedAt: '2026-04-15',
     readingTime: '8 min',
     category: 'Science de la mémoire',
+    sources: [
+      { label: 'Documentation Anki — FSRS', url: 'https://docs.ankiweb.net/deck-options.html#fsrs' },
+      { label: 'Projet open source FSRS', url: 'https://github.com/open-spaced-repetition/fsrs4anki/wiki' },
+    ],
     content: [
       {
         type: 'p',
@@ -344,12 +361,17 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: 'comment-reviser-efficacement-ia',
-    title: "Comment réviser efficacement avec l'IA en 2025",
+    title: "Comment réviser efficacement avec l'IA en 2026",
+    seoTitle: "Comment réviser efficacement avec l'IA en 2026",
     description:
-      'La révision passive (surligner, relire) ne fonctionne pas. Découvre comment combiner les techniques actives éprouvées avec les outils IA pour mémoriser 3x plus vite.',
+      'Combine rappel actif, répétition espacée et outils IA pour réviser efficacement sans perdre des heures à relire tes cours.',
     publishedAt: '2026-04-18',
     readingTime: '6 min',
     category: 'Méthodes de révision',
+    sources: [
+      { label: 'Dunlosky et al. (2013) — techniques d’apprentissage efficaces', url: 'https://doi.org/10.1177/1529100612453266' },
+      { label: 'Karpicke & Roediger (2008) — pratique de récupération', url: 'https://doi.org/10.1126/science.1152408' },
+    ],
     content: [
       {
         type: 'p',
@@ -460,11 +482,16 @@ export const blogPosts: BlogPost[] = [
   {
     slug: 'methode-repetition-espacee-guide',
     title: 'Guide complet de la répétition espacée pour étudiants',
+    seoTitle: 'Répétition espacée : guide complet étudiant',
     description:
-      "La répétition espacée est la technique de mémorisation la plus efficace validée par la science. Ce guide explique le principe, la courbe de l'oubli, les algorithmes et comment commencer.",
+      "Comprends la répétition espacée, la courbe de l'oubli et les algorithmes comme FSRS pour construire une mémoire durable.",
     publishedAt: '2026-04-20',
     readingTime: '9 min',
     category: 'Science de la mémoire',
+    sources: [
+      { label: 'Cepeda et al. (2008) — effets de l’espacement', url: 'https://doi.org/10.1111/j.1467-9280.2008.02209.x' },
+      { label: 'Dunlosky et al. (2013) — techniques d’apprentissage efficaces', url: 'https://doi.org/10.1177/1529100612453266' },
+    ],
     content: [
       {
         type: 'p',

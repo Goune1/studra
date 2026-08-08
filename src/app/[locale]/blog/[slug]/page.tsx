@@ -19,23 +19,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return {}
 
   return {
-    title: post.title,
+    title: post.seoTitle ?? post.title,
     description: post.description,
     alternates: {
       canonical: `https://studra.fr/blog/${post.slug}`,
     },
     openGraph: {
-      title: post.title,
+      title: post.seoTitle ?? post.title,
       description: post.description,
       url: `https://studra.fr/blog/${post.slug}`,
       siteName: 'Studra',
       locale: 'fr_FR',
       type: 'article',
       publishedTime: post.publishedAt,
+      images: [`https://studra.fr/blog/${post.slug}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
+      title: post.seoTitle ?? post.title,
       description: post.description,
       images: [`https://studra.fr/blog/${post.slug}/opengraph-image`],
     },
@@ -140,7 +141,12 @@ export default async function BlogPostPage({ params }: Props) {
     image: `https://studra.fr/blog/${post.slug}/opengraph-image`,
     inLanguage: 'fr',
     author: { '@type': 'Organization', name: 'Studra' },
-    publisher: { '@type': 'Organization', name: 'Studra', url: 'https://studra.fr' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Studra',
+      url: 'https://studra.fr',
+      logo: { '@type': 'ImageObject', url: 'https://studra.fr/studra-logo.png' },
+    },
     url: `https://studra.fr/blog/${post.slug}`,
   }
 
@@ -189,6 +195,21 @@ export default async function BlogPostPage({ params }: Props) {
         <article className="py-16 px-7">
           <div className="max-w-[760px] mx-auto">
             {post.content.map((block, i) => renderBlock(block, i))}
+
+            <aside className="mt-12 rounded-xl border border-line bg-white p-6" aria-labelledby="sources-title">
+              <h2 id="sources-title" className="font-serif text-[22px] tracking-[-0.02em] mb-4">
+                Sources et références
+              </h2>
+              <ul className="space-y-2 text-[14px] leading-[1.6] text-fg-dim">
+                {post.sources.map((source) => (
+                  <li key={source.url}>
+                    <a className="text-accent underline underline-offset-4" href={source.url} target="_blank" rel="noopener noreferrer">
+                      {source.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </aside>
 
             {/* FAQ */}
             <div className="mt-14 pt-10 border-t border-line">

@@ -1,9 +1,15 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { DashboardShell } from '@/components/dashboard-shell'
 import type { Locale } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+  alternates: { canonical: null },
+}
 
 export default async function DashboardLayout({
   children,

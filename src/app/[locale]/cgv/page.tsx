@@ -14,7 +14,7 @@ export const metadata = {
   title: 'Conditions Générales de Vente',
   description: "Consultez les Conditions Générales de Vente de Studra : tarifs, abonnements, remboursements et politique de facturation.",
   alternates: { canonical: 'https://studra.fr/cgv' },
-  robots: { index: true, follow: false },
+  robots: { index: true, follow: true },
 }
 
 const sections = [

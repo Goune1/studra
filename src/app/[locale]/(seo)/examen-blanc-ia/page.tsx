@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Génère un examen blanc depuis ton cours en un clic | Studra',
+  title: 'Examen blanc IA généré depuis ton cours',
   description:
     '7 QCM et 3 questions ouvertes générés par IA depuis ton cours, corrigés avec feedback détaillé. Entraîne-toi dans les conditions réelles de l\'épreuve.',
   alternates: {

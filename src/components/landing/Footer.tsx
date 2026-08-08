@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const COLS = [
   { brand: true },
@@ -40,10 +41,10 @@ function Footer() {
             <div key={i} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {"brand" in col ? (
                 <>
-                  <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", marginBottom: 12 }}>
-                    <Image src="/studra-logo.png" alt="Studra" width={40} height={40} unoptimized />
+                  <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", marginBottom: 12 }}>
+                    <Image src="/studra-logo.png" alt="Studra" width={40} height={40} />
                     <span>Studra</span>
-                  </a>
+                  </Link>
                   <p style={{ margin: 0, fontSize: 14.5, color: "var(--ink-500)", lineHeight: 1.5, maxWidth: "32ch" }}>
                     Réviser sans y passer ses nuits.
                   </p>

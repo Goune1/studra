@@ -21,6 +21,14 @@ export const metadata: Metadata = {
     siteName: 'Studra',
     locale: 'fr_FR',
     type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Blog Studra — méthodes de révision et science de la mémoire',
+      },
+    ],
   },
 }
 
