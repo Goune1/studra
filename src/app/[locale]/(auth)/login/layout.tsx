@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import type { Locale } from 'next-intl'
-import { setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'Connexion',
-  description: 'Connectez-vous à votre compte Studra pour accéder à vos supports de révision générés par IA.',
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  const t = await getTranslations({locale: locale as Locale, namespace: 'auth.login.metadata'})
+
+  return {title: t('title'), description: t('description')}
 }
 
 export default async function LoginLayout({ children, params }: {

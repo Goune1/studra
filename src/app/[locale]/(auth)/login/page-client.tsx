@@ -1,13 +1,16 @@
 'use client'
 
 import { Suspense, useState } from 'react'
-import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Link, useRouter } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { trackLogin } from '@/lib/analytics'
 
 function LoginForm() {
+  const t = useTranslations('auth.login')
+  const common = useTranslations('auth.common')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,7 +28,7 @@ function LoginForm() {
         window.location.href = data.url
         return
       }
-      toast.error(data.error ?? 'Erreur lors du checkout')
+      toast.error(data.error ?? common('checkoutError'))
     }
     router.push('/dashboard')
     router.refresh()
@@ -70,10 +73,10 @@ function LoginForm() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-white">
-            Studra
+            {common('brand')}
           </Link>
-          <h1 className="text-2xl font-bold mt-6 mb-2">Connexion</h1>
-          <p className="text-gray-400">Bon retour parmi nous !</p>
+          <h1 className="text-2xl font-bold mt-6 mb-2">{t('title')}</h1>
+          <p className="text-gray-400">{t('subtitle')}</p>
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
@@ -89,36 +92,36 @@ function LoginForm() {
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
               <path fill="none" d="M0 0h48v48H0z"/>
             </svg>
-            {googleLoading ? 'Redirection...' : 'Continuer avec Google'}
+            {googleLoading ? common('googleRedirecting') : common('continueWithGoogle')}
           </button>
 
           <div className="flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs text-gray-500">ou</span>
+            <span className="text-xs text-gray-500">{common('or')}</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">{common('email')}</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
-                placeholder="votre@email.com"
+                placeholder={common('emailPlaceholder')}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Mot de passe</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">{common('password')}</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
-                placeholder="••••••••"
+                placeholder={t('passwordPlaceholder')}
               />
             </div>
             <button
@@ -126,15 +129,15 @@ function LoginForm() {
               disabled={loading}
               className="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-colors"
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loading ? t('submitting') : t('submit')}
             </button>
           </form>
         </div>
 
         <p className="text-center mt-6 text-gray-400">
-          Pas encore de compte ?{' '}
-          <Link href={isPro ? '/register?plan=pro' : '/register'} className="text-violet-400 hover:text-violet-300 transition-colors">
-            S&apos;inscrire
+          {t('noAccount')}{' '}
+          <Link href={{pathname: '/register', query: isPro ? {plan: 'pro'} : {}}} className="text-violet-400 hover:text-violet-300 transition-colors">
+            {t('register')}
           </Link>
         </p>
       </div>

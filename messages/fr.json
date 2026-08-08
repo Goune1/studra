@@ -359,8 +359,47 @@
     }
   },
   "auth": {
-    "login": {},
-    "register": {}
+    "common": {
+      "brand": "Studra",
+      "googleRedirecting": "Redirection...",
+      "continueWithGoogle": "Continuer avec Google",
+      "or": "ou",
+      "email": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "password": "Mot de passe",
+      "checkoutError": "Erreur lors du checkout"
+    },
+    "login": {
+      "metadata": {
+        "title": "Connexion",
+        "description": "Connectez-vous à votre compte Studra pour accéder à vos supports de révision générés par IA."
+      },
+      "title": "Connexion",
+      "subtitle": "Bon retour parmi nous !",
+      "passwordPlaceholder": "••••••••",
+      "submitting": "Connexion...",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "register": "S'inscrire"
+    },
+    "register": {
+      "metadata": {
+        "title": "Créer un compte",
+        "description": "Inscrivez-vous gratuitement sur Studra et commencez à générer des flashcards, fiches de révision et examens avec l'IA."
+      },
+      "title": "Créer un compte",
+      "subtitle": "Commencez à réviser intelligemment",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "passwordPlaceholder": "Minimum 6 caractères",
+      "submittingCheckout": "Création et redirection vers le paiement...",
+      "submitting": "Création...",
+      "submit": "Créer mon compte",
+      "hasAccount": "Déjà un compte ?",
+      "login": "Se connecter",
+      "createError": "Erreur lors de la création du compte",
+      "success": "Compte créé !"
+    }
   },
   "dashboard": {
     "home": {},
