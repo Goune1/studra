@@ -6,7 +6,6 @@ import { List, X } from "@phosphor-icons/react";
 import Image from "next/image";
 import {useTranslations} from 'next-intl'
 import {Link} from '@/i18n/navigation'
-import {LanguageSelector} from '@/components/LanguageSelector'
 
 export default function Nav() {
   const t = useTranslations('landing.nav')
@@ -114,7 +113,6 @@ export default function Nav() {
 
           {/* CTAs + burger */}
           <div style={{ display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
-            <LanguageSelector className="nav-cta-desktop" />
             {loggedIn ? (
               <Link href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{t('openApp')}</Link>
             ) : (
@@ -185,7 +183,6 @@ export default function Nav() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 0 24px" }}>
-              <LanguageSelector showLabel className="mb-2 justify-between" />
               {loggedIn ? (
                 <Link href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('openApp')}</Link>
               ) : (

@@ -46,7 +46,7 @@ test('invalid preferences fall back to French', () => {
   }), 'fr')
 })
 
-test('phase 3 persists locale and exposes selectors in header and settings', () => {
+test('phase 3 persists locale and exposes the selector only in settings', () => {
   const routing = read('src/i18n/routing.ts')
   const proxy = read('src/proxy.ts')
   const middleware = read('src/lib/supabase/middleware.ts')
@@ -71,7 +71,7 @@ test('phase 3 persists locale and exposes selectors in header and settings', () 
   assert.match(selector, /if \(!result\.ok\)/)
   assert.match(selector, /window\.location\.search/)
   assert.match(selector, /window\.location\.hash/)
-  assert.match(nav, /LanguageSelector/)
+  assert.doesNotMatch(nav, /LanguageSelector/)
   assert.match(settings, /LanguageSelector/)
   assert.match(migration, /preferred_locale text/)
   assert.match(migration, /'fr'.*'en'.*'es'.*'pt'.*'de'.*'it'/s)
