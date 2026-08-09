@@ -8,14 +8,22 @@ import { toast } from 'sonner'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackFlashcardsGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 import { useTranslations } from 'next-intl'
+import { PaywallBanner } from '@/components/paywall/PaywallBanner'
+import { PaywallModal } from '@/components/paywall/PaywallModal'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'schema', 'exam', 'timeline']
 
-export default function NewFlashcardsPage() {
+interface Props {
+  showPaywall: boolean
+  price: string | null
+}
+
+export default function NewFlashcardsPage({ showPaywall, price }: Props) {
   const t = useTranslations('flashcards.new')
   const [loading, setLoading] = useState(false)
   const [also, setAlso] = useState<Set<AlsoKey>>(new Set())
   const [results, setResults] = useState<GeneratedResource[] | null>(null)
+  const [paywallOpen, setPaywallOpen] = useState(false)
 
   function toggleAlso(key: AlsoKey) {
     setAlso((prev) => {
@@ -27,6 +35,10 @@ export default function NewFlashcardsPage() {
   }
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
+    if (showPaywall) {
+      setPaywallOpen(true)
+      return
+    }
     setLoading(true)
     trackFlashcardsGenerate(data.subject || data.title, 0)
     const startedAt = Date.now()
@@ -52,6 +64,7 @@ export default function NewFlashcardsPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {showPaywall && <PaywallBanner tool="flashcards" />}
       <div className="mb-8">
         <Eyebrow className="mb-2">{t('title')}</Eyebrow>
         <h1 className="section-h">{t('newDeck')}</h1>
@@ -67,6 +80,7 @@ export default function NewFlashcardsPage() {
           extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
         />
       </div>
+      {paywallOpen && <PaywallModal tool="flashcards" price={price} onClose={() => setPaywallOpen(false)} />}
     </div>
   )
 }

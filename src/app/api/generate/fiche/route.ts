@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
   if (profile.plan === 'free' && currentGenerations >= 5) {
     return NextResponse.json(
-      { error: 'Limite mensuelle atteinte. Passez en Pro pour des générations illimitées.' },
+      { error: 'Limite mensuelle atteinte. Passez en Pro pour des générations illimitées.', code: 'quota_exceeded' },
       { status: 403 }
     )
   }

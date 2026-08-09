@@ -1170,6 +1170,22 @@
       "checkoutError": "Erreur lors du checkout",
         "error": "Une erreur est survenue"
     },
+    "paywall": {
+      "banner": {
+        "text": "Tes 5 générations gratuites du mois sont épuisées.",
+        "cta": "Voir l'offre Pro"
+      },
+      "modal": {
+        "title": "Tes 5 générations gratuites sont utilisées",
+        "subtitle": "Passe Pro pour continuer à générer sans limite.",
+        "deleteNote": "Supprimer tes contenus ne restaure pas tes générations.",
+        "cancel": "Plus tard",
+        "cta": "Passer Pro",
+        "redirecting": "Redirection…",
+        "checkoutError": "Erreur lors du checkout",
+        "error": "Une erreur est survenue"
+      }
+    },
     "date": "{date, date, ::EEEE d MMMM}",
     "now": "MAINTENANT",
     "welcome": "Bienvenue, {name}.",

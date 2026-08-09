@@ -298,6 +298,14 @@ export function trackPaywallHit(tool: Tool, reason: string) {
   capture('paywall_hit', { tool, reason })
 }
 
+export function trackPaywallViewed(tool: Tool, source: 'banner' | 'modal') {
+  capture('paywall_viewed', { tool, source })
+}
+
+export function trackPaywallCtaClicked(tool: Tool, source: 'banner' | 'modal') {
+  capture('paywall_cta_clicked', { tool, source })
+}
+
 export function trackUpgradeClick(from: 'paywall' | 'settings' | 'navbar' | 'dashboard') {
   capture('upgrade_clicked', { from })
 }

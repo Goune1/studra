@@ -52,6 +52,19 @@ export async function createCheckoutSession(
   return session.url!
 }
 
+export async function getProPriceDisplay(): Promise<string> {
+  const stripe = getStripe()
+  const price = await stripe.prices.retrieve(process.env.STRIPE_PRICE_ID!)
+  const amount = (price.unit_amount ?? 0) / 100
+  const formatted = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: price.currency,
+    minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+  }).format(amount)
+  const interval = price.recurring?.interval === 'year' ? 'an' : 'mois'
+  return `${formatted}/${interval}`
+}
+
 export async function createPortalSession(
   customerId: string,
   locale: AppLocale,

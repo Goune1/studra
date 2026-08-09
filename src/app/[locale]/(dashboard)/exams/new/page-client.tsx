@@ -8,14 +8,22 @@ import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackExamGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
+import { PaywallBanner } from '@/components/paywall/PaywallBanner'
+import { PaywallModal } from '@/components/paywall/PaywallModal'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'schema', 'timeline']
 
-export default function NewExamPage() {
+interface Props {
+  showPaywall: boolean
+  price: string | null
+}
+
+export default function NewExamPage({ showPaywall, price }: Props) {
   const t = useTranslations('dashboard.exams')
   const [loading, setLoading] = useState(false)
   const [also, setAlso] = useState<Set<AlsoKey>>(new Set())
   const [results, setResults] = useState<GeneratedResource[] | null>(null)
+  const [paywallOpen, setPaywallOpen] = useState(false)
 
   function toggleAlso(key: AlsoKey) {
     setAlso((prev) => {
@@ -27,6 +35,10 @@ export default function NewExamPage() {
   }
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
+    if (showPaywall) {
+      setPaywallOpen(true)
+      return
+    }
     setLoading(true)
     trackExamGenerate(data.subject || data.title, 'moyen')
     const startedAt = Date.now()
@@ -72,6 +84,7 @@ export default function NewExamPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {showPaywall && <PaywallBanner tool="exam" />}
       <div className="mb-8">
         <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
         <h1 className="section-h">{t('newPage.title')}</h1>
@@ -87,6 +100,7 @@ export default function NewExamPage() {
           extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
         />
       </div>
+      {paywallOpen && <PaywallModal tool="exam" price={price} onClose={() => setPaywallOpen(false)} />}
     </div>
   )
 }

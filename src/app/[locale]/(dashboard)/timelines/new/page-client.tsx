@@ -8,14 +8,22 @@ import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackFriseGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
+import { PaywallBanner } from '@/components/paywall/PaywallBanner'
+import { PaywallModal } from '@/components/paywall/PaywallModal'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'schema', 'exam']
 
-export default function NewTimelinePage() {
+interface Props {
+  showPaywall: boolean
+  price: string | null
+}
+
+export default function NewTimelinePage({ showPaywall, price }: Props) {
   const t = useTranslations('dashboard.timelines')
   const [loading, setLoading] = useState(false)
   const [also, setAlso] = useState<Set<AlsoKey>>(new Set())
   const [results, setResults] = useState<GeneratedResource[] | null>(null)
+  const [paywallOpen, setPaywallOpen] = useState(false)
 
   function toggleAlso(key: AlsoKey) {
     setAlso((prev) => {
@@ -27,6 +35,10 @@ export default function NewTimelinePage() {
   }
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
+    if (showPaywall) {
+      setPaywallOpen(true)
+      return
+    }
     setLoading(true)
     trackFriseGenerate(data.subject || data.title, data.title)
     const startedAt = Date.now()
@@ -52,6 +64,7 @@ export default function NewTimelinePage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {showPaywall && <PaywallBanner tool="frises" />}
       <div className="mb-8">
         <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
         <h1 className="section-h">{t('newPage.title')}</h1>
@@ -67,6 +80,7 @@ export default function NewTimelinePage() {
           extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
         />
       </div>
+      {paywallOpen && <PaywallModal tool="frises" price={price} onClose={() => setPaywallOpen(false)} />}
     </div>
   )
 }
