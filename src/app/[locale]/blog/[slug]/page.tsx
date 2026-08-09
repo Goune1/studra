@@ -6,6 +6,7 @@ import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 import { blogPosts, getBlogPost, type ContentBlock } from '@/lib/blog-posts'
 import { setRequestLocale } from 'next-intl/server'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
 type Props = { params: Promise<{ slug: string; locale: string }> }
 
@@ -14,22 +15,17 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
+  const { slug, locale } = await params
   const post = getBlogPost(slug)
   if (!post) return {}
 
-  return {
+  return localizedMetadata({
     title: post.seoTitle ?? post.title,
     description: post.description,
-    alternates: {
-      canonical: `https://studra.fr/blog/${post.slug}`,
-    },
     openGraph: {
       title: post.seoTitle ?? post.title,
       description: post.description,
-      url: `https://studra.fr/blog/${post.slug}`,
       siteName: 'Studra',
-      locale: 'fr_FR',
       type: 'article',
       publishedTime: post.publishedAt,
       images: [`https://studra.fr/blog/${post.slug}/opengraph-image`],
@@ -40,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.description,
       images: [`https://studra.fr/blog/${post.slug}/opengraph-image`],
     },
-  }
+  }, `/blog/${post.slug}`, locale)
 }
 
 function renderBlock(block: ContentBlock, i: number) {

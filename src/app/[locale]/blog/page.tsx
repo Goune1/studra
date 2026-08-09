@@ -5,8 +5,9 @@ import Link from 'next/link'
 import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 import { blogPosts } from '@/lib/blog-posts'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Blog Studra — Méthodes de révision et flashcards IA',
   description:
     'Guides pratiques et articles de fond sur la répétition espacée, FSRS, les flashcards IA et les meilleures méthodes de révision pour étudiants.',
@@ -30,6 +31,11 @@ export const metadata: Metadata = {
       },
     ],
   },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/blog', locale)
 }
 
 const breadcrumbLd = {

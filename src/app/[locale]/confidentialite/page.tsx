@@ -1,19 +1,25 @@
 import type {Locale} from 'next-intl'
+import type {Metadata} from 'next'
 import {setRequestLocale} from 'next-intl/server'
 import Link from 'next/link'
 import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
 const LAST_UPDATED = '19 avril 2026'
 const CONTACT_EMAIL = 'contact@studra.fr'
 const APP_NAME = 'Studra'
 const APP_URL = 'https://studra.fr'
 
-export const metadata = {
+const baseMetadata: Metadata = {
   title: 'Politique de confidentialité',
   description: "Politique de confidentialité de Studra : données collectées, finalités, droits RGPD, sous-traitants et durées de conservation.",
-  alternates: { canonical: 'https://studra.fr/confidentialite' },
   robots: { index: true, follow: true },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/confidentialite', locale)
 }
 
 const sections = [

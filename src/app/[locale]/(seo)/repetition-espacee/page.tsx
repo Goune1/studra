@@ -2,8 +2,9 @@ import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Répétition espacée avec FSRS',
   description:
     'Studra utilise FSRS pour estimer le prochain intervalle de révision à partir de tes réponses. Intervalles visibles, quatre choix et accès gratuit.',
@@ -25,6 +26,11 @@ export const metadata: Metadata = {
     description:
       'Studra estime le prochain intervalle de révision à partir de tes réponses et te laisse choisir entre quatre évaluations.',
   },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/repetition-espacee', locale)
 }
 
 const faqItems = [

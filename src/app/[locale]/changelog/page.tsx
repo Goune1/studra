@@ -1,12 +1,18 @@
 import type {Locale} from 'next-intl'
+import type {Metadata} from 'next'
 import {setRequestLocale} from 'next-intl/server'
 import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
-export const metadata = {
+const baseMetadata: Metadata = {
   title: 'Changelog',
   description: 'Historique des mises à jour et nouvelles fonctionnalités de Studra.',
-  alternates: { canonical: 'https://studra.fr/changelog' },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/changelog', locale)
 }
 
 type Entry = {

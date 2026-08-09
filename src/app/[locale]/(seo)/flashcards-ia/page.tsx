@@ -2,8 +2,9 @@ import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Créer des flashcards IA depuis un cours',
   description:
     'Génère des flashcards depuis un cours, un PDF ou YouTube, puis révise avec FSRS 5. Une alternative IA simple à Anki et Quizlet.',
@@ -25,6 +26,11 @@ export const metadata: Metadata = {
     description:
       'Génère automatiquement des flashcards depuis ton cours, PDF ou vidéo YouTube. Algorithme FSRS 5 pour une mémorisation optimale.',
   },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/flashcards-ia', locale)
 }
 
 const faqItems = [

@@ -2,8 +2,9 @@ import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Examen blanc IA généré depuis ton cours',
   description:
     '7 QCM et 3 questions ouvertes générés par IA depuis ton cours, corrigés avec feedback détaillé. Entraîne-toi dans les conditions réelles de l\'épreuve.',
@@ -25,6 +26,11 @@ export const metadata: Metadata = {
     description:
       '7 QCM et 3 questions ouvertes générés par IA depuis ton cours, corrigés avec feedback détaillé.',
   },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/examen-blanc-ia', locale)
 }
 
 const faqItems = [

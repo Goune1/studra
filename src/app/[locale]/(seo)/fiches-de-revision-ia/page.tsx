@@ -2,8 +2,9 @@ import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Générateur de fiches de révision IA',
   description:
     'Crée des fiches de révision structurées en quelques secondes depuis n\'importe quel cours. Titres, définitions, points clés générés par IA.',
@@ -25,6 +26,11 @@ export const metadata: Metadata = {
     description:
       'Crée des fiches de révision structurées en quelques secondes depuis n\'importe quel cours.',
   },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/fiches-de-revision-ia', locale)
 }
 
 const faqItems = [

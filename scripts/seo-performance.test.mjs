@@ -41,14 +41,14 @@ test('les titres locaux ne dupliquent pas le template Studra', () => {
   ]
   for (const file of files) {
     const source = read(file)
-    const title = source.match(/export const metadata[\s\S]*?title:\s*['"]([^'"]+)['"]/)?.[1] ?? ''
+    const title = source.match(/(?:export const metadata|const baseMetadata)[\s\S]*?title:\s*['"]([^'"]+)['"]/)?.[1] ?? ''
     assert.ok(title, `titre introuvable dans ${file}`)
     assert.doesNotMatch(title, /Studra/)
   }
 })
 
 test('le sitemap référence le changelog', () => {
-  assert.match(read('src/app/sitemap.ts'), /\$\{BASE_URL\}\/changelog/)
+  assert.match(read('src/app/sitemap.ts'), /pathname:\s*['"]\/changelog['"]/)
 })
 
 test('la page blog déclare une image Open Graph', () => {

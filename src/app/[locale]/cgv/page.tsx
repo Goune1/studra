@@ -1,8 +1,10 @@
 import type {Locale} from 'next-intl'
+import type {Metadata} from 'next'
 import {setRequestLocale} from 'next-intl/server'
 import Link from 'next/link'
 import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
 const LAST_UPDATED = '10 avril 2026'
 const CONTACT_EMAIL = 'contact@studra.fr'
@@ -10,11 +12,15 @@ const APP_NAME = 'Studra'
 const APP_URL = 'https://studra.fr'
 const PRICE_PRO_MONTHLY = '4,99 €'
 
-export const metadata = {
+const baseMetadata: Metadata = {
   title: 'Conditions Générales de Vente',
   description: "Consultez les Conditions Générales de Vente de Studra : tarifs, abonnements, remboursements et politique de facturation.",
-  alternates: { canonical: 'https://studra.fr/cgv' },
   robots: { index: true, follow: true },
+}
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
+  const {locale} = await params
+  return localizedMetadata(baseMetadata, '/cgv', locale)
 }
 
 const sections = [

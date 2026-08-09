@@ -14,23 +14,19 @@ import FAQ      from '@/components/landing/FAQ'
 import { SeoLinks } from '@/components/landing/SeoLinks'
 import FinalCTA from '@/components/landing/FinalCTA'
 import Footer   from '@/components/landing/Footer'
+import {localizedMetadata} from '@/lib/seo-i18n'
 
 export async function generateMetadata({params}: {params: Promise<{locale: string}>}): Promise<Metadata> {
   const {locale} = await params
   const t = await getTranslations({locale: locale as Locale, namespace: 'landing.metadata'})
 
-  return {
+  return localizedMetadata({
     title: t('title'),
     description: t('description'),
-    alternates: {
-      canonical: 'https://studra.fr',
-    },
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: 'https://studra.fr',
       siteName: 'Studra',
-      locale: 'fr_FR',
       type: 'website',
     },
     twitter: {
@@ -38,7 +34,7 @@ export async function generateMetadata({params}: {params: Promise<{locale: strin
       title: t('title'),
       description: t('description'),
     },
-  }
+  }, '/', locale)
 }
 
 export default async function LandingPage({params}: {params: Promise<{locale: string}>}) {

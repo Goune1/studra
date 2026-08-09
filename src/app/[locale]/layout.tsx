@@ -64,9 +64,6 @@ export const metadata: Metadata = {
       'Génère des flashcards, fiches de révision, schémas et examens depuis ton cours en moins de 10 secondes.',
     images: ['/opengraph-image'],
   },
-  alternates: {
-    canonical: 'https://studra.fr',
-  },
 }
 
 type Props = {
