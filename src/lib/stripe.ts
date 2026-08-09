@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import {getLocalizedPathname, type AppLocale} from '@/i18n/pathname'
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -6,14 +7,23 @@ function getStripe() {
   })
 }
 
+function billingUrl(locale: AppLocale, status?: 'success' | 'canceled'): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://studra.fr'
+  const url = new URL(getLocalizedPathname('/billing', locale), appUrl)
+  if (status) url.searchParams.set(status, 'true')
+  return url.toString()
+}
+
 export async function createCheckoutSession(
   userId: string,
   email: string,
-  referralCode?: string
+  locale: AppLocale,
+  referralCode?: string,
 ): Promise<string> {
   const stripe = getStripe()
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
+    locale,
     payment_method_types: ['card'],
     customer_email: email,
     line_items: [
@@ -25,26 +35,32 @@ export async function createCheckoutSession(
     subscription_data: {
       metadata: {
         user_id: userId,
-        ...(referralCode ? { referral_code: referralCode } : {}),
+        locale,
+        ...(referralCode ? {referral_code: referralCode} : {}),
       },
     },
     metadata: {
       user_id: userId,
-      ...(referralCode ? { referral_code: referralCode } : {}),
+      locale,
+      ...(referralCode ? {referral_code: referralCode} : {}),
     },
     client_reference_id: userId,
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=true`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=true`,
+    success_url: billingUrl(locale, 'success'),
+    cancel_url: billingUrl(locale, 'canceled'),
   })
 
   return session.url!
 }
 
-export async function createPortalSession(customerId: string): Promise<string> {
+export async function createPortalSession(
+  customerId: string,
+  locale: AppLocale,
+): Promise<string> {
   const stripe = getStripe()
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing`,
+    locale,
+    return_url: billingUrl(locale),
   })
 
   return session.url

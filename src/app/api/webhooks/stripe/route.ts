@@ -7,6 +7,7 @@ import {
   createCommissionForInvoice,
   refundCommission,
 } from '@/lib/affiliate'
+import {defaultLocale, isAppLocale, type AppLocale} from '@/i18n/pathname'
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-03-31.basil' })
@@ -17,6 +18,22 @@ function getSupabaseAdmin() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
+}
+
+async function getProfileLocale(
+  supabaseAdmin: ReturnType<typeof getSupabaseAdmin>,
+  userId: string,
+  metadataLocale?: string,
+): Promise<AppLocale> {
+  const {data: profile} = await supabaseAdmin
+    .from('profiles')
+    .select('preferred_locale')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (isAppLocale(profile?.preferred_locale)) return profile.preferred_locale
+  if (isAppLocale(metadataLocale)) return metadataLocale
+  return defaultLocale
 }
 
 /** Retrouve l'utilisateur Supabase depuis un customer Stripe, puis son affilié éventuel */
@@ -76,6 +93,12 @@ export async function POST(request: Request) {
 
       if (!userId) break
 
+      const locale = await getProfileLocale(
+        supabaseAdmin,
+        userId,
+        session.metadata?.locale,
+      )
+
       await supabaseAdmin.from('profiles').update({
         plan: 'pro',
         stripe_customer_id: customerId,
@@ -84,7 +107,7 @@ export async function POST(request: Request) {
 
       const email = session.customer_details?.email ?? session.metadata?.email
       if (email) {
-        await sendWelcomeProEmail(email).catch(console.error)
+        await sendWelcomeProEmail(email, locale).catch(console.error)
       }
 
       const ph = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
@@ -147,6 +170,12 @@ export async function POST(request: Request) {
 
       if (!userId) break
 
+      const locale = await getProfileLocale(
+        supabaseAdmin,
+        userId,
+        subscription.metadata?.locale,
+      )
+
       await supabaseAdmin.from('profiles').update({
         plan: 'free',
         stripe_subscription_id: null,
@@ -155,7 +184,7 @@ export async function POST(request: Request) {
       const customer = await getStripe().customers.retrieve(subscription.customer as string)
       const email = !customer.deleted && (customer as Stripe.Customer).email
       if (email) {
-        await sendSubscriptionCancelledEmail(email).catch(console.error)
+        await sendSubscriptionCancelledEmail(email, locale).catch(console.error)
       }
 
       const ph = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {

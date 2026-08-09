@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { generateSchema } from '@/lib/openai'
 import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
+import { resolveContentLanguage, resolveServerLocale } from '@/i18n/server-locale'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -34,14 +35,16 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { title, subject, content, language = 'fr', isPublic = false } = body as { title: string; subject: string; content: string; language?: string; isPublic?: boolean }
+  const { title, subject, content, language, isPublic = false } = body as { title: string; subject: string; content: string; language?: string; isPublic?: boolean }
+  const locale = resolveServerLocale(request, {profile})
+  const generationLanguage = resolveContentLanguage(language, locale)
 
   if (!title || title.length > 200) return NextResponse.json({ error: 'Titre invalide' }, { status: 400 })
   if (!content || content.length < 50 || content.length > 100000) return NextResponse.json({ error: 'Contenu invalide (50-100000 caractères)' }, { status: 400 })
 
   let schemaData
   try {
-    schemaData = await generateSchema(content, language)
+    schemaData = await generateSchema(content, generationLanguage)
     if (!schemaData.nodes || !schemaData.edges) throw new Error('Format invalide')
   } catch {
     return NextResponse.json({ error: 'Erreur lors de la génération du schéma' }, { status: 500 })

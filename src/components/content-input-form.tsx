@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { ImageUploadInput } from '@/components/image-upload-input'
-import { useTranslations, useFormatter } from 'next-intl'
+import { useTranslations, useFormatter, useLocale } from 'next-intl'
 
 interface ContentInputFormProps {
   onSubmit: (data: { title: string; subject: string; content: string; language: string }) => Promise<void>
@@ -40,10 +40,11 @@ export function ContentInputForm({
 }: ContentInputFormProps) {
   const t = useTranslations('components.contentInput')
   const format = useFormatter()
+  const locale = useLocale()
   const [title, setTitle] = useState('')
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
-  const [language, setLanguage] = useState('fr')
+  const [language, setLanguage] = useState<string>(locale)
   const [sourceTab, setSourceTab] = useState<SourceTab>('text')
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [extracting, setExtracting] = useState(false)
