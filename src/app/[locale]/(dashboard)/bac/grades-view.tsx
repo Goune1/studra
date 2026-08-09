@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronRight, ChevronDown } from 'lucide-react'
+import { useFormatter, useTranslations } from 'next-intl'
 import {
   parseGrades,
   gradeAvgColor,
@@ -17,17 +18,10 @@ interface GradesViewProps {
   rawData: unknown
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
 function GradeStatusLabel({ status }: { status: GradeValueStatus }) {
+  const t = useTranslations('dashboard.bac')
   if (status === 'normal') return null
-  const label = status === 'absent' ? 'Absent' : status === 'not-rendered' ? 'Non rendu' : '-'
+  const label = status === 'absent' ? t('absent') : status === 'not-rendered' ? t('notRendered') : '-'
   return (
     <span className="italic text-xs" style={{ color: 'var(--text-4)' }}>
       {label}
@@ -36,6 +30,7 @@ function GradeStatusLabel({ status }: { status: GradeValueStatus }) {
 }
 
 function OverallBandeau({ period }: { period: ParsedPeriod }) {
+  const t = useTranslations('dashboard.bac')
   if (!period.overallAvg?.available) return null
   const avg = period.overallAvg.on20!
   const color = gradeAvgColor(avg)
@@ -62,11 +57,11 @@ function OverallBandeau({ period }: { period: ParsedPeriod }) {
       </div>
       <div className="flex flex-col gap-0.5">
         <span className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
-          Moyenne générale {isGood ? ': bien' : ': en difficulté'}
+          {t('average')} : {isGood ? t('good') : t('difficulty')}
         </span>
         {period.classAvg?.available && (
           <span className="text-xs" style={{ color: 'var(--text-3)' }}>
-            Moyenne de classe : {period.classAvg.display}/20
+            {t('classAverageDisplay', {value: period.classAvg.display})}
           </span>
         )}
       </div>
@@ -142,6 +137,8 @@ function SubjectCard({
 
 function GradeRow({ grade }: { grade: ParsedGrade }) {
   const isNormal = grade.status === 'normal'
+  const t = useTranslations('dashboard.bac')
+  const format = useFormatter()
 
   return (
     <div
@@ -151,7 +148,7 @@ function GradeRow({ grade }: { grade: ParsedGrade }) {
       {/* Date + comment */}
       <div className="flex-1 min-w-0">
         <p className="text-xs" style={{ color: 'var(--text-4)' }}>
-          {formatDate(grade.date)}
+          {format.dateTime(new Date(grade.date), {day: 'numeric', month: 'short', year: 'numeric'})}
         </p>
         {grade.comment && (
           <p className="text-sm mt-0.5 leading-snug" style={{ color: 'var(--text-2)' }}>
@@ -161,17 +158,17 @@ function GradeRow({ grade }: { grade: ParsedGrade }) {
         <div className="flex flex-wrap items-center gap-2 mt-1">
           {grade.coefficient !== 1 && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: 'var(--border)', color: 'var(--text-3)' }}>
-              coeff. {grade.coefficient}
+              {t('coefficient')} {grade.coefficient}
             </span>
           )}
           {grade.isOptional && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: '#6366F115', color: '#818CF8', border: '1px solid #6366F130' }}>
-              Optionnel
+              {t('optional')}
             </span>
           )}
           {grade.isBonus && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: '#22C55E15', color: '#10B981', border: '1px solid #22C55E30' }}>
-              Bonus
+              {t('bonus')}
             </span>
           )}
           {grade.classAvgDisplay !== '-' && (
@@ -211,6 +208,7 @@ function SubjectDetail({
   subject: ParsedSubjectAverage
   grades: ParsedGrade[]
 }) {
+  const t = useTranslations('dashboard.bac')
   const sorted = [...grades].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   )
@@ -221,11 +219,11 @@ function SubjectDetail({
       style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
     >
       <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-3)' }}>
-        Notes - {subject.subjectName}
+        {t('notesFor', {subject: subject.subjectName})}
       </p>
       {sorted.length === 0 ? (
         <p className="text-xs pb-3" style={{ color: 'var(--text-4)' }}>
-          Aucune note pour cette période.
+          {t('noPeriodGrades')}
         </p>
       ) : (
         sorted.map((g) => <GradeRow key={g.id} grade={g} />)
@@ -235,6 +233,8 @@ function SubjectDetail({
 }
 
 export function GradesView({ rawData }: GradesViewProps) {
+  const t = useTranslations('dashboard.bac')
+  const format = useFormatter()
   const periods = parseGrades(rawData)
 
   const [selectedPeriodId, setSelectedPeriodId] = useState<string>(() => periods[0]?.id ?? '')
@@ -252,8 +252,8 @@ export function GradesView({ rawData }: GradesViewProps) {
     <div className="space-y-5">
       {/* Header section */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-3)' }}>
-          Notes par période
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-3)' }} title={format.dateTime(new Date())}>
+          {t('grades')} {t('period')}
         </p>
 
         {/* Period pills */}
@@ -290,7 +290,7 @@ export function GradesView({ rawData }: GradesViewProps) {
       {/* Subjects */}
       {period.subjects.length === 0 ? (
         <p className="text-sm" style={{ color: 'var(--text-4)' }}>
-          Aucune matière disponible pour cette période.
+          {t('noPeriodSubjects')}
         </p>
       ) : (
         <div className="space-y-2">

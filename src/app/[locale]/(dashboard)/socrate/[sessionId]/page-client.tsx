@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { X, Send, Lightbulb, CheckCircle, AlertCircle, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
@@ -13,6 +14,7 @@ import type { Profile } from '@/types'
 const COLOR = '#1F4D3F'
 
 export default function SocrateSessionPage() {
+  const t = useTranslations('dashboard.socrate')
   const params = useParams()
   const router = useRouter()
   const sessionId = params.sessionId as string
@@ -79,10 +81,10 @@ export default function SocrateSessionPage() {
         body: JSON.stringify({ userMessage: userText }),
       })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Erreur'); return }
+      if (!res.ok) { toast.error(json.error ?? t('error')); return }
       setMessages((m) => [...m, { role: 'assistant', content: json.message }])
     } catch {
-      toast.error('Erreur de connexion')
+      toast.error(t('error'))
     } finally {
       setLoading(false)
       setTimeout(() => inputRef.current?.focus(), 50)
@@ -96,10 +98,10 @@ export default function SocrateSessionPage() {
         method: 'POST',
       })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Erreur'); return }
+      if (!res.ok) { toast.error(json.error ?? t('error')); return }
       setDiagnosis(json.diagnosis as FeynmanDiagnosis)
     } catch {
-      toast.error('Erreur de connexion')
+      toast.error(t('error'))
     } finally {
       setDiagnosing(false)
     }
@@ -124,7 +126,7 @@ export default function SocrateSessionPage() {
           onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-1)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-3)')}
         >
-          <X size={14} />Quitter
+          <X size={14} />{t('cancel')}
         </Link>
         <div className="w-px h-4 shrink-0" style={{ background: 'var(--border)' }} />
         <div className="flex items-center gap-2 min-w-0">
@@ -135,7 +137,7 @@ export default function SocrateSessionPage() {
             <Lightbulb size={12} style={{ color: COLOR }} />
           </div>
           <span className="text-sm font-medium truncate" style={{ color: 'var(--text-1)' }}>
-            Socrate{session ? ` — ${session.content_title}` : ''}
+            {t('assistantName')}{session ? ` — ${session.content_title}` : ''}
           </span>
         </div>
         {!diagnosis && messages.length >= 4 && (
@@ -145,7 +147,7 @@ export default function SocrateSessionPage() {
             className="ml-auto shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-50 cursor-pointer"
             style={{ background: COLOR + '20', color: COLOR, border: `1px solid ${COLOR}40` }}
           >
-            {diagnosing ? 'Analyse…' : 'Terminer & diagnostiquer'}
+            {diagnosing ? t('loading') : t('finish')}
           </button>
         )}
         <div className="ml-auto flex gap-1 shrink-0" style={{ display: (!diagnosis && messages.length >= 4) ? 'none' : undefined }}>
@@ -167,7 +169,7 @@ export default function SocrateSessionPage() {
               className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tl-sm"
               style={{ background: COLOR + '12', border: `1px solid ${COLOR}25` }}
             >
-              <div className="text-[10px] font-semibold mb-1" style={{ color: COLOR }}>Socrate</div>
+              <div className="text-[10px] font-semibold mb-1" style={{ color: COLOR }}>{t('assistantName')}</div>
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
                   <div
@@ -206,7 +208,7 @@ export default function SocrateSessionPage() {
             >
               {msg.role === 'assistant' && (
                 <div className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: COLOR }}>
-                  Socrate
+                  {t('assistantName')}
                 </div>
               )}
               {msg.content}
@@ -221,7 +223,7 @@ export default function SocrateSessionPage() {
               style={{ background: COLOR + '10', border: `1px solid ${COLOR}25`, borderRadius: '1rem 1rem 1rem 4px' }}
             >
               <div className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: COLOR }}>
-                Socrate
+                {t('assistantName')}
               </div>
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
@@ -245,7 +247,7 @@ export default function SocrateSessionPage() {
             <div className="flex items-center gap-2">
               <CheckCircle size={18} style={{ color: COLOR }} />
               <h3 className="font-bold text-base" style={{ color: 'var(--text-1)' }}>
-                Diagnostic Socrate
+                {t('diagnosis')} {t('assistantName')}
               </h3>
               <span
                 className="ml-auto text-sm font-bold px-2.5 py-0.5 rounded-lg"
@@ -258,7 +260,7 @@ export default function SocrateSessionPage() {
             {diagnosis.well_explained.length > 0 && (
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: COLOR }}>
-                  Bien expliqué
+                  {t('bestExplanation')}
                 </p>
                 <ul className="space-y-1">
                   {diagnosis.well_explained.map((n, i) => (
@@ -273,7 +275,7 @@ export default function SocrateSessionPage() {
             {diagnosis.still_unclear.length > 0 && (
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#F59E0B' }}>
-                  Encore flou
+                  {t('unclear')}
                 </p>
                 <ul className="space-y-1">
                   {diagnosis.still_unclear.map((n, i) => (
@@ -292,7 +294,7 @@ export default function SocrateSessionPage() {
                 style={{ background: COLOR + '08', border: `1px solid ${COLOR}20` }}
               >
                 <p className="text-[10px] font-semibold uppercase tracking-wide mb-1" style={{ color: COLOR }}>
-                  Ta meilleure explication
+                  {t('bestExplanation')}
                 </p>
                 <p className="text-sm italic" style={{ color: 'var(--text-2)' }}>
                   &ldquo;{diagnosis.best_explanation}&rdquo;
@@ -303,7 +305,7 @@ export default function SocrateSessionPage() {
             {diagnosis.suggestions.length > 0 && (
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--text-3)' }}>
-                  À revoir
+                  {t('toReview')}
                 </p>
                 <ul className="space-y-1">
                   {diagnosis.suggestions.map((s, i) => (
@@ -332,7 +334,7 @@ export default function SocrateSessionPage() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
               disabled={loading}
-              placeholder="Réponds à Socrate…"
+              placeholder={t('placeholder')}
               className="flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-colors disabled:opacity-50"
               style={{
                 background: 'var(--surface)',

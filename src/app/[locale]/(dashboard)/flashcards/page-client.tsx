@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Layers, Plus, Search } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { trackFlashcardsOpen } from '@/lib/analytics'
@@ -11,6 +11,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/Button'
+import { useTranslations } from 'next-intl'
 
 const COLOR = '#1F4D3F'
 
@@ -23,6 +24,7 @@ interface Deck {
 }
 
 export default function FlashcardsPage() {
+  const t = useTranslations('flashcards.list')
   const [decks, setDecks] = useState<Deck[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -62,11 +64,11 @@ export default function FlashcardsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
         <div>
-          <Eyebrow className="mb-2">Flashcards</Eyebrow>
-          <h1 className="section-h">Mes decks</h1>
+          <Eyebrow className="mb-2">{t('title')}</Eyebrow>
+          <h1 className="section-h">{t('decks')}</h1>
         </div>
         <Button href="/flashcards/new" className="sm:ml-auto shrink-0">
-          <Plus size={14} />Nouveau deck
+          <Plus size={14} />{t('new')}
         </Button>
       </div>
 
@@ -77,7 +79,7 @@ export default function FlashcardsPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un deck…"
+            placeholder={t('search')}
             className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
             style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
@@ -87,9 +89,9 @@ export default function FlashcardsPage() {
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}
           className="px-3 py-2.5 rounded-xl text-sm outline-none shrink-0"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-2)' }}>
-          <option value="recent">Plus récent</option>
-          <option value="alpha">Alphabétique</option>
-          <option value="cards">Nb de cartes</option>
+          <option value="recent">{t('sort.recent')}</option>
+          <option value="alpha">{t('sort.alpha')}</option>
+          <option value="cards">{t('sort.cards')}</option>
         </select>
       </div>
 
@@ -103,7 +105,7 @@ export default function FlashcardsPage() {
               color: subject === null ? COLOR : 'var(--text-4)',
               border: `1px solid ${subject === null ? COLOR + '40' : 'var(--border)'}`,
             }}>
-            Tous
+            {t('allSubjects')}
           </button>
           {subjects.map((s) => (
             <button key={s} onClick={() => setSubject(subject === s ? null : s)}
@@ -128,14 +130,14 @@ export default function FlashcardsPage() {
       ) : filtered.length === 0 && decks.length === 0 ? (
         <EmptyState
           Icon={Layers}
-          title="Aucun deck pour l'instant"
-          description="Crée ton premier deck à partir de tes cours."
+          title={t('emptyTitle')}
+          description={t('firstDeckDescription')}
           actionHref="/flashcards/new"
-          actionLabel="Créer un deck"
+          actionLabel={t('createDeck')}
         />
       ) : filtered.length === 0 ? (
         <div className="app-card p-10 text-center">
-          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>Aucun résultat</p>
+          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('noResults')}</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -154,6 +156,7 @@ export default function FlashcardsPage() {
 }
 
 function DeckCard({ deck, index, onDeleted }: { deck: Deck; index: number; onDeleted: (id: string) => void }) {
+  const t = useTranslations('flashcards.list')
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -167,7 +170,7 @@ function DeckCard({ deck, index, onDeleted }: { deck: Deck; index: number; onDel
         <DeleteEntityButton
           table="decks"
           id={deck.id}
-          entityLabel="ce deck"
+          entityLabel={t('entityLabel')}
           variant="icon"
           color={COLOR}
           onDeleted={onDeleted}
@@ -193,7 +196,7 @@ function DeckCard({ deck, index, onDeleted }: { deck: Deck; index: number; onDel
 
       <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: 'var(--ink-200)' }}>
         <span className="mono text-[10px] tabular-nums font-medium" style={{ color: COLOR }}>
-          {deck.card_count} cartes
+          {t('cardCount', {count: deck.card_count})}
         </span>
         <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
           {formatDate(deck.created_at)}

@@ -1,5 +1,6 @@
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import type { DashboardUser, UpcomingExam } from '@/lib/dashboard/queries'
+import { useTranslations } from 'next-intl'
 
 const monoSm: React.CSSProperties = {
   fontFamily: 'var(--font-geist-mono), monospace',
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function DashboardEmpty({ user, dateLabel, upcomingExams }: Props) {
+  const t = useTranslations('dashboard')
   return (
     <div style={{ maxWidth: 880, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 32 }}>
 
@@ -30,10 +32,10 @@ export function DashboardEmpty({ user, dateLabel, upcomingExams }: Props) {
       {/* Welcome */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <h1 style={{ fontSize: 30, fontWeight: 600, letterSpacing: '-.02em', lineHeight: 1.1, color: 'var(--ink)', margin: 0 }}>
-          Bienvenue, {user.name}.
+          {t('welcome', { name: user.name })}
         </h1>
         <p style={{ fontSize: 15, color: 'var(--ink-500)', margin: 0 }}>
-          Transforme n&apos;importe quel cours en cartes de révision, en 30 secondes.
+          {t('emptyDescription')}
         </p>
       </div>
 

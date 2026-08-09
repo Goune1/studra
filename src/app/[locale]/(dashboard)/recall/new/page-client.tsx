@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 import { Timer } from 'lucide-react'
 import ContentPicker from '@/components/ContentPicker'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -18,6 +19,7 @@ const DURATIONS = [
 ]
 
 export default function RecallNewPage() {
+  const t = useTranslations('dashboard.recall')
   const [selected, setSelected] = useState<ContentItem | null>(null)
   const [duration, setDuration] = useState(300)
   const [loading, setLoading] = useState(false)
@@ -38,12 +40,12 @@ export default function RecallNewPage() {
       })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? 'Erreur lors du démarrage')
+        toast.error(json.error ?? t('startError'))
         return
       }
       router.push(`/recall/${json.sessionId}`)
     } catch {
-      toast.error('Une erreur est survenue')
+      toast.error(t('error'))
     } finally {
       setLoading(false)
     }
@@ -53,10 +55,10 @@ export default function RecallNewPage() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-up">
-        <Eyebrow className="mb-2">Rappel libre</Eyebrow>
-        <h1 className="section-h">Lance une session</h1>
+        <Eyebrow className="mb-2">{t('label')}</Eyebrow>
+        <h1 className="section-h">{t('newTitle')}</h1>
         <p className="mt-3 text-sm" style={{ color: 'var(--ink-500)' }}>
-          Écris tout ce que tu sais sur un sujet en temps limité. L&apos;IA évalue ta complétude et pointe les oublis.
+          {t('description')}
         </p>
       </div>
 
@@ -65,7 +67,7 @@ export default function RecallNewPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
       >
         <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--ink)' }}>
-          Contenu à rappeler
+          {t('content')}
         </h2>
         <ContentPicker selected={selected} onSelect={setSelected} />
       </div>
@@ -75,7 +77,7 @@ export default function RecallNewPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
       >
         <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--ink)' }}>
-          Durée
+          {t('duration')}
         </h2>
         <div className="grid grid-cols-4 gap-2">
           {DURATIONS.map((d) => (
@@ -117,11 +119,11 @@ export default function RecallNewPage() {
         style={{ padding: '14px', fontSize: '14px' }}
       >
         <Timer size={15} />
-        {loading ? 'Démarrage…' : 'Lancer le chronomètre'}
+        {loading ? t('starting') : t('start')}
       </button>
 
       <p className="mono text-xs text-center mt-3" style={{ color: 'var(--ink-400)' }}>
-        Compte comme 1 génération lors de l&apos;évaluation finale
+        {t('quota')}
       </p>
     </div>
   )

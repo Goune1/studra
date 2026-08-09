@@ -7,10 +7,12 @@ import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackFlashcardsGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
+import { useTranslations } from 'next-intl'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'schema', 'exam', 'timeline']
 
 export default function NewFlashcardsPage() {
+  const t = useTranslations('flashcards.new')
   const [loading, setLoading] = useState(false)
   const [also, setAlso] = useState<Set<AlsoKey>>(new Set())
   const [results, setResults] = useState<GeneratedResource[] | null>(null)
@@ -27,35 +29,35 @@ export default function NewFlashcardsPage() {
       const { primary, also: alsoRes } = await generateWithAlso('flashcards', [...also], data, toast.error)
       if (!primary.ok) {
         trackAIGenerationError('flashcards', 'generation_failed')
-        toast.error('Erreur lors de la génération des flashcards')
+        toast.error(t('generationError'))
         return
       }
       trackAIGenerationSuccess('flashcards', Date.now() - startedAt)
-      toast.success('Contenu généré avec succès !')
+      toast.success(t('success'))
       setResults(buildResources('flashcards', primary.id!, alsoRes))
     } catch {
       trackAIGenerationError('flashcards', 'exception')
-      toast.error('Une erreur est survenue')
+      toast.error(t('error'))
     } finally {
       setLoading(false)
     }
   }
 
-  if (results) return <GenerationResultsScreen resources={results} newPath="/flashcards/new" newLabel="Créer un autre deck" />
+  if (results) return <GenerationResultsScreen resources={results} newPath="/flashcards/new" newLabel={t('createAnother')} />
 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <Eyebrow className="mb-2">Flashcards</Eyebrow>
-        <h1 className="section-h">Nouveau deck</h1>
-        <p className="lede mt-3">Colle ton cours, l&apos;IA génère tes cartes de révision.</p>
+        <Eyebrow className="mb-2">{t('title')}</Eyebrow>
+        <h1 className="section-h">{t('newDeck')}</h1>
+        <p className="lede mt-3">{t('description')}</p>
       </div>
       <div className="app-card p-8">
         <ContentInputForm
           onSubmit={handleGenerate}
-          submitLabel={also.size > 0 ? `✨ Générer les cartes + ${also.size} autre${also.size > 1 ? 's' : ''}` : '✨ Générer les cartes'}
-          titlePlaceholder="Ex: Chapitre 3 - La photosynthèse"
-          contentPlaceholder="Collez ici le contenu de votre cours, vos notes, ou tout texte à réviser..."
+          submitLabel={also.size > 0 ? `✨ ${t('generateWithAlso', {count: also.size})}` : `✨ ${t('generate')}`}
+          titlePlaceholder={t('titlePlaceholder')}
+          contentPlaceholder={t('contentPlaceholder')}
           loading={loading}
           extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
         />

@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { ImageUploadInput } from '@/components/image-upload-input'
+import { useTranslations, useFormatter } from 'next-intl'
 
 interface ContentInputFormProps {
   onSubmit: (data: { title: string; subject: string; content: string; language: string }) => Promise<void>
@@ -37,6 +38,8 @@ export function ContentInputForm({
   loading,
   extras,
 }: ContentInputFormProps) {
+  const t = useTranslations('components.contentInput')
+  const format = useFormatter()
   const [title, setTitle] = useState('')
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
@@ -57,14 +60,14 @@ export function ContentInputForm({
       const res = await fetch('/api/extract/pdf', { method: 'POST', body: formData })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? 'Erreur lors de l\'extraction du PDF')
+        toast.error(json.error ?? t('pdfError'))
         return
       }
       setContent(json.text)
       if (!title) setTitle(file.name.replace('.pdf', ''))
-      toast.success(`PDF extrait : ${json.pages} page(s), ${json.text.length} caractères`)
+      toast.success(t('pdfSuccess', { pages: json.pages, characters: json.text.length }))
     } catch {
-      toast.error('Erreur lors de la lecture du PDF')
+      toast.error(t('pdfReadError'))
     } finally {
       setExtracting(false)
     }
@@ -81,14 +84,14 @@ export function ContentInputForm({
       })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? 'Erreur lors de l\'extraction YouTube')
+        toast.error(json.error ?? t('youtubeError'))
         return
       }
       setContent(json.text)
-      toast.success('Transcription YouTube extraite !')
+      toast.success(t('youtubeSuccess'))
       setSourceTab('text')
     } catch {
-      toast.error('Erreur lors de l\'extraction YouTube')
+      toast.error(t('youtubeError'))
     } finally {
       setExtracting(false)
     }
@@ -106,7 +109,7 @@ export function ContentInputForm({
       {/* Title + Subject */}
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>Titre *</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>{t('titleRequired')}</label>
           <input
             type="text"
             value={title}
@@ -121,7 +124,7 @@ export function ContentInputForm({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>Matière</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>{t('subject')}</label>
           <input
             type="text"
             value={subject}
@@ -131,14 +134,14 @@ export function ContentInputForm({
             style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
             onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
-            placeholder="Maths, Histoire, Biologie..."
+            placeholder={t('subjectPlaceholder')}
           />
         </div>
       </div>
 
       {/* Language selector */}
       <div>
-        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>Langue de génération</label>
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>{t('language')}</label>
         <div className="flex flex-wrap gap-2">
           {LANGUAGES.map((lang) => (
             <button
@@ -183,9 +186,9 @@ export function ContentInputForm({
         {sourceTab === 'text' && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium" style={{ color: 'var(--ink-700)' }}>Contenu du cours *</label>
+              <label className="text-sm font-medium" style={{ color: 'var(--ink-700)' }}>{t('courseRequired')}</label>
               <span className="text-xs" style={{ color: content.length > MAX_CHARS * 0.9 ? '#A8762E' : 'var(--ink-500)' }}>
-                {content.length.toLocaleString('fr')} / {MAX_CHARS.toLocaleString('fr')}
+                {format.number(content.length)} / {format.number(MAX_CHARS)}
               </span>
             </div>
             <textarea
@@ -222,20 +225,20 @@ export function ContentInputForm({
             {extracting ? (
               <div className="flex flex-col items-center gap-2" style={{ color: 'var(--accent)' }}>
                 <span className="animate-spin text-2xl">⟳</span>
-                <span className="text-sm">Extraction du PDF...</span>
+                <span className="text-sm">{t('pdfExtracting')}</span>
               </div>
             ) : content && sourceTab === 'pdf' ? (
               <div style={{ color: 'var(--accent)' }}>
                 <div className="text-2xl mb-1">✓</div>
-                <div className="text-sm">{content.length.toLocaleString()} caractères extraits</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--ink-500)' }}>Cliquez pour changer de fichier</div>
+                <div className="text-sm">{t('charactersExtracted', { count: content.length })}</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--ink-500)' }}>{t('changeFile')}</div>
               </div>
             ) : (
               <div style={{ color: 'var(--ink-500)' }}>
                 <div className="text-3xl mb-2">📄</div>
-                <div className="font-medium mb-1" style={{ color: 'var(--ink)' }}>Déposez votre PDF ici</div>
-                <div className="text-sm">ou cliquez pour sélectionner un fichier</div>
-                <div className="text-xs mt-2" style={{ color: 'var(--ink-400)' }}>Max 10 Mo · PDF uniquement</div>
+                <div className="font-medium mb-1" style={{ color: 'var(--ink)' }}>{t('dropPdf')}</div>
+                <div className="text-sm">{t('selectFile')}</div>
+                <div className="text-xs mt-2" style={{ color: 'var(--ink-400)' }}>{t('pdfLimit')}</div>
               </div>
             )}
           </div>
@@ -254,7 +257,7 @@ export function ContentInputForm({
         {sourceTab === 'youtube' && (
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>URL de la vidéo YouTube</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-700)' }}>{t('youtubeUrl')}</label>
               <div className="flex gap-2">
                 <input
                   type="url"
@@ -265,7 +268,7 @@ export function ContentInputForm({
                   style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
-                  placeholder="https://www.youtube.com/watch?v=..."
+                  placeholder={t('youtubePlaceholder')}
                 />
                 <button
                   type="button"
@@ -273,19 +276,19 @@ export function ContentInputForm({
                   disabled={busy || !youtubeUrl}
                   className="btn btn-primary disabled:cursor-not-allowed"
                 >
-                  {extracting ? <span className="animate-spin">⟳</span> : 'Extraire'}
+                  {extracting ? <span className="animate-spin">⟳</span> : t('extract')}
                 </button>
               </div>
             </div>
             <p className="text-xs" style={{ color: 'var(--ink-500)' }}>
-              La vidéo doit avoir des sous-titres activés (automatiques ou manuels).
+              {t('youtubeHelp')}
             </p>
             {content && (
               <div
                 className="p-3 rounded-xl text-sm"
                 style={{ background: 'var(--accent-soft)', border: '1px solid rgba(31,77,63,0.18)', color: 'var(--accent)' }}
               >
-                ✓ Transcription extraite ({content.length.toLocaleString()} caractères) — vous pouvez maintenant générer.
+                {t('transcriptExtracted', { count: content.length })}
               </div>
             )}
           </div>
@@ -303,7 +306,7 @@ export function ContentInputForm({
         {loading ? (
           <>
             <span className="animate-spin">⟳</span>
-            Génération en cours...
+            {t('generating')}
           </>
         ) : (
           submitLabel

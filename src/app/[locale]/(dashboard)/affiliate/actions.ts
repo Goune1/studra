@@ -6,13 +6,15 @@ import { createHash } from 'crypto'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { generateUniqueReferralCode } from '@/lib/affiliate'
+import { getTranslations } from 'next-intl/server'
 
 export async function unlockAffiliate(_prevState: string | null, formData: FormData): Promise<string | null> {
+  const t = await getTranslations('dashboard.affiliate')
   const password = formData.get('password') as string
   const expected = process.env.BAC_BETA_PASSWORD
 
   if (!expected || password !== expected) {
-    return 'Mot de passe incorrect.'
+    return t('wrongPassword')
   }
 
   const hash = createHash('sha256').update(expected).digest('hex')
@@ -32,20 +34,21 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const IBAN_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$/
 
 export async function registerAffiliate(formData: FormData) {
+  const t = await getTranslations('dashboard.affiliate')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { ok: false, error: 'Session expirée.' }
+  if (!user) return { ok: false, error: t('sessionExpired') }
 
   const firstName = (formData.get('first_name') as string ?? '').trim().slice(0, 100)
   const lastName = (formData.get('last_name') as string ?? '').trim().slice(0, 100)
   const contactEmail = (formData.get('contact_email') as string ?? '').trim().toLowerCase()
   const paymentMethod = formData.get('payment_method') as string
 
-  if (!firstName) return { ok: false, error: 'Prénom requis.' }
-  if (!lastName) return { ok: false, error: 'Nom requis.' }
-  if (!contactEmail || !EMAIL_REGEX.test(contactEmail)) return { ok: false, error: 'Email invalide.' }
+  if (!firstName) return { ok: false, error: t('firstNameRequired') }
+  if (!lastName) return { ok: false, error: t('lastNameRequired') }
+  if (!contactEmail || !EMAIL_REGEX.test(contactEmail)) return { ok: false, error: t('invalidEmail') }
   if (!['paypal', 'bank_transfer'].includes(paymentMethod)) {
-    return { ok: false, error: 'Moyen de paiement requis.' }
+    return { ok: false, error: t('paymentRequired') }
   }
 
   let paypalEmail: string | null = null
@@ -56,14 +59,14 @@ export async function registerAffiliate(formData: FormData) {
   if (paymentMethod === 'paypal') {
     paypalEmail = (formData.get('paypal_email') as string ?? '').trim().toLowerCase()
     if (!paypalEmail || !EMAIL_REGEX.test(paypalEmail)) {
-      return { ok: false, error: 'Email PayPal invalide.' }
+      return { ok: false, error: t('invalidPaypalEmail') }
     }
   } else {
     accountHolder = (formData.get('account_holder_name') as string ?? '').trim().slice(0, 200)
     const rawIban = (formData.get('iban') as string ?? '').replace(/\s/g, '').toUpperCase()
     const rawBic = (formData.get('bic') as string ?? '').trim().toUpperCase().slice(0, 11)
-    if (!accountHolder) return { ok: false, error: 'Titulaire du compte requis.' }
-    if (!rawIban || !IBAN_REGEX.test(rawIban)) return { ok: false, error: 'IBAN invalide.' }
+    if (!accountHolder) return { ok: false, error: t('accountHolderRequired') }
+    if (!rawIban || !IBAN_REGEX.test(rawIban)) return { ok: false, error: t('invalidIban') }
     iban = rawIban
     bic = rawBic || null
   }
@@ -74,7 +77,7 @@ export async function registerAffiliate(formData: FormData) {
     .eq('user_id', user.id)
     .maybeSingle()
 
-  if (existing) return { ok: false, error: 'Vous êtes déjà inscrit au programme.' }
+  if (existing) return { ok: false, error: t('alreadyRegistered') }
 
   const referralCode = await generateUniqueReferralCode(firstName)
 
@@ -94,7 +97,7 @@ export async function registerAffiliate(formData: FormData) {
 
   if (error) {
     console.error('registerAffiliate error:', error)
-    return { ok: false, error: 'Erreur lors de l\'inscription. Réessayez.' }
+    return { ok: false, error: t('registrationError') }
   }
 
   revalidatePath('/affiliate')
@@ -102,13 +105,14 @@ export async function registerAffiliate(formData: FormData) {
 }
 
 export async function updatePaymentMethod(formData: FormData) {
+  const t = await getTranslations('dashboard.affiliate')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { ok: false, error: 'Session expirée.' }
+  if (!user) return { ok: false, error: t('sessionExpired') }
 
   const paymentMethod = formData.get('payment_method') as string
   if (!['paypal', 'bank_transfer'].includes(paymentMethod)) {
-    return { ok: false, error: 'Moyen de paiement invalide.' }
+    return { ok: false, error: t('invalidPaymentMethod') }
   }
 
   const updates: Record<string, unknown> = {
@@ -119,7 +123,7 @@ export async function updatePaymentMethod(formData: FormData) {
   if (paymentMethod === 'paypal') {
     const paypalEmail = (formData.get('paypal_email') as string ?? '').trim().toLowerCase()
     if (!paypalEmail || !EMAIL_REGEX.test(paypalEmail)) {
-      return { ok: false, error: 'Email PayPal invalide.' }
+      return { ok: false, error: t('invalidPaypalEmail') }
     }
     updates.paypal_email = paypalEmail
     updates.iban = null
@@ -129,8 +133,8 @@ export async function updatePaymentMethod(formData: FormData) {
     const rawIban = (formData.get('iban') as string ?? '').replace(/\s/g, '').toUpperCase()
     const rawBic = (formData.get('bic') as string ?? '').trim().toUpperCase().slice(0, 11)
     const accountHolder = (formData.get('account_holder_name') as string ?? '').trim().slice(0, 200)
-    if (!accountHolder) return { ok: false, error: 'Titulaire du compte requis.' }
-    if (!rawIban || !IBAN_REGEX.test(rawIban)) return { ok: false, error: 'IBAN invalide.' }
+    if (!accountHolder) return { ok: false, error: t('accountHolderRequired') }
+    if (!rawIban || !IBAN_REGEX.test(rawIban)) return { ok: false, error: t('invalidIban') }
     updates.iban = rawIban
     updates.bic = rawBic || null
     updates.account_holder_name = accountHolder
@@ -142,7 +146,7 @@ export async function updatePaymentMethod(formData: FormData) {
     .update(updates)
     .eq('user_id', user.id)
 
-  if (error) return { ok: false, error: 'Erreur lors de la mise à jour.' }
+  if (error) return { ok: false, error: t('updateError') }
 
   revalidatePath('/affiliate')
   return { ok: true }

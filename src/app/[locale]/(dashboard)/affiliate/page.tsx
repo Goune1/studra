@@ -1,5 +1,6 @@
 import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
+import {getTranslations} from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { createHash } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
@@ -12,6 +13,7 @@ import type { Affiliate, AffiliateCommission, AffiliatePayout } from '@/types'
 export default async function AffiliatePage({params}: {params: Promise<{locale: string}>}) {
   const {locale} = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('dashboard.affiliate')
   const cookieStore = await cookies()
   const access = cookieStore.get('affiliate_beta_access')
   const expected = process.env.BAC_BETA_PASSWORD
@@ -33,9 +35,9 @@ export default async function AffiliatePage({params}: {params: Promise<{locale: 
   if (!affiliate) {
     return (
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">Programme d'affiliation</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('title')}</h1>
         <p className="text-sm mb-8" style={{ color: 'var(--text-4)' }}>
-          Parrainez vos amis et gagnez une commission récurrente à vie.
+          {t('description')}
         </p>
         <AffiliateRegistrationForm userEmail={user!.email ?? ''} />
       </div>

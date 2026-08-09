@@ -1,10 +1,10 @@
 import type {Locale} from 'next-intl'
+import { getFormatter, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import SchemaEditor from './SchemaEditorClient'
 import { normalizeSchemaData } from '@/components/schema/utils/adapter'
-import { formatDate } from '@/lib/utils'
 import { GitBranch } from 'lucide-react'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 import { setRequestLocale } from 'next-intl/server'
@@ -14,6 +14,8 @@ const COLOR = '#1F4D3F'
 export default async function SchemaPage({ params }: { params: Promise<{ schemaId: string; locale: string }> }) {
   const { schemaId, locale } = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations({locale: locale as Locale, namespace: 'dashboard.schemas'})
+  const format = await getFormatter({locale: locale as Locale})
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -31,7 +33,7 @@ export default async function SchemaPage({ params }: { params: Promise<{ schemaI
         <div className="flex items-center gap-3 min-w-0">
           <Link href="/schemas"
             className="text-xs transition-colors shrink-0 flex items-center gap-1" style={{ color: 'var(--ink-500)' }}>
-            <GitBranch size={12} />← Mes schémas
+            <GitBranch size={12} />{t('detail.back')}
           </Link>
           <div className="w-px h-4 shrink-0" style={{ background: 'var(--ink-200)' }} />
           <h1 className="text-lg font-semibold truncate" style={{ color: 'var(--ink)' }}>{schema.title}</h1>
@@ -43,17 +45,17 @@ export default async function SchemaPage({ params }: { params: Promise<{ schemaI
           )}
           <span className="mono text-[10px] px-2 py-0.5 rounded-full shrink-0 tabular-nums hidden sm:inline"
             style={{ background: 'var(--surface-2)', color: 'var(--ink-500)', border: '1px solid var(--ink-200)' }}>
-            {nodeCount} nœuds · {edgeCount} relations
+            {t('detail.stats', {nodes: nodeCount, edges: edgeCount})}
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <span className="mono text-xs tabular-nums hidden md:block" style={{ color: 'var(--ink-400)' }}>
-            {formatDate(schema.created_at)}
+            {format.dateTime(new Date(schema.created_at), {day: 'numeric', month: 'short', year: 'numeric'})}
           </span>
           <DeleteEntityButton
             table="schemas"
             id={schema.id}
-            entityLabel="ce schéma"
+            entityLabel={t('detail.entityLabel')}
             variant="button"
             redirectTo="/schemas"
           />

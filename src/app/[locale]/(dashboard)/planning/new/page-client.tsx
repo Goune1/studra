@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { Sparkles } from 'lucide-react'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -14,12 +15,12 @@ interface SelectableItem extends StudyPlanContentItem {
 
 const COLOR = '#1F4D3F'
 
-const MASTERY_LABELS = ['', 'Très difficile', 'Difficile', 'Moyen', 'Maîtrisé', 'Très maîtrisé']
 const MASTERY_COLORS = ['', '#EF4444', '#F59E0B', '#3B82F6', '#10B981', '#34D399']
 
 const TIME_OPTIONS = [30, 45, 60, 90, 120]
 
 export default function PlanningNewPage() {
+  const t = useTranslations('dashboard.planning')
   const [title, setTitle] = useState('')
   const [examDate, setExamDate] = useState('')
   const [minutesPerDay, setMinutesPerDay] = useState(60)
@@ -83,11 +84,11 @@ export default function PlanningNewPage() {
         }),
       })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Erreur'); return }
-      toast.success(`Planning créé (${json.taskCount} sessions)`)
+      if (!res.ok) { toast.error(json.error ?? t('errorShort')); return }
+      toast.success(t('created', {count: json.taskCount}))
       router.push(`/planning/${json.planId}`)
     } catch {
-      toast.error('Une erreur est survenue')
+      toast.error(t('error'))
     } finally {
       setLoading(false)
     }
@@ -99,10 +100,10 @@ export default function PlanningNewPage() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-up">
-        <Eyebrow className="mb-2">Planning</Eyebrow>
-        <h1 className="section-h">Nouveau planning</h1>
+        <Eyebrow className="mb-2">{t('label')}</Eyebrow>
+        <h1 className="section-h">{t('newTitle')}</h1>
         <p className="mt-3 text-sm" style={{ color: 'var(--ink-500)' }}>
-          Studra génère un plan de révision jour par jour adapté à ta maîtrise et à ton temps disponible.
+          {t('newDescription')}
         </p>
       </div>
 
@@ -113,13 +114,13 @@ export default function PlanningNewPage() {
       >
         <div className="mb-4">
           <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--ink-700)' }}>
-            Nom de l&apos;examen
+            {t('examName')}
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Ex: Bac de philosophie"
+            placeholder={t('examPlaceholder')}
             className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors"
             style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)' }}
             onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
@@ -130,7 +131,7 @@ export default function PlanningNewPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--ink-700)' }}>
-              Date de l&apos;examen
+              {t('examDate')}
             </label>
             <input
               type="date"
@@ -143,7 +144,7 @@ export default function PlanningNewPage() {
           </div>
           <div>
             <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--ink-700)' }}>
-              Temps dispo/jour
+              {t('timePerDay')}
             </label>
             <div className="grid grid-cols-5 gap-1">
               {TIME_OPTIONS.map((t) => (
@@ -171,10 +172,10 @@ export default function PlanningNewPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
       >
         <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>
-          Chapitres à réviser
+          {t('chapters')}
         </h2>
         <p className="text-xs mb-4" style={{ color: 'var(--ink-500)' }}>
-          Coche les contenus et évalue ta maîtrise actuelle (1 = très difficile, 5 = maîtrisé)
+          {t('chaptersDescription')}
         </p>
 
         {fetching ? (
@@ -185,7 +186,7 @@ export default function PlanningNewPage() {
           </div>
         ) : items.length === 0 ? (
           <p className="text-sm text-center py-4" style={{ color: 'var(--ink-500)' }}>
-            Aucun contenu trouvé. Crée d&apos;abord des fiches ou des decks.
+            {t('noContent')}
           </p>
         ) : (
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
@@ -223,7 +224,7 @@ export default function PlanningNewPage() {
                       <button
                         key={n}
                         onClick={() => setMastery(item.id, n)}
-                        title={MASTERY_LABELS[n]}
+                        title={t(`mastery.${n}`)}
                         className="w-6 h-6 rounded-lg text-xs font-bold transition-all cursor-pointer"
                         style={{
                           background: item.mastery >= n ? MASTERY_COLORS[n] + '25' : 'var(--surface-2)',
@@ -249,7 +250,7 @@ export default function PlanningNewPage() {
           style={{ background: 'var(--accent-soft)', border: `1px solid ${COLOR}30` }}
         >
           <span className="text-sm" style={{ color: 'var(--ink-700)' }}>
-            <strong style={{ color: 'var(--ink)' }}>{selected.length} contenu{selected.length > 1 ? 's' : ''}</strong> sélectionné{selected.length > 1 ? 's' : ''}
+            <strong style={{ color: 'var(--ink)' }}>{t('selected', {count: selected.length})}</strong>
           </span>
         </div>
       )}
@@ -261,11 +262,11 @@ export default function PlanningNewPage() {
         style={{ padding: '14px', fontSize: '14px' }}
       >
         <Sparkles size={15} />
-        {loading ? 'Génération du planning…' : 'Générer mon planning'}
+        {loading ? t('generating') : t('generate')}
       </button>
 
       <p className="mono text-xs text-center mt-3" style={{ color: 'var(--ink-400)' }}>
-        Compte comme 1 génération sur ton quota mensuel
+        {t('quota')}
       </p>
     </div>
   )

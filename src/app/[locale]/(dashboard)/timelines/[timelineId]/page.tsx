@@ -1,9 +1,9 @@
 import type {Locale} from 'next-intl'
+import { getFormatter, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { TimelineViewer } from '@/components/timeline-viewer'
-import { formatDate } from '@/lib/utils'
 import type { TimelineData } from '@/types'
 import { AlignLeft } from 'lucide-react'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
@@ -19,6 +19,8 @@ const CAT_COLORS: Record<string, string> = {
 export default async function TimelinePage({ params }: { params: Promise<{ timelineId: string; locale: string }> }) {
   const { timelineId, locale } = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations({locale: locale as Locale, namespace: 'dashboard.timelines'})
+  const format = await getFormatter({locale: locale as Locale})
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -50,12 +52,12 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
     <div className="max-w-350">
       <div className="flex items-center justify-between mb-6">
         <Link href="/timelines" className="inline-flex items-center gap-1.5 text-xs transition-colors" style={{ color: 'var(--ink-500)' }}>
-          <AlignLeft size={12} />← Mes frises
+          <AlignLeft size={12} />{t('detail.back')}
         </Link>
         <DeleteEntityButton
           table="timelines"
           id={timeline.id}
-          entityLabel="cette frise"
+          entityLabel={t('detail.entityLabel')}
           variant="button"
           redirectTo="/timelines"
         />
@@ -71,7 +73,7 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
             </span>
           )}
           <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-            {formatDate(timeline.created_at)}
+            {format.dateTime(new Date(timeline.created_at), {day: 'numeric', month: 'short', year: 'numeric'})}
           </span>
         </div>
         <h1 className="section-h leading-tight mb-5">
@@ -82,7 +84,7 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
         <div className="flex flex-wrap items-center gap-2">
           <span className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
             style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
-            {eventCount} événements
+            {t('detail.events', {count: eventCount})}
           </span>
           <span className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
             style={{ background: 'var(--surface-2)', color: 'var(--ink-700)', border: '1px solid var(--ink-200)' }}>
@@ -91,7 +93,7 @@ export default async function TimelinePage({ params }: { params: Promise<{ timel
           {cats.map(([cat, count]) => (
             <span key={cat} className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
               style={{ background: (CAT_COLORS[cat] ?? COLOR) + '15', color: CAT_COLORS[cat] ?? COLOR, border: `1px solid ${(CAT_COLORS[cat] ?? COLOR)}25` }}>
-              {cat.charAt(0).toUpperCase() + cat.slice(1)} {count}
+              {t(`viewer.categories.${cat}` as never)} {count}
             </span>
           ))}
         </div>

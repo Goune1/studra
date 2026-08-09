@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
+import { useFormatter, useTranslations } from 'next-intl'
 import { CalendarDays, PlusCircle, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -12,6 +13,8 @@ import type { StudyPlan } from '@/types'
 const COLOR = '#1F4D3F'
 
 export default function PlanningListPage() {
+  const t = useTranslations('dashboard.planning')
+  const format = useFormatter()
   const [plans, setPlans] = useState<StudyPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [nowMs] = useState(() => Date.now())
@@ -34,20 +37,20 @@ export default function PlanningListPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
         <div>
-          <Eyebrow className="mb-2">Planning</Eyebrow>
+          <Eyebrow className="mb-2">{t('label')}</Eyebrow>
           <div className="flex items-center gap-3">
-            <h1 className="section-h">Mes plannings</h1>
+            <h1 className="section-h">{t('listTitle')}</h1>
             <span
               className="mono text-xs px-2 py-1 rounded-full font-medium tabular-nums"
               style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}
             >
-              {loading ? '…' : plans.length} plan{plans.length > 1 ? 's' : ''}
+              {loading ? '…' : t('count', {count: plans.length})}
             </span>
           </div>
         </div>
         <Link href="/planning/new" className="btn btn-primary shrink-0">
           <PlusCircle size={15} />
-          Nouveau planning
+          {t('new')}
         </Link>
       </div>
 
@@ -61,9 +64,9 @@ export default function PlanningListPage() {
         <EmptyState
           Icon={CalendarDays}
           color={COLOR}
-          title="Aucun planning"
-          subtitle="Génère un planning personnalisé jour par jour pour ton prochain examen."
-          ctaLabel="Créer mon premier planning"
+          title={t('noneTitle')}
+          subtitle={t('noneSubtitle')}
+          ctaLabel={t('createFirst')}
           ctaHref="/planning/new"
         />
       ) : (
@@ -101,7 +104,7 @@ export default function PlanningListPage() {
                       {plan.title}
                     </p>
                     <p className="text-xs mt-0.5" style={{ color: 'var(--ink-500)' }}>
-                      Examen le {new Date(plan.exam_date + 'T00:00:00').toLocaleDateString('fr-FR')}
+                      {t('examOn', {date: format.dateTime(new Date(plan.exam_date + 'T00:00:00'), {dateStyle: 'short'})})}
                     </p>
                   </div>
                   {daysLeft > 0 ? (

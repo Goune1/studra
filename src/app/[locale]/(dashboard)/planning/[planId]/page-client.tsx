@@ -1,8 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
+import { useParams } from 'next/navigation'
+import { useFormatter, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
   AlertTriangle,
@@ -32,14 +33,6 @@ const COLOR = '#1F4D3F'
 const DANGER = '#EF4444'
 const SUCCESS = '#10B981'
 
-const TASK_TYPE_LABELS: Record<StudyPlanTaskType, string> = {
-  flashcards: 'Flashcards',
-  fiche: 'Fiche',
-  exam: 'Examen blanc',
-  review: 'Révision',
-  general_review: 'Révision générale',
-}
-
 const TASK_TYPE_COLORS: Record<StudyPlanTaskType, string> = {
   flashcards: '#F59E0B',
   fiche: '#3B82F6',
@@ -52,6 +45,8 @@ const TASK_TYPE_COLORS: Record<StudyPlanTaskType, string> = {
 // Page
 // ─────────────────────────────────────────────────────────────────────
 export default function PlanningViewPage() {
+  const t = useTranslations('dashboard.planning')
+  const format = useFormatter()
   const params = useParams()
   const router = useRouter()
   const planId = params.planId as string
@@ -97,7 +92,7 @@ export default function PlanningViewPage() {
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
-        toast.error(json.error ?? 'Une erreur est survenue')
+        toast.error(json.error ?? t('error'))
         return null
       }
       await load()
@@ -107,28 +102,28 @@ export default function PlanningViewPage() {
   )
 
   const handleRegenerate = async () => {
-    if (!confirm('Régénérer le planning ? Les sessions non terminées seront réécrites.')) return
+    if (!confirm(t('confirmRegenerate'))) return
     setRegenerating(true)
     const res = await fetch(`/api/study-plans/${planId}/regenerate`, { method: 'POST' })
     const json = await res.json().catch(() => ({}))
     if (!res.ok) {
-      toast.error(json.error ?? 'Erreur de régénération')
+      toast.error(json.error ?? t('regenerationError'))
       setRegenerating(false)
       return
     }
-    toast.success(`Planning régénéré (${json.taskCount} sessions)`)
+    toast.success(t('regenerated', {count: json.taskCount}))
     await load()
     setRegenerating(false)
   }
 
   const handleDelete = async () => {
-    if (!confirm('Supprimer ce planning ? Cette action est irréversible.')) return
+    if (!confirm(t('confirmDelete'))) return
     const res = await fetch(`/api/study-plans/${planId}`, { method: 'DELETE' })
     if (res.ok) {
-      toast.success('Planning supprimé')
+      toast.success(t('deleted'))
       router.push('/planning')
     } else {
-      toast.error('Erreur lors de la suppression')
+      toast.error(t('deleteError'))
     }
   }
 
@@ -183,7 +178,7 @@ export default function PlanningViewPage() {
   if (loading || !plan) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-sm" style={{ color: 'var(--text-3)' }}>Chargement…</div>
+        <div className="text-sm" style={{ color: 'var(--text-3)' }}>{t('loading')}</div>
       </div>
     )
   }
@@ -199,23 +194,23 @@ export default function PlanningViewPage() {
         className="text-xs mb-4 inline-flex items-center gap-1 hover:underline"
         style={{ color: 'var(--ink-500)' }}
       >
-        ← Tous les plannings
+        {t('back')}
       </Link>
 
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
-            <Eyebrow className="mb-1">Planning</Eyebrow>
+        <Eyebrow className="mb-1">{t('label')}</Eyebrow>
             <h1 className="section-h mb-1 truncate">{plan.title}</h1>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: 'var(--text-2)' }}>
               <span className="flex items-center gap-1.5">
                 <Calendar size={14} />
-                Examen le {formatDay(plan.exam_date)}
+                {t('examOn', {date: format.dateTime(new Date(plan.exam_date + 'T00:00:00'), {weekday: 'long', day: 'numeric', month: 'long'})})}
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock size={14} />
-                {plan.available_minutes_per_day} min/jour
+                {t('minutesPerDay', {minutes: plan.available_minutes_per_day})}
               </span>
             </div>
           </div>
@@ -235,10 +230,10 @@ export default function PlanningViewPage() {
       >
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-            {isCompletedPlan ? 'Planning terminé 🎉' : 'Progression'}
+            {isCompletedPlan ? t('completed') : t('progress')}
           </span>
           <span className="text-sm font-bold" style={{ color: COLOR }}>
-            {completedCount}/{totalCount} sessions
+            {t('sessions', {completed: completedCount, total: totalCount})}
           </span>
         </div>
         <div className="h-2 rounded-full overflow-hidden mb-3" style={{ background: 'var(--surface-2)' }}>
@@ -249,7 +244,7 @@ export default function PlanningViewPage() {
         </div>
         <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-3)' }}>
           <span>
-            {progress}% complété{skippedCount > 0 ? ` · ${skippedCount} sautée${skippedCount > 1 ? 's' : ''}` : ''}
+            {t('completion', {progress})}{skippedCount > 0 ? ` · ${t('skipped', {count: skippedCount})}` : ''}
           </span>
           <span style={{ color: daysUntilExam <= 3 ? DANGER : 'var(--text-3)' }}>
             J-{daysUntilExam}
@@ -274,7 +269,7 @@ export default function PlanningViewPage() {
               {overdueSessions.length} session{overdueSessions.length > 1 ? 's' : ''} en retard
             </p>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-2)' }}>
-              Reporte-les ou régénère le planning pour les recompacter.
+              {t('overdueDescription')}
             </p>
             <div className="space-y-1.5 mt-3">
               {overdueSessions.slice(0, 3).map((s) => (
@@ -299,7 +294,7 @@ export default function PlanningViewPage() {
               style={{ background: DANGER + '20', color: DANGER }}
             >
               <RefreshCw size={12} className={regenerating ? 'animate-spin' : ''} />
-              Recompacter le planning
+              {t('recompact')}
             </button>
           </div>
         </div>
@@ -310,7 +305,7 @@ export default function PlanningViewPage() {
         <section className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-bold uppercase tracking-wide" style={{ color: COLOR }}>
-              Aujourd&apos;hui
+              {t('today')}
             </h2>
             <span className="text-xs" style={{ color: 'var(--text-3)' }}>
               {todaySessions.filter((s) => s.status === 'completed').length}/{todaySessions.length}
@@ -336,10 +331,10 @@ export default function PlanningViewPage() {
         >
           <CheckCircle2 size={24} className="mx-auto mb-2" style={{ color: SUCCESS }} />
           <p className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-            Rien à faire aujourd&apos;hui
+            {t('nothingToday')}
           </p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-            Profites-en pour réviser à ton rythme.
+            {t('nothingTodayDescription')}
           </p>
         </div>
       )}
@@ -348,7 +343,7 @@ export default function PlanningViewPage() {
       {upcomingSessions.length > 0 && (
         <section className="mb-6">
           <h2 className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--text-2)' }}>
-            Prochaines sessions
+            {t('upcoming')}
           </h2>
           <div className="space-y-1.5">
             {upcomingSessions.slice(0, 5).map((s) => (
@@ -367,7 +362,7 @@ export default function PlanningViewPage() {
       {calendarDays.length > 0 && (
         <section className="mb-6">
           <h2 className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--text-2)' }}>
-            Calendrier complet
+            {t('calendar')}
           </h2>
           <div className="space-y-2">
             {calendarDays.map(({ date, tasks }) => {
@@ -385,7 +380,7 @@ export default function PlanningViewPage() {
                     className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer text-left"
                   >
                     <span className="text-sm font-semibold flex-1 capitalize" style={{ color: 'var(--text-1)' }}>
-                      {formatDay(date)}
+                      {format.dateTime(new Date(date + 'T00:00:00'), {weekday: 'long', day: 'numeric', month: 'long'})}
                     </span>
                     <span className="text-xs shrink-0" style={{ color: 'var(--text-3)' }}>
                       {tasks.length} · {dayMinutes} min
@@ -420,7 +415,7 @@ export default function PlanningViewPage() {
             style={{ color: 'var(--text-2)' }}
           >
             {historyOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            Historique ({historySessions.length})
+            {t('history', {count: historySessions.length})}
           </button>
           {historyOpen && (
             <div className="space-y-1.5 mt-3">
@@ -459,6 +454,7 @@ function TodaySessionCard({
     action: 'start' | 'complete' | 'postpone' | 'skip' | 'reset',
   ) => Promise<StudyPlanTask | null>
 }) {
+  const t = useTranslations('dashboard.planning')
   const done = session.status === 'completed'
   const skipped = session.status === 'skipped'
   const target = sessionTargetHref(session)
@@ -478,7 +474,7 @@ function TodaySessionCard({
           className="text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-md"
           style={{ background: color + '20', color }}
         >
-          {TASK_TYPE_LABELS[session.task_type]}
+          {t(`taskTypes.${session.task_type}`)}
         </span>
         <span className="text-xs" style={{ color: 'var(--text-3)' }}>
           {session.duration_minutes} min
@@ -525,7 +521,7 @@ function TodaySessionCard({
             style={{ padding: '8px 14px', fontSize: '13px' }}
           >
             <Play size={14} fill="currentColor" />
-            Commencer
+            {t('start')}
           </Link>
         )}
         {!done && (
@@ -535,7 +531,7 @@ function TodaySessionCard({
             style={{ background: 'var(--surface-2)', color: 'var(--text-1)' }}
           >
             <CheckCircle2 size={14} />
-            Marquer fait
+            {t('markDone')}
           </button>
         )}
         {done && (
@@ -545,7 +541,7 @@ function TodaySessionCard({
             style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}
           >
             <RotateCcw size={14} />
-            Annuler
+            {t('cancel')}
           </button>
         )}
         {!done && !skipped && (
@@ -556,7 +552,7 @@ function TodaySessionCard({
               style={{ background: 'transparent', color: 'var(--text-2)' }}
             >
               <CalendarClock size={14} />
-              Reporter
+              {t('postpone')}
             </button>
             <button
               onClick={() => onAction(session.id, 'skip')}
@@ -564,7 +560,7 @@ function TodaySessionCard({
               style={{ background: 'transparent', color: 'var(--text-3)' }}
             >
               <FastForward size={14} />
-              Sauter
+              {t('skip')}
             </button>
           </>
         )}
@@ -592,6 +588,8 @@ function SessionRow({
     action: 'start' | 'complete' | 'postpone' | 'skip' | 'reset',
   ) => Promise<StudyPlanTask | null>
 }) {
+  const t = useTranslations('dashboard.planning')
+  const format = useFormatter()
   const done = session.status === 'completed'
   const skipped = session.status === 'skipped'
   const target = sessionTargetHref(session)
@@ -612,7 +610,7 @@ function SessionRow({
       <button
         onClick={() => onAction(session.id, done ? 'reset' : 'complete')}
         className="shrink-0 cursor-pointer p-0.5"
-        aria-label={done ? 'Annuler' : 'Marquer fait'}
+        aria-label={done ? t('cancel') : t('markDone')}
       >
         {statusIcon}
       </button>
@@ -639,8 +637,8 @@ function SessionRow({
           </p>
         )}
         <p className="text-[11px] truncate" style={{ color: color + 'cc' }}>
-          {TASK_TYPE_LABELS[session.task_type]}
-          {showDate && ` · ${formatDayShort(session.scheduled_date)}`}
+          {t(`taskTypes.${session.task_type}`)}
+          {showDate && ` · ${format.dateTime(new Date(session.scheduled_date + 'T00:00:00'), {weekday: 'short', day: 'numeric', month: 'short'})}`}
           {session.duration_minutes ? ` · ${session.duration_minutes} min` : ''}
         </p>
       </div>
@@ -650,7 +648,7 @@ function SessionRow({
           <button
             onClick={() => setMenuOpen((v) => !v)}
             className="p-1.5 rounded-md hover:bg-black/10 cursor-pointer"
-            aria-label="Actions"
+            aria-label={t('actions')}
           >
             <MoreHorizontal size={14} style={{ color: 'var(--text-3)' }} />
           </button>
@@ -659,7 +657,7 @@ function SessionRow({
               <button
                 className="fixed inset-0 z-10 cursor-default"
                 onClick={() => setMenuOpen(false)}
-                aria-label="Fermer le menu"
+                aria-label={t('closeMenu')}
                 tabIndex={-1}
               />
               <div
@@ -667,10 +665,10 @@ function SessionRow({
                 style={{ background: 'var(--surface)', border: '1px solid var(--border-2)' }}
               >
                 <MenuItem icon={<CalendarClock size={13} />} onClick={() => { setMenuOpen(false); onAction(session.id, 'postpone') }}>
-                  Reporter
+                  {t('postpone')}
                 </MenuItem>
                 <MenuItem icon={<FastForward size={13} />} onClick={() => { setMenuOpen(false); onAction(session.id, 'skip') }}>
-                  Sauter
+                  {t('skip')}
                 </MenuItem>
               </div>
             </>
@@ -708,6 +706,7 @@ function PlanMenu({
   onDelete: () => void
   regenerating: boolean
 }) {
+  const t = useTranslations('dashboard.planning')
   const [open, setOpen] = useState(false)
   return (
     <div className="relative shrink-0">
@@ -715,7 +714,7 @@ function PlanMenu({
         onClick={() => setOpen((v) => !v)}
         className="p-2 rounded-xl cursor-pointer"
         style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-        aria-label="Actions"
+        aria-label={t('actions')}
       >
         <MoreHorizontal size={16} style={{ color: 'var(--text-2)' }} />
       </button>
@@ -724,7 +723,7 @@ function PlanMenu({
           <button
             className="fixed inset-0 z-10 cursor-default"
             onClick={() => setOpen(false)}
-            aria-label="Fermer le menu"
+            aria-label={t('closeMenu')}
             tabIndex={-1}
           />
           <div
@@ -732,16 +731,16 @@ function PlanMenu({
             style={{ background: 'var(--surface)', border: '1px solid var(--border-2)' }}
           >
             <MenuItem icon={<Pencil size={13} />} onClick={() => { setOpen(false); onEdit() }}>
-              Modifier les paramètres
+              {t('editSettings')}
             </MenuItem>
             <MenuItem
               icon={<RefreshCw size={13} className={regenerating ? 'animate-spin' : ''} />}
               onClick={() => { setOpen(false); onRegenerate() }}
             >
-              Régénérer
+              {t('regenerate')}
             </MenuItem>
             <MenuItem icon={<Trash2 size={13} />} onClick={() => { setOpen(false); onDelete() }}>
-              Supprimer
+              {t('delete')}
             </MenuItem>
           </div>
         </>
@@ -762,6 +761,7 @@ function EditPlanModal({
   onClose: () => void
   onSaved: () => void
 }) {
+  const t = useTranslations('dashboard.planning')
   const [title, setTitle] = useState(plan.title)
   const [examDate, setExamDate] = useState(plan.exam_date)
   const [minutes, setMinutes] = useState(plan.available_minutes_per_day)
@@ -784,11 +784,11 @@ function EditPlanModal({
     })
     const json = await res.json().catch(() => ({}))
     if (!res.ok) {
-      toast.error(json.error ?? 'Erreur')
+      toast.error(json.error ?? t('errorShort'))
       setSaving(false)
       return
     }
-    toast.success('Planning mis à jour')
+    toast.success(t('updated'))
     onSaved()
   }
 
@@ -799,10 +799,10 @@ function EditPlanModal({
         style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--text-1)' }}>
-          Modifier le planning
+          {t('editTitle')}
         </h2>
         <div className="space-y-4">
-          <Field label="Titre">
+          <Field label={t('title')}>
             <input
               type="text"
               value={title}
@@ -811,7 +811,7 @@ function EditPlanModal({
               style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
             />
           </Field>
-          <Field label="Date d'examen">
+          <Field label={t('examDate')}>
             <input
               type="date"
               value={examDate}
@@ -821,7 +821,7 @@ function EditPlanModal({
               style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
             />
           </Field>
-          <Field label="Temps disponible par jour (min)">
+          <Field label={t('availableTime')}>
             <input
               type="number"
               min={10}
@@ -833,7 +833,7 @@ function EditPlanModal({
             />
           </Field>
           <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-            Si tu changes la date ou le temps/jour, lance « Régénérer » ensuite pour rebâtir les sessions.
+            {t('editHint')}
           </p>
         </div>
         <div className="flex gap-2 mt-6">
@@ -842,7 +842,7 @@ function EditPlanModal({
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
             style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}
           >
-            Annuler
+            {t('cancel')}
           </button>
           <button
             onClick={save}
@@ -850,7 +850,7 @@ function EditPlanModal({
             className="btn btn-primary flex-1"
             style={{ padding: '10px', fontSize: '13px' }}
           >
-            {saving ? 'Enregistrement…' : 'Enregistrer'}
+            {saving ? t('saving') : t('save')}
           </button>
         </div>
       </div>
@@ -874,18 +874,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 // ─────────────────────────────────────────────────────────────────────
 function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10)
-}
-
-function formatDay(dateStr: string): string {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('fr-FR', {
-    weekday: 'long', day: 'numeric', month: 'long',
-  })
-}
-
-function formatDayShort(dateStr: string): string {
-  if (dateStr === todayIsoDate()) return "Aujourd'hui"
-  const d = new Date(dateStr + 'T00:00:00')
-  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 function daysBetween(a: string, b: string): number {

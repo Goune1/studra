@@ -2,13 +2,15 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { getTranslations } from 'next-intl/server'
 
 export async function updateMarketingConsent(marketingConsent: boolean) {
+  const t = await getTranslations('dashboard.settings')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    return { ok: false, error: 'Session expirée.' }
+    return { ok: false, error: t('sessionExpired') }
   }
 
   const { error } = await supabase
@@ -17,7 +19,7 @@ export async function updateMarketingConsent(marketingConsent: boolean) {
     .eq('id', user.id)
 
   if (error) {
-    return { ok: false, error: 'Impossible de mettre à jour cette préférence.' }
+    return { ok: false, error: t('preferenceUpdateError') }
   }
 
   revalidatePath('/settings')

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { GraduationCap, Search, MapPin, School, User, Lock, RefreshCw, Unlink, ChevronRight, QrCode, ImageIcon, X } from 'lucide-react'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { toast } from 'sonner'
+import { useFormatter, useTranslations } from 'next-intl'
 import { GradesView } from './grades-view'
 import { BacSimulator } from './bac-simulator'
 
@@ -34,17 +35,9 @@ interface BacClientProps {
   initialConnection: PronoteConnection | null
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
 export function BacClient({ initialConnection }: BacClientProps) {
+  const t = useTranslations('dashboard.bac')
+  const format = useFormatter()
   const [connection, setConnection] = useState<PronoteConnection | null>(initialConnection)
 
   // Méthode de connexion
@@ -142,7 +135,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
       })
       const json = await res.json() as PronoteSchool[] | { error: string }
       if (!res.ok) {
-        toast.error('error' in json ? json.error : 'Erreur lors de la recherche des établissements')
+        toast.error('error' in json ? json.error : t('schoolSearchError'))
         return
       }
       setSchools(json as PronoteSchool[])
@@ -173,7 +166,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
         setConnectError(json.error ?? 'Erreur de connexion')
         return
       }
-      toast.success('Pronote connecté avec succès')
+      toast.success(t('connectSuccess'))
       setConnection({
         instance_url: selectedSchool.url,
         username: pronoteUsername,
@@ -235,7 +228,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
         setQrError(json.error ?? 'Erreur de connexion')
         return
       }
-      toast.success('Pronote connecté avec succès')
+      toast.success(t('connectSuccess'))
       setConnection({
         instance_url: json.instanceUrl ?? '',
         username: json.username ?? '',
@@ -269,9 +262,9 @@ export function BacClient({ initialConnection }: BacClientProps) {
           ? { ...prev, raw_data: json.data, last_synced_at: json.last_synced_at ?? null }
           : prev,
       )
-      toast.success('Données synchronisées')
+      toast.success(t('syncSuccess'))
     } catch {
-      toast.error('Impossible de synchroniser avec Pronote')
+      toast.error(t('syncError'))
     } finally {
       setSyncing(false)
     }
@@ -286,12 +279,12 @@ export function BacClient({ initialConnection }: BacClientProps) {
         toast.error(json.error ?? 'Erreur lors de la déconnexion')
         return
       }
-      toast.success('Pronote déconnecté')
+      toast.success(t('disconnected'))
       setConnection(null)
       setRawData(null)
       setLastSyncedAt(null)
     } catch {
-      toast.error('Impossible de se déconnecter')
+      toast.error(t('disconnectError'))
     } finally {
       setDisconnecting(false)
     }
@@ -305,9 +298,9 @@ export function BacClient({ initialConnection }: BacClientProps) {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <GraduationCap size={14} style={{ color: COLOR }} />
-              <Eyebrow>Notes Pronote</Eyebrow>
+              <Eyebrow>{t('grades')}</Eyebrow>
             </div>
-            <h1 className="section-h">Mes notes Pronote</h1>
+            <h1 className="section-h">{t('notesHeader')}</h1>
           </div>
           <button
             onClick={handleSync}
@@ -316,7 +309,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             style={{ padding: '10px 16px', fontSize: '13px' }}
           >
             <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
-            {syncing ? 'Synchronisation...' : 'Synchroniser les données'}
+            {syncing ? t('syncing') : t('sync')}
           </button>
         </div>
 
@@ -337,18 +330,18 @@ export function BacClient({ initialConnection }: BacClientProps) {
                 {connection.instance_url}
               </p>
               <p className="text-xs mt-0.5" style={{ color: 'var(--ink-500)' }}>
-                Identifiant : {connection.username}
+                {t('username')}: {connection.username}
               </p>
             </div>
           </div>
           {lastSyncedAt && (
             <p className="mono text-xs" style={{ color: 'var(--ink-400)' }}>
-              Dernière synchronisation : {formatDate(lastSyncedAt)}
+              {t('lastSync', {date: format.dateTime(new Date(lastSyncedAt), {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'})})}
             </p>
           )}
           {!lastSyncedAt && (
             <p className="text-xs" style={{ color: 'var(--ink-400)' }}>
-              Aucune synchronisation effectuée - cliquez sur "Synchroniser" pour récupérer vos notes.
+              {t('noSync')}
             </p>
           )}
         </div>
@@ -376,7 +369,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             style={{ color: 'var(--text-3)' }}
           >
             <Unlink size={13} />
-            {disconnecting ? 'Déconnexion...' : 'Déconnecter Pronote'}
+            {disconnecting ? t('disconnecting') : t('disconnectPronote')}
           </button>
         </div>
       </div>
@@ -390,11 +383,11 @@ export function BacClient({ initialConnection }: BacClientProps) {
       <div className="mb-8 animate-fade-up">
         <div className="flex items-center gap-2 mb-2">
           <GraduationCap size={14} style={{ color: COLOR }} />
-          <Eyebrow>Notes Pronote</Eyebrow>
+          <Eyebrow>{t('grades')}</Eyebrow>
         </div>
-        <h1 className="section-h">Connecter Pronote</h1>
+        <h1 className="section-h">{t('connectHeader')}</h1>
         <p className="text-sm mt-3" style={{ color: 'var(--ink-500)' }}>
-          Récupérez vos notes directement depuis votre espace Pronote.
+          {t('notesDescription')}
         </p>
       </div>
 
@@ -410,8 +403,8 @@ export function BacClient({ initialConnection }: BacClientProps) {
           >
             {(
               [
-                { key: 'credentials', label: 'Identifiants', Icon: User },
-                { key: 'qr', label: 'QR Code', Icon: QrCode },
+                { key: 'credentials', label: t('credentialsTab'), Icon: User },
+                { key: 'qr', label: t('qrTab'), Icon: QrCode },
               ] as const
             ).map(({ key, label, Icon }) => (
               <button
@@ -445,15 +438,15 @@ export function BacClient({ initialConnection }: BacClientProps) {
               style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-3)' }}
             >
               <p className="font-semibold mb-2" style={{ color: 'var(--text-2)' }}>
-                Pour te connecter via QR code Pronote :
+                {t('qrInstructions')}
               </p>
-              <p>1. Connecte-toi à ton espace Pronote depuis un navigateur</p>
-              <p>2. Va dans Informations personnelles &gt; Compte</p>
-              <p>3. Clique sur QR Code et choisis un code PIN à 4 chiffres</p>
-              <p>4. Fais une capture d'écran de la fenêtre QR Code</p>
-              <p>5. Importe cette capture ci-dessous</p>
+              <p>{t('qrStep1')}</p>
+              <p>{t('qrStep2')}</p>
+              <p>{t('qrStep3')}</p>
+              <p>{t('qrStep4')}</p>
+              <p>{t('qrStep5')}</p>
               <p className="pt-1" style={{ color: 'var(--text-4)' }}>
-                Les utilisateurs EduConnect peuvent suivre ces étapes sans connaître leur mot de passe Pronote.
+                {t('eduConnectHelp')}
               </p>
             </div>
 
@@ -491,7 +484,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
                         className="text-xs mt-0.5 hover:opacity-70 transition-opacity"
                         style={{ color: COLOR }}
                       >
-                        Changer l'image
+                        {t('changeImage')}
                       </button>
                     </div>
                     <button
@@ -522,10 +515,10 @@ export function BacClient({ initialConnection }: BacClientProps) {
                     <ImageIcon size={20} className="text-gray-500" />
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
-                        Importer la capture du QR code
+                        {t('importQr')}
                       </p>
                       <p className="text-xs mt-0.5" style={{ color: 'var(--text-4)' }}>
-                        PNG, JPEG, WEBP - cliquez ou glissez-déposez
+                        {t('qrHelp')}
                       </p>
                     </div>
                   </div>
@@ -541,7 +534,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   type="password"
                   value={pin}
                   onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  placeholder="Code PIN (4 chiffres)"
+              placeholder={t('pin')}
                   maxLength={4}
                   inputMode="numeric"
                   autoComplete="one-time-code"
@@ -571,14 +564,14 @@ export function BacClient({ initialConnection }: BacClientProps) {
               disabled={qrConnecting || !qrImageFile || pin.length !== 4}
               className="btn btn-primary w-full"
             >
-              {qrConnecting ? 'Connexion en cours...' : 'Connecter via QR code'}
+              {qrConnecting ? t('qrConnecting') : t('connectQr')}
             </button>
           </form>
         ) : !selectedSchool ? (
           /* Étape 1 : trouver l'établissement */
           <>
             <p className="text-sm font-semibold text-white mb-4">
-              Étape 1 - Trouver votre établissement
+              {t('stepOneLabel')}
             </p>
 
             {/* City search */}
@@ -591,7 +584,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
               <input
                 value={cityQuery}
                 onChange={(e) => setCityQuery(e.target.value)}
-                placeholder="Nom de votre ville ou commune..."
+                placeholder={t('city')}
                 className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
                 style={{
                   background: 'var(--surface-2)',
@@ -610,7 +603,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   className="w-4 h-4 rounded-full border-2 animate-spin"
                   style={{ borderColor: COLOR + '20', borderTopColor: COLOR }}
                 />
-                <span className="text-xs" style={{ color: 'var(--text-4)' }}>Recherche...</span>
+                <span className="text-xs" style={{ color: 'var(--text-4)' }}>{t('searching')}</span>
               </div>
             )}
 
@@ -640,14 +633,14 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   className="w-4 h-4 rounded-full border-2 animate-spin"
                   style={{ borderColor: COLOR + '20', borderTopColor: COLOR }}
                 />
-                <span className="text-xs" style={{ color: 'var(--text-4)' }}>Recherche des établissements...</span>
+                <span className="text-xs" style={{ color: 'var(--text-4)' }}>{t('searchSchools')}</span>
               </div>
             )}
 
             {!schoolsLoading && schools.length > 0 && (
               <>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--text-4)' }}>
-                  Établissements trouvés
+                  {t('schoolsFound')}
                 </p>
                 <div className="rounded-xl overflow-hidden border" style={{ borderColor: 'var(--border)' }}>
                   {schools.map((school, i) => (
@@ -678,7 +671,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
 
             {!schoolsLoading && schools.length === 0 && cityQuery && communes.length === 0 && !communeLoading && (
               <p className="text-xs py-2" style={{ color: 'var(--text-4)' }}>
-                Tapez le nom de votre commune pour commencer la recherche.
+                {t('startSearch')}
               </p>
             )}
           </>
@@ -691,11 +684,11 @@ export function BacClient({ initialConnection }: BacClientProps) {
               className="text-xs mb-5 transition-opacity hover:opacity-70"
               style={{ color: 'var(--text-3)' }}
             >
-              Changer d'établissement
+              {t('changeSchool')}
             </button>
 
             <p className="text-sm font-semibold text-white mb-4">
-              Étape 2 - Connexion à Pronote
+              {t('stepTwo')}
             </p>
 
             {/* School info */}
@@ -722,7 +715,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   type="text"
                   value={pronoteUsername}
                   onChange={(e) => setPronoteUsername(e.target.value)}
-                  placeholder="Identifiant Pronote"
+                  placeholder={t('username')}
                   required
                   autoComplete="username"
                   className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
@@ -745,7 +738,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
                   type="password"
                   value={pronotePassword}
                   onChange={(e) => setPronotePassword(e.target.value)}
-                  placeholder="Mot de passe Pronote"
+                  placeholder={t('passwordPronote')}
                   required
                   autoComplete="current-password"
                   className="w-full pl-8 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
@@ -761,7 +754,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
             </div>
 
             <p className="text-xs mb-5" style={{ color: 'var(--text-4)' }}>
-              Vos identifiants ne sont jamais stockés. Seul un token de reconnexion sécurisé est conservé.
+              {t('credentialsSafe')}
             </p>
 
             {connectError && (
@@ -778,7 +771,7 @@ export function BacClient({ initialConnection }: BacClientProps) {
               disabled={connecting || !pronoteUsername || !pronotePassword}
               className="btn btn-primary w-full"
             >
-              {connecting ? 'Connexion en cours...' : 'Connecter Pronote'}
+              {connecting ? t('connecting') : t('connect')}
             </button>
           </form>
         )}

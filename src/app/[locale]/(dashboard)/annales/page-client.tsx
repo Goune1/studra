@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useTranslations, useFormatter } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { PlusCircle, Scroll } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -12,6 +13,8 @@ import type { GeneratedPastExam } from '@/types'
 const COLOR = '#1F4D3F'
 
 export default function AnnalesListPage() {
+  const t = useTranslations('dashboard.annales')
+  const format = useFormatter()
   const [exams, setExams] = useState<GeneratedPastExam[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -33,20 +36,20 @@ export default function AnnalesListPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
         <div>
-          <Eyebrow className="mb-2">Annales</Eyebrow>
+          <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
           <div className="flex items-center gap-3">
-            <h1 className="section-h">Mes annales</h1>
+            <h1 className="section-h">{t('title')}</h1>
             <span
               className="mono text-xs px-2 py-1 rounded-full font-medium tabular-nums"
               style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}
             >
-              {loading ? '…' : exams.length} sujet{exams.length > 1 ? 's' : ''}
+              {loading ? '…' : t('count', {count: exams.length})}
             </span>
           </div>
         </div>
         <Link href="/annales/new" className="btn btn-primary shrink-0">
           <PlusCircle size={15} />
-          Nouvelle annale
+          {t('new')}
         </Link>
       </div>
 
@@ -60,9 +63,9 @@ export default function AnnalesListPage() {
         <EmptyState
           Icon={Scroll}
           color={COLOR}
-          title="Aucune annale générée"
-          subtitle="Uploade une ancienne annale et choisis un cours pour générer un nouveau sujet dans le même style."
-          ctaLabel="Générer ma première annale"
+          title={t('empty.title')}
+          subtitle={t('empty.subtitle')}
+          ctaLabel={t('new')}
           ctaHref="/annales/new"
         />
       ) : (
@@ -73,7 +76,7 @@ export default function AnnalesListPage() {
                 <DeleteEntityButton
                   table="generated_past_exams"
                   id={exam.id}
-                  entityLabel="cette annale"
+                  entityLabel={t('detail.entityLabel')}
                   variant="icon"
                   color={COLOR}
                   onDeleted={(id) => setExams((prev) => prev.filter((e) => e.id !== id))}
@@ -96,7 +99,7 @@ export default function AnnalesListPage() {
                   </p>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--ink-500)' }}>
                     {exam.questions_json.length} question{exam.questions_json.length > 1 ? 's' : ''} ·{' '}
-                    {new Date(exam.created_at).toLocaleDateString('fr-FR')}
+                    {format.dateTime(new Date(exam.created_at), {day: 'numeric', month: 'short', year: 'numeric'})}
                   </p>
                 </div>
               </Link>

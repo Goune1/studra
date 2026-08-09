@@ -1,6 +1,7 @@
 'use client'
 
 import { memo } from 'react'
+import { useTranslations } from 'next-intl'
 import { Edit3, Link2, Palette, Trash2 } from 'lucide-react'
 import type { SchemaNode, SchemaNodeColor } from '@/types'
 
@@ -15,6 +16,7 @@ interface ContextBarProps {
 }
 
 function ContextBarImpl({ node, screenPos, connecting, onRename, onConnect, onCycleColor, onDelete }: ContextBarProps) {
+  const t = useTranslations('components.schema')
   return (
     <div
       style={{
@@ -37,23 +39,23 @@ function ContextBarImpl({ node, screenPos, connecting, onRename, onConnect, onCy
       }}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <Pill label="Renommer" onClick={onRename} icon={<Edit3 size={14} />} />
+      <Pill label={t('rename')} onClick={onRename} icon={<Edit3 size={14} />} />
       <Pill
-        label={connecting ? 'Annuler la connexion' : 'Connecter'}
+        label={connecting ? t('cancelConnection') : t('connect')}
         onClick={onConnect}
         icon={<Link2 size={14} />}
         active={connecting}
       />
-      <Pill label={`Couleur : ${colorLabel(node.color)}`} onClick={onCycleColor} icon={<Palette size={14} />} />
-      <Pill label="Supprimer" onClick={onDelete} icon={<Trash2 size={14} />} tone="danger" />
+      <Pill label={`${t('color')}: ${t(colorLabelKey(node.color))}`} onClick={onCycleColor} icon={<Palette size={14} />} />
+      <Pill label={t('delete')} onClick={onDelete} icon={<Trash2 size={14} />} tone="danger" />
     </div>
   )
 }
 
-function colorLabel(c: SchemaNodeColor | undefined): string {
-  if (c === 'primary') return 'Principal'
-  if (c === 'accent') return 'Accent'
-  return 'Neutre'
+function colorLabelKey(c: SchemaNodeColor | undefined): 'primary' | 'accent' | 'neutral' {
+  if (c === 'primary') return 'primary'
+  if (c === 'accent') return 'accent'
+  return 'neutral'
 }
 
 function Pill({

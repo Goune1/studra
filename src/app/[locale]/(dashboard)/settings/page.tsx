@@ -1,6 +1,7 @@
 import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
-import Link from 'next/link'
+import {getTranslations} from 'next-intl/server'
+import { Link } from '@/i18n/navigation'
 import { Brain, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/checkout-button'
@@ -14,6 +15,8 @@ const COLOR = '#1F4D3F'
 export default async function SettingsPage({params}: {params: Promise<{locale: string}>}) {
   const {locale} = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('dashboard.settings')
+  const format = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' })
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
@@ -25,8 +28,8 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div className="animate-fade-up">
-        <Eyebrow className="mb-2">Compte</Eyebrow>
-        <h1 className="section-h">Paramètres</h1>
+        <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
+        <h1 className="section-h">{t('title')}</h1>
       </div>
 
       {/* FSRS shortcut */}
@@ -42,9 +45,9 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
           <Brain size={18} style={{ color: COLOR }} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>Répétition espacée (FSRS)</p>
+          <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{t('revision')}</p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
-            Stats, rétention cible, prévision
+            {t('revisionSummary')}
           </p>
         </div>
         <ChevronRight
@@ -59,20 +62,20 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
         className="rounded-2xl p-8 space-y-6 animate-fade-up"
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
       >
-        <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>Profil</h2>
+        <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>{t('profile')}</h2>
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>Email</label>
+          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>{t('email')}</label>
           <p className="text-sm" style={{ color: 'var(--ink)' }}>{user?.email}</p>
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>Nom complet</label>
-          <p className="text-sm" style={{ color: 'var(--ink)' }}>{profile?.full_name ?? 'Non renseigné'}</p>
+          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>{t('fullName')}</label>
+          <p className="text-sm" style={{ color: 'var(--ink)' }}>{profile?.full_name ?? t('notProvided')}</p>
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>Membre depuis</label>
+          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>{t('memberSince')}</label>
           <p className="text-sm" style={{ color: 'var(--ink)' }}>
             {profile?.created_at
-              ? new Date(profile.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+              ? format.format(new Date(profile.created_at))
               : '-'}
           </p>
         </div>
@@ -81,8 +84,8 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
           style={{ borderColor: 'var(--border)' }}
         >
           <div>
-            <p className="text-sm font-medium mb-1" style={{ color: 'var(--ink-700)' }}>Emails marketing</p>
-            <p className="text-xs" style={{ color: 'var(--ink-500)' }}>Recevoir les actualités et offres Studra par email.</p>
+            <p className="text-sm font-medium mb-1" style={{ color: 'var(--ink-700)' }}>{t('marketingEmails')}</p>
+            <p className="text-xs" style={{ color: 'var(--ink-500)' }}>{t('marketingDescription')}</p>
           </div>
           <MarketingConsentToggle
             initialValue={profile?.marketing_consent ?? false}
@@ -98,8 +101,8 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>Abonnement</h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>Votre abonnement Studra</p>
+            <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>{t('subscription')}</h2>
+            <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>{t('subscriptionDescription')}</p>
           </div>
           <span
             className="mono px-3 py-1.5 rounded-full text-xs font-semibold"
@@ -108,7 +111,7 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
               : { background: 'var(--surface-2)', color: 'var(--ink-500)', border: '1px solid var(--border)' }
             }
           >
-            {isPro ? 'Pro' : 'Gratuit'}
+            {isPro ? t('pro') : t('free')}
           </span>
         </div>
 
@@ -119,17 +122,17 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
           >
             <p className="text-sm" style={{ color: COLOR }}>
               {generationsLeft === 0
-                ? 'Tu as utilisé toutes tes générations ce mois-ci.'
-                : `Il te reste ${generationsLeft} génération${generationsLeft! > 1 ? 's' : ''} ce mois-ci.`}
+                ? t('allGenerationsUsed')
+                : t('generationsRemaining', {count: generationsLeft!})}
             </p>
           </div>
         )}
 
         <div className="space-y-3 mb-8">
           {[
-            { label: 'Flashcards illimitées',  included: isPro },
-            { label: 'Fiches illimitées',       included: isPro },
-            { label: 'Générations par mois',    value: isPro ? 'Illimitées' : '5' },
+            { label: t('unlimitedFlashcards'),  included: isPro },
+            { label: t('unlimitedNotes'),       included: isPro },
+            { label: t('generationsPerMonth'),    value: isPro ? t('unlimited') : '5' },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
               <span className="text-sm" style={{ color: 'var(--ink-700)' }}>{item.label}</span>

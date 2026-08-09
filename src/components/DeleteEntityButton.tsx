@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from 'next-intl'
 
 /** Destructive actions stay red (muted, on-system) regardless of the module accent. */
 const DANGER = '#B4503C'
@@ -36,6 +37,7 @@ export function DeleteEntityButton({
   stopPropagation = true,
 }: DeleteEntityButtonProps) {
   const [open, setOpen] = useState(false)
+  const t = useTranslations('common.delete')
 
   function handleOpen(e: React.MouseEvent) {
     if (stopPropagation) {
@@ -51,7 +53,7 @@ export function DeleteEntityButton({
         <button
           type="button"
           onClick={handleOpen}
-          aria-label="Supprimer"
+          aria-label={t('delete')}
           className="flex items-center justify-center w-8 h-8 rounded-lg transition-all"
           style={{ color: 'var(--ink-400)' }}
           onMouseEnter={(e) => { e.currentTarget.style.background = `${DANGER}15`; e.currentTarget.style.color = DANGER }}
@@ -70,7 +72,7 @@ export function DeleteEntityButton({
             color: DANGER,
           }}
         >
-          <Trash2 size={14} />Supprimer
+          <Trash2 size={14} />{t('delete')}
         </button>
       )}
 
@@ -105,6 +107,7 @@ function ConfirmDeleteDialog({
   onDeleted,
   redirectTo,
 }: ConfirmDeleteDialogProps) {
+  const t = useTranslations('common.delete')
   const router = useRouter()
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
@@ -115,11 +118,11 @@ function ConfirmDeleteDialog({
     setError('')
     const { error: err } = await supabase.from(table).delete().eq('id', id)
     if (err) {
-      setError(err.message || 'Erreur lors de la suppression')
+      setError(err.message || t('error'))
       setDeleting(false)
       return
     }
-    toast.success('Supprimé')
+    toast.success(t('deleted'))
     onDeleted?.(id)
     if (redirectTo) router.push(redirectTo)
     onClose()
@@ -143,9 +146,9 @@ function ConfirmDeleteDialog({
             <AlertTriangle size={16} style={{ color: DANGER }} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>Supprimer {entityLabel} ?</h2>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{t('confirm', { entity: entityLabel })}</h2>
             <p className="mt-1 text-xs" style={{ color: 'var(--ink-500)' }}>
-              Cette action est définitive et ne peut pas être annulée.
+              {t('warning')}
             </p>
           </div>
         </div>
@@ -168,7 +171,7 @@ function ConfirmDeleteDialog({
               color: 'var(--ink-700)',
             }}
           >
-            Annuler
+            {t('cancel')}
           </button>
           <button
             type="button"
@@ -178,7 +181,7 @@ function ConfirmDeleteDialog({
             style={{ background: DANGER }}
           >
             {deleting && <Loader2 size={12} className="animate-spin" />}
-            {deleting ? 'Suppression…' : 'Supprimer'}
+            {deleting ? t('deleting') : t('delete')}
           </button>
         </div>
       </div>

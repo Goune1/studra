@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import Link from 'next/link'
+import { useTranslations, useFormatter } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { GitBranch, PlusCircle, Search, ChevronDown } from 'lucide-react'
 import { EmptyState } from '@/components/content/EmptyState'
@@ -10,13 +11,9 @@ import type { Schema } from '@/types'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#1F4D3F'
-const MATIERES = ['Tous', 'SES', 'HGGSP', 'Maths', 'Histoire', 'Physique', 'Autre']
+const MATIERE_KEYS = ['all', 'ses', 'hggsp', 'maths', 'history', 'physics', 'other'] as const
 type SortKey = 'date_desc' | 'date_asc' | 'alpha'
-const SORT_LABELS: Record<SortKey, string> = { date_desc: 'Date ↓', date_asc: 'Date ↑', alpha: 'Titre A→Z' }
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-}
+const SORT_KEYS: Record<SortKey, 'dateDesc' | 'dateAsc' | 'alpha'> = { date_desc: 'dateDesc', date_asc: 'dateAsc', alpha: 'alpha' }
 
 function MiniGraph({ seed }: { seed: number }) {
   const n = Math.max(4, Math.min(7, seed))
@@ -47,10 +44,12 @@ function MiniGraph({ seed }: { seed: number }) {
 }
 
 export default function SchemasPage() {
+  const t = useTranslations('dashboard.schemas')
+  const format = useFormatter()
   const [schemas, setSchemas] = useState<Schema[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [matiere, setMatiere] = useState('Tous')
+  const [matiere, setMatiere] = useState('all')
   const [sort, setSort] = useState<SortKey>('date_desc')
   const [sortOpen, setSortOpen] = useState(false)
   const supabase = createClient()
@@ -70,7 +69,7 @@ export default function SchemasPage() {
   const filtered = useMemo(() => {
     let list = schemas
     if (search) list = list.filter((s) => s.title.toLowerCase().includes(search.toLowerCase()))
-    if (matiere !== 'Tous') list = list.filter((s) => s.subject === matiere)
+    if (matiere !== 'all') list = list.filter((s) => s.subject === t(`subjects.${matiere}` as never))
     return [...list].sort((a, b) => {
       if (sort === 'date_desc') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       if (sort === 'date_asc') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -82,35 +81,35 @@ export default function SchemasPage() {
     <div className="max-w-350">
       <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
         <div>
-          <Eyebrow className="mb-2">Schémas</Eyebrow>
+          <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
           <div className="flex items-center gap-3">
-            <h1 className="section-h">Mes schémas</h1>
+            <h1 className="section-h">{t('title')}</h1>
             <span className="mono text-xs px-2 py-1 rounded-full font-medium tabular-nums"
               style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
-              {loading ? '…' : schemas.length} schéma{schemas.length > 1 ? 's' : ''}
+              {loading ? '…' : t('count', {count: schemas.length})}
             </span>
           </div>
         </div>
         <Link href="/schemas/new" className="btn btn-primary shrink-0">
-          <PlusCircle size={15} />Nouveau schéma
+          <PlusCircle size={15} />{t('new')}
         </Link>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-6 animate-fade-up" style={{ animationDelay: '60ms' }}>
         <div className="relative flex-1 min-w-50">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-400)' }} />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher un schéma…"
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('searchPlaceholder')}
             className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
             style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
             onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')} />
         </div>
         <div className="flex gap-1 p-1 rounded-xl overflow-x-auto" style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}>
-          {MATIERES.map((m) => (
-            <button key={m} onClick={() => setMatiere(m)}
+          {MATIERE_KEYS.map((key) => (
+            <button key={key} onClick={() => setMatiere(key)}
               className="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all"
-              style={{ background: matiere === m ? 'var(--accent-soft)' : 'transparent', color: matiere === m ? COLOR : 'var(--ink-500)', border: matiere === m ? `1px solid ${COLOR}30` : '1px solid transparent' }}>
-              {m}
+              style={{ background: matiere === key ? 'var(--accent-soft)' : 'transparent', color: matiere === key ? COLOR : 'var(--ink-500)', border: matiere === key ? `1px solid ${COLOR}30` : '1px solid transparent' }}>
+              {t(`subjects.${key}`)}
             </button>
           ))}
         </div>
@@ -118,15 +117,15 @@ export default function SchemasPage() {
           <button onClick={() => setSortOpen((o) => !o)}
             className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium"
             style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}>
-            {SORT_LABELS[sort]}<ChevronDown size={12} />
+            {t(`sort.${SORT_KEYS[sort]}`)}<ChevronDown size={12} />
           </button>
           {sortOpen && (
             <div className="absolute right-0 top-full mt-1 rounded-xl overflow-hidden z-10 min-w-35"
               style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}>
-              {(Object.entries(SORT_LABELS) as [SortKey, string][]).map(([k, label]) => (
+              {(Object.keys(SORT_KEYS) as SortKey[]).map((k) => (
                 <button key={k} onClick={() => { setSort(k); setSortOpen(false) }}
                   className="w-full text-left px-4 py-2.5 text-xs hover:bg-black/[0.03] transition-colors"
-                  style={{ color: sort === k ? COLOR : 'var(--ink-700)' }}>{label}</button>
+                  style={{ color: sort === k ? COLOR : 'var(--ink-700)' }}>{t(`sort.${SORT_KEYS[k]}`)}</button>
               ))}
             </div>
           )}
@@ -134,9 +133,9 @@ export default function SchemasPage() {
       </div>
 
       {!loading && schemas.length === 0 ? (
-        <EmptyState Icon={GitBranch} color={COLOR} title="Aucun schéma"
-          subtitle="Créez votre premier schéma conceptuel à partir de votre cours"
-          ctaLabel="Créer mon premier schéma" ctaHref="/schemas/new" />
+        <EmptyState Icon={GitBranch} color={COLOR} title={t('empty.title')}
+          subtitle={t('empty.subtitle')}
+          ctaLabel={t('new')} ctaHref="/schemas/new" />
       ) : (
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((schema, i) => {
@@ -152,7 +151,7 @@ export default function SchemasPage() {
                   <DeleteEntityButton
                     table="schemas"
                     id={schema.id}
-                    entityLabel="ce schéma"
+                    entityLabel={t('detail.entityLabel')}
                     variant="icon"
                     color={COLOR}
                     onDeleted={(id) => setSchemas((prev) => prev.filter((s) => s.id !== id))}
@@ -188,15 +187,15 @@ export default function SchemasPage() {
                   <div className="flex-1 flex items-end"><MiniGraph seed={nodeCount} /></div>
                 </div>
                 <div className="flex items-center justify-between px-5 py-3 border-t" style={{ borderColor: 'var(--ink-200)', background: 'var(--surface-2)' }}>
-                  <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>{formatDate(schema.created_at)}</span>
-                  <span className="text-[10px] font-semibold" style={{ color: COLOR }}>Ouvrir →</span>
+                  <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>{format.dateTime(new Date(schema.created_at), {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+                  <span className="text-[10px] font-semibold" style={{ color: COLOR }}>{t('open')}</span>
                 </div>
               </Link>
               </div>
             )
           })}
           {!loading && filtered.length === 0 && schemas.length > 0 && (
-            <div className="col-span-full text-center py-16 text-sm" style={{ color: 'var(--ink-400)' }}>Aucun schéma ne correspond à votre recherche.</div>
+            <div className="col-span-full text-center py-16 text-sm" style={{ color: 'var(--ink-400)' }}>{t('empty.search')}</div>
           )}
         </div>
       )}

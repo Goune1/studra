@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useTranslations, useFormatter } from 'next-intl'
+import { useParams } from 'next/navigation'
+import { useRouter, Link } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link'
 import { toast } from 'sonner'
 import { ClipboardCheck, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Exam, ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen, ExamSession } from '@/types'
@@ -13,11 +14,9 @@ const COLOR = '#1F4D3F'
 
 function scoreColor(s: number) { return s >= 75 ? '#1F4D3F' : s >= 50 ? '#A8762E' : '#B4503C' }
 
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
-
 export default function ExamPage() {
+  const t = useTranslations('dashboard.exams')
+  const format = useFormatter()
   const params = useParams()
   const examId = params.examId as string
   const router = useRouter()
@@ -50,10 +49,10 @@ export default function ExamPage() {
         body: JSON.stringify({ userAnswers: answers }),
       })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Erreur'); setSubmitting(false); return }
+      if (!res.ok) { toast.error(json.error ?? t('toast.submitError')); setSubmitting(false); return }
       router.push(`/exams/${examId}/results/${json.sessionId}`)
     } catch {
-      toast.error('Erreur lors de la soumission')
+      toast.error(t('toast.submitError'))
       setSubmitting(false)
     }
   }
@@ -76,9 +75,9 @@ export default function ExamPage() {
         </div>
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-1" style={{ color: 'var(--ink)' }}>
-            Correction en cours…
+            {t('detail.analyzingTitle')}
           </h2>
-          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>L&apos;IA analyse tes réponses</p>
+          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('detail.analyzing')}</p>
         </div>
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
@@ -98,7 +97,7 @@ export default function ExamPage() {
     return (
       <div className="max-w-350">
         <Link href="/exams" className="inline-flex items-center gap-1.5 text-xs transition-colors mb-6" style={{ color: 'var(--ink-500)' }}>
-          <ClipboardCheck size={12} />← Mes examens
+          <ClipboardCheck size={12} />{t('detail.back')}
         </Link>
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,60fr)_minmax(0,40fr)] gap-8">
@@ -119,27 +118,27 @@ export default function ExamPage() {
             <div className="flex gap-3 mb-6">
               <span className="mono text-xs px-3 py-1.5 rounded-full font-medium tabular-nums"
                 style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
-                {questions.length} questions
+                {t('questions', {count: questions.length})}
               </span>
               <span className="mono text-xs px-3 py-1.5 rounded-full font-medium tabular-nums"
                 style={{ background: 'var(--surface-2)', color: 'var(--ink-700)', border: '1px solid var(--ink-200)' }}>
-                {mcqCount} QCM · {openCount} ouvertes
+                {t('openQuestions', {count: mcqCount, open: openCount})}
               </span>
             </div>
 
             <p className="text-sm mb-8 leading-relaxed" style={{ color: 'var(--ink-500)' }}>
-              Les QCM sont corrigés automatiquement. Les questions ouvertes sont évaluées par l&apos;IA selon ta réponse et les mots-clés attendus.
+              {t('detail.instructions')}
             </p>
 
             <button onClick={() => setStarted(true)} className="btn btn-primary w-full" style={{ padding: '16px 24px', fontSize: 16, borderRadius: 16 }}>
-              Commencer l&apos;examen →
+              {t('detail.start')} →
             </button>
 
             <div className="mt-4 flex justify-center">
               <DeleteEntityButton
                 table="exams"
                 id={exam.id}
-                entityLabel="cet examen"
+                entityLabel={t('detail.entityLabel')}
                 variant="button"
                 redirectTo="/exams"
               />
@@ -149,13 +148,13 @@ export default function ExamPage() {
           {/* Right: past sessions */}
           <div>
             <p className="mono text-[10px] font-medium uppercase tracking-widest mb-4" style={{ color: 'var(--ink-400)' }}>
-              Tentatives précédentes
+              {t('detail.attempts')}
             </p>
 
             {pastSessions.length === 0 ? (
               <div className="app-card p-6 text-center">
-                <p className="text-sm" style={{ color: 'var(--ink-500)' }}>Aucune tentative</p>
-                <p className="text-xs mt-1" style={{ color: 'var(--ink-400)' }}>Lance ton premier examen !</p>
+                <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('detail.noAttempts')}</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--ink-400)' }}>{t('detail.startFirst')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -172,16 +171,16 @@ export default function ExamPage() {
                             {session.score}%
                           </span>
                           <p className="mono text-xs mt-1 tabular-nums" style={{ color: 'var(--ink-500)' }}>
-                            {correct}/{session.total_questions} correctes
+                            {t('detail.correctAnswers', {correct, total: session.total_questions})}
                           </p>
                         </div>
                         <span className="mono text-[10px] tabular-nums text-right" style={{ color: 'var(--ink-400)' }}>
-                          {formatDateTime(session.completed_at)}
+                          {format.dateTime(new Date(session.completed_at), {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'})}
                         </span>
                       </div>
                       <Link href={`/exams/${examId}/results/${session.id}`}
                         className="text-xs font-semibold transition-colors hover:opacity-80" style={{ color: COLOR }}>
-                        Voir la correction →
+                        {t('results.detailedCorrection')} →
                       </Link>
                     </div>
                   )
@@ -207,13 +206,13 @@ export default function ExamPage() {
         style={{ background: 'var(--app-bg)', borderColor: 'var(--ink-200)' }}>
         <button onClick={() => setStarted(false)}
           className="flex items-center gap-1.5 text-xs transition-colors shrink-0" style={{ color: 'var(--ink-500)' }}>
-          <X size={14} />Quitter
+          <X size={14} />{t('detail.quit')}
         </button>
 
         <div className="flex-1 flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-              Question {currentIndex + 1} / {questions.length}
+              {t('detail.question', {current: currentIndex + 1, total: questions.length})}
             </span>
             <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
               {Math.round(progress)}%
@@ -230,7 +229,7 @@ export default function ExamPage() {
             color: currentQ.type === 'mcq' ? '#3E6B7A' : '#A8762E',
             border: `1px solid ${currentQ.type === 'mcq' ? '#3E6B7A25' : '#A8762E25'}`,
           }}>
-          {currentQ.type === 'mcq' ? 'QCM' : 'Ouverte'}
+          {currentQ.type === 'mcq' ? 'QCM' : t('detail.openLabel')}
         </span>
       </div>
 
@@ -271,7 +270,7 @@ export default function ExamPage() {
                 rows={6}
                 className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none transition-colors"
                 style={{ background: 'var(--bg-elev)', border: `1px solid var(--ink-200)`, color: 'var(--ink)' }}
-                placeholder="Rédige ta réponse ici…"
+                placeholder={t('detail.answerPlaceholder')}
                 onFocus={(e) => (e.currentTarget.style.borderColor = COLOR)}
                 onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
               />
@@ -286,7 +285,7 @@ export default function ExamPage() {
             <button onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))} disabled={currentIndex === 0}
               className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed border"
               style={{ color: 'var(--ink-500)', borderColor: 'var(--ink-200)' }}>
-              <ChevronLeft size={14} />Préc.
+              <ChevronLeft size={14} />{t('detail.previous')}
             </button>
 
             {/* Dot indicators */}
@@ -305,12 +304,12 @@ export default function ExamPage() {
             {!isLast ? (
               <button onClick={() => setCurrentIndex((i) => i + 1)} disabled={!answers[currentQ.id]}
                 className="btn btn-primary disabled:opacity-30 disabled:cursor-not-allowed">
-                Suiv.<ChevronRight size={14} />
+                {t('detail.next')}<ChevronRight size={14} />
               </button>
             ) : (
               <button onClick={handleSubmit} disabled={!allAnswered}
                 className="btn btn-primary disabled:opacity-30 disabled:cursor-not-allowed">
-                Soumettre ✓
+                {t('detail.submit')} ✓
               </button>
             )}
           </div>

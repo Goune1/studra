@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { ArrowLeft, Brain, TrendingUp, Calendar, Layers, Settings2 } from 'lucide-react'
 import { Eyebrow } from '@/components/ui/Eyebrow'
+import { useTranslations } from 'next-intl'
 
 const COLOR = '#1F4D3F'
 
@@ -25,6 +26,7 @@ interface FsrsSettings {
 }
 
 export default function RevisionSettingsPage() {
+  const t = useTranslations('dashboard.settings.fsrs')
   const [stats, setStats] = useState<FsrsStats | null>(null)
   const [settings, setSettings] = useState<FsrsSettings | null>(null)
   const [saving, setSaving] = useState(false)
@@ -68,12 +70,12 @@ export default function RevisionSettingsPage() {
           <ArrowLeft size={16} />
         </Link>
         <div>
-          <Eyebrow className="mb-1">Paramètres</Eyebrow>
+          <Eyebrow className="mb-1">{t('eyebrow')}</Eyebrow>
           <h1 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
-            Répétition espacée (FSRS)
+            {t('spacedRepetition')}
           </h1>
           <p className="mono text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
-            Free Spaced Repetition Scheduler · algorithme par défaut.
+              {t('algorithmSubtitle')}
           </p>
         </div>
       </div>
@@ -162,7 +164,7 @@ export default function RevisionSettingsPage() {
           <div className="flex items-center gap-2 mb-4">
             <Calendar size={14} style={{ color: COLOR }} />
             <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
-              Prévision révisions · 30 prochains jours
+              {t('forecast')}
             </p>
           </div>
           <div className="flex items-end gap-0.5 h-16">
@@ -170,7 +172,7 @@ export default function RevisionSettingsPage() {
               const height = maxForecast > 0 ? Math.max((count / maxForecast) * 100, count > 0 ? 8 : 0) : 0
               const isToday = date === new Date().toISOString().slice(0, 10)
               return (
-                <div key={date} className="flex-1 flex flex-col items-center justify-end" title={`${date} : ${count} carte${count > 1 ? 's' : ''}`}>
+                <div key={date} className="flex-1 flex flex-col items-center justify-end" title={t('forecastCardTitle', {date, count})}>
                   <div
                     className="w-full rounded-sm transition-all"
                     style={{
@@ -185,8 +187,8 @@ export default function RevisionSettingsPage() {
             })}
           </div>
           <div className="flex justify-between mt-1">
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>Aujourd&apos;hui</span>
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>J+30</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{t('todayLabel')}</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{t('dayThirty')}</span>
           </div>
         </div>
       )}
@@ -197,14 +199,14 @@ export default function RevisionSettingsPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '150ms' }}
       >
         <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
-          Paramètres
+          {t('parameters')}
         </p>
 
         {/* Retention slider */}
         <div>
           <div className="flex justify-between items-center mb-2">
             <label className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
-              Rétention cible
+              {t('targetRetention')}
             </label>
             <span className="mono text-sm font-semibold" style={{ color: COLOR }}>
               {Math.round(draftRetention * 100)}%
@@ -219,11 +221,11 @@ export default function RevisionSettingsPage() {
             style={{ accentColor: COLOR }}
           />
           <div className="flex justify-between mt-1">
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>70% · moins de révisions</span>
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>98% · plus de révisions</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{t('retentionLow')}</span>
+            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{t('retentionHigh')}</span>
           </div>
           <p className="text-[10px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
-            Probabilité de rappel souhaitée lors de chaque révision. 90% est le réglage recommandé.
+            {t('retentionHelp')}
           </p>
         </div>
 
@@ -231,12 +233,12 @@ export default function RevisionSettingsPage() {
         <div>
           <div className="flex justify-between items-center mb-2">
             <label className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
-              Intervalle maximum
+              {t('maximumInterval')}
             </label>
             <span className="mono text-sm" style={{ color: 'var(--ink-700)' }}>
               {draftInterval >= 365
-                ? `${Math.round(draftInterval / 365)} an${Math.round(draftInterval / 365) > 1 ? 's' : ''}`
-                : `${draftInterval} j`}
+                ? t('intervalValue', {count: Math.round(draftInterval / 365)})
+                : t('daysValue', {count: draftInterval})}
             </span>
           </div>
           <input
@@ -254,7 +256,7 @@ export default function RevisionSettingsPage() {
             onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
           />
           <p className="text-[10px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
-            Intervalle maximal entre deux révisions, en jours (défaut : 36 500 j ≈ 100 ans).
+            {t('intervalHelp')}
           </p>
         </div>
 
@@ -263,7 +265,7 @@ export default function RevisionSettingsPage() {
           disabled={saving || !settings || (draftRetention === settings.desired_retention && draftInterval === settings.maximum_interval)}
           className="btn btn-primary w-full"
         >
-          {saving ? 'Sauvegarde…' : 'Enregistrer les paramètres'}
+          {saving ? t('saveSettingsLoading') : t('saveSettings')}
         </button>
       </div>
 
@@ -273,25 +275,24 @@ export default function RevisionSettingsPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '180ms' }}
       >
         <p className="mono text-[10px] uppercase tracking-wider mb-3" style={{ color: 'var(--ink-400)' }}>
-          Algorithme
+          {t('algorithm')}
         </p>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: 'var(--ink)' }}>Paramètres</span>
+            <span className="text-sm" style={{ color: 'var(--ink)' }}>{t('parameters')}</span>
             <span
               className="mono text-xs px-2 py-0.5 rounded"
               style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}20` }}
             >
-              Standards FSRS v5
+              {t('standards')}
             </span>
           </div>
           <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-            Studra utilise les paramètres FSRS v5 par défaut, validés sur des millions de révisions.
-            La personnalisation algorithmique basée sur votre historique sera disponible dans une prochaine mise à jour.
+            {t('algorithmHelp')}
           </p>
           {settings && settings.total_reviews > 0 && (
             <p className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>
-              {settings.total_reviews} révision{settings.total_reviews > 1 ? 's' : ''} enregistrée{settings.total_reviews > 1 ? 's' : ''}
+              {t('reviewsRecorded', {count: settings.total_reviews})}
             </p>
           )}
         </div>

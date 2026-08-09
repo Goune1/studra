@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 const RADIUS = 44
 const STROKE = 8
@@ -20,6 +21,7 @@ interface ScoreRingProps {
 }
 
 export function ScoreRing({ rate, masteredCount, weakCount }: ScoreRingProps) {
+  const t = useTranslations('dashboard.lacunes')
   const [animated, setAnimated] = useState(false)
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export function ScoreRing({ rate, masteredCount, weakCount }: ScoreRingProps) {
         </div>
       </div>
 
-      <p className="text-xs text-center" style={{ color: 'var(--ink-500)' }}>Taux de réussite global</p>
+      <p className="text-xs text-center" style={{ color: 'var(--ink-500)' }}>{t('score')}</p>
 
       {/* Flanking stats */}
       <div className="flex gap-6">
@@ -73,14 +75,14 @@ export function ScoreRing({ rate, masteredCount, weakCount }: ScoreRingProps) {
           <div className="text-lg font-semibold tabular-nums" style={{ color: '#10B981' }}>
             {masteredCount}
           </div>
-          <div className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>maîtrisées</div>
+          <div className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>{t('mastery')}</div>
         </div>
         <div className="w-px" style={{ background: 'var(--border)' }} />
         <div className="text-center">
           <div className="text-lg font-semibold tabular-nums" style={{ color: '#EF4444' }}>
             {weakCount}
           </div>
-          <div className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>à retravailler</div>
+          <div className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>{t('review')}</div>
         </div>
       </div>
     </div>

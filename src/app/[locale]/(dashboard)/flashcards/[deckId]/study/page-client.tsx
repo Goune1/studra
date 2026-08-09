@@ -6,9 +6,10 @@ import { createClient } from '@/lib/supabase/client'
 import { FlashCard } from '@/components/flashcards/FlashCard'
 import type { DueCard } from '@/lib/fsrs/service'
 import type { RatingPreview } from '@/lib/fsrs/types'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { X, RotateCcw, CheckCircle, Clock } from 'lucide-react'
 import { trackFlashcardsSessionStart, trackFlashcardsSessionComplete, trackFlashcardsSessionAbandoned } from '@/lib/analytics'
+import { useFormatter, useTranslations } from 'next-intl'
 
 const COLOR = '#1F4D3F'
 
@@ -27,6 +28,8 @@ interface SessionStats {
 }
 
 export default function StudyPage() {
+  const t = useTranslations('flashcards.study')
+  const format = useFormatter()
   const params = useParams()
   const deckId = params.deckId as string
   const supabase = createClient()
@@ -188,7 +191,7 @@ export default function StudyPage() {
   // ── No cards due ──────────────────────────────────────────────────────────
   if (noCards) {
     const nextDate = nextDueAt
-      ? new Date(nextDueAt).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+      ? format.dateTime(new Date(nextDueAt), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
       : null
     return (
       <div className="h-full flex flex-col items-center justify-center px-4">
@@ -197,17 +200,17 @@ export default function StudyPage() {
             style={{ background: 'var(--accent-soft)', border: '1px solid rgba(31,77,63,0.2)' }}>
             <CheckCircle size={28} style={{ color: 'var(--accent)' }} />
           </div>
-          <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--ink)' }}>Tout est à jour !</h2>
+          <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--ink)' }}>{t('allCaughtUp')}</h2>
           <p className="text-sm mb-2" style={{ color: 'var(--ink-500)' }}>
-            {totalInDeck} carte{totalInDeck > 1 ? 's' : ''} dans ce deck — aucune révision due pour l&apos;instant.
+            {t('cardsInDeck', {count: totalInDeck})}
           </p>
           {nextDate && (
             <div className="flex items-center justify-center gap-2 text-xs mb-8" style={{ color: 'var(--accent)' }}>
-              <Clock size={12} />Prochaine révision : {nextDate}
+              <Clock size={12} />{t('nextReview', {date: nextDate})}
             </div>
           )}
           <Link href={`/flashcards/${deckId}`} className="btn btn-primary">
-            Retour au deck
+            {t('backToDeck')}
           </Link>
         </div>
       </div>
@@ -227,16 +230,16 @@ export default function StudyPage() {
           <div className="rounded-2xl border p-8 text-center mb-6"
             style={{ background: 'var(--bg-elev)', borderLeft: `4px solid ${sc}`, borderColor: 'var(--ink-200)' }}>
             <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3"
-              style={{ color: 'var(--ink-400)' }}>Session terminée</p>
+              style={{ color: 'var(--ink-400)' }}>{t('sessionFinished')}</p>
             <div className="text-6xl font-normal mb-2 tracking-tight" style={{ color: sc }}>{score}%</div>
             <p className="text-sm mb-6 line-clamp-1" style={{ color: 'var(--ink-500)' }}>{deckTitle}</p>
 
             <div className="grid grid-cols-4 gap-2 mb-2">
               {([
-                { label: 'À revoir',  value: stats.again, color: RATING_COLORS[1] },
-                { label: 'Difficile', value: stats.hard,  color: RATING_COLORS[2] },
-                { label: 'Bien',      value: stats.good,  color: RATING_COLORS[3] },
-                { label: 'Facile',    value: stats.easy,  color: RATING_COLORS[4] },
+                { label: t('again'),  value: stats.again, color: RATING_COLORS[1] },
+                { label: t('hard'), value: stats.hard,  color: RATING_COLORS[2] },
+                { label: t('good'),      value: stats.good,  color: RATING_COLORS[3] },
+                { label: t('easy'),    value: stats.easy,  color: RATING_COLORS[4] },
               ] as const).map(({ label, value, color }) => (
                 <div key={label} className="rounded-xl p-3 text-center"
                   style={{ background: color + '10', border: `1px solid ${color}20` }}>
@@ -250,10 +253,10 @@ export default function StudyPage() {
 
           <div className="flex gap-3">
             <button onClick={restart} className="btn btn-outline flex-1">
-              <RotateCcw size={13} />Recommencer
+              <RotateCcw size={13} />{t('restart')}
             </button>
             <Link href={`/flashcards/${deckId}`} className="btn btn-primary flex-1">
-              Retour au deck
+              {t('backToDeck')}
             </Link>
           </div>
         </div>
@@ -273,7 +276,7 @@ export default function StudyPage() {
         <Link href={`/flashcards/${deckId}`}
           className="flex items-center gap-1.5 text-xs transition-colors shrink-0"
           style={{ color: 'var(--ink-500)' }}>
-          <X size={14} />Quitter
+          <X size={14} />{t('cancel')}
         </Link>
 
         <div className="flex-1 flex flex-col gap-1">

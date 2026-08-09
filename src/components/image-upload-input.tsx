@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useImageCompressor } from '@/hooks/use-image-compressor'
 import { ImageIcon, CheckCircle, XCircle, Loader2, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export interface ImageUploadInputProps {
   onTextExtracted: (text: string) => void
@@ -35,14 +36,8 @@ const STATUS_ICON: Record<FileStatus, React.ReactNode> = {
   error: <XCircle size={12} style={{ color: '#B4503C' }} />,
 }
 
-const STATUS_LABEL: Record<FileStatus, string> = {
-  compressing: 'Compression…',
-  extracting: 'Extraction…',
-  done: 'Extrait',
-  error: 'Erreur',
-}
-
 export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUploadInputProps) {
+  const t = useTranslations('components.imageUpload')
   const [entries, setEntries] = useState<FileEntry[]>([])
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -72,7 +67,7 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
           const bm = await createImageBitmap(file)
           bm.close()
         } catch {
-          toast.error('Format HEIC non supporté sur ce navigateur, convertis en JPG avant d\'importer.')
+          toast.error(t('heicUnsupported'))
           URL.revokeObjectURL(previewUrl)
           return null
         }
@@ -93,7 +88,7 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
         if (!res.ok || json.error === 'EXTRACTION_FAILED') {
           updateEntry(id, { status: 'error' })
           toast.error(
-            'Désolé, nous n\'avons pas réussi à lire cette image. Essaie avec une photo mieux éclairée ou un meilleur contraste.',
+            t('extractionFailed'),
           )
           return null
         }
@@ -102,12 +97,12 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
         return json.text as string
       } catch {
         updateEntry(id, { status: 'error' })
-        toast.error('Une erreur est survenue, réessaie.')
+        toast.error(t('unknownError'))
         onError?.()
         return null
       }
     },
-    [compress, updateEntry, onError],
+    [compress, onError, t, updateEntry],
   )
 
   const handleFiles = useCallback(
@@ -118,17 +113,17 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
       const toProcess = valid.slice(0, slots)
 
       if (toProcess.length === 0) return
-      if (valid.length > slots) toast.error(`Maximum ${MAX_FILES} images à la fois`)
+      if (valid.length > slots) toast.error(t('maxFiles', { count: MAX_FILES }))
 
       const results = await Promise.all(toProcess.map(processFile))
       const texts = results.filter(Boolean) as string[]
 
       if (texts.length > 0) {
         onTextExtracted(texts.join('\n\n---\n\n'))
-        toast.success('Texte extrait avec succès — il a été ajouté à ton cours.')
+        toast.success(t('success'))
       }
     },
-    [disabled, entries, processFile, onTextExtracted],
+    [disabled, entries, onTextExtracted, processFile, t],
   )
 
   const onDrop = useCallback(
@@ -177,10 +172,10 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
         )}
         <div>
           <p className="text-sm font-medium" style={{ color: 'var(--ink-700)' }}>
-            {busy ? 'Extraction en cours…' : 'Importer une photo de cours'}
+            {busy ? t('extracting') : t('import')}
           </p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
-            JPG, PNG, WEBP, HEIC · Max {MAX_FILES} photos
+            {t('formats', { count: MAX_FILES })}
           </p>
         </div>
       </div>
@@ -202,7 +197,7 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
               {/* Status overlay */}
               <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-0.5">
                 {STATUS_ICON[entry.status]}
-                <span className="text-[9px] text-white/80 leading-tight">{STATUS_LABEL[entry.status]}</span>
+                <span className="text-[9px] text-white/80 leading-tight">{t(`status.${entry.status}`)}</span>
               </div>
               {/* Remove button — only when not in progress */}
               {(entry.status === 'done' || entry.status === 'error') && (

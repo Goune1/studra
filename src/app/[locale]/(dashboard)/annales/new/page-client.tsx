@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useRouter } from '@/i18n/navigation'
 import { toast } from 'sonner'
 import { Upload, FileText, Sparkles } from 'lucide-react'
 import ContentPicker from '@/components/ContentPicker'
@@ -11,6 +12,7 @@ import type { ContentItem } from '@/types'
 const COLOR = '#1F4D3F'
 
 export default function AnnalesNewPage() {
+  const t = useTranslations('dashboard.annales')
   const [examText, setExamText] = useState('')
   const [examFile, setExamFile] = useState<File | null>(null)
   const [extracting, setExtracting] = useState(false)
@@ -21,7 +23,7 @@ export default function AnnalesNewPage() {
 
   async function handleFileUpload(file: File) {
     if (file.type !== 'application/pdf') {
-      toast.error('Seuls les fichiers PDF sont acceptés')
+      toast.error(t('toast.pdfOnly'))
       return
     }
     setExamFile(file)
@@ -31,11 +33,11 @@ export default function AnnalesNewPage() {
       fd.append('file', file)
       const res = await fetch('/api/extract/pdf', { method: 'POST', body: fd })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Erreur extraction PDF'); return }
+      if (!res.ok) { toast.error(json.error ?? t('toast.extractError')); return }
       setExamText(json.text)
-      toast.success(`PDF extrait (${json.pages} page${json.pages > 1 ? 's' : ''})`)
+      toast.success(t('toast.pdfSuccess', {pages: json.pages}))
     } catch {
-      toast.error('Erreur lors de la lecture du PDF')
+      toast.error(t('toast.readError'))
     } finally {
       setExtracting(false)
     }
@@ -55,11 +57,11 @@ export default function AnnalesNewPage() {
         }),
       })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Erreur lors de la génération'); return }
-      toast.success('Annale générée !')
+      if (!res.ok) { toast.error(json.error ?? t('toast.generationError')); return }
+      toast.success(t('toast.success'))
       router.push(`/annales/${json.examId}`)
     } catch {
-      toast.error('Une erreur est survenue')
+      toast.error(t('toast.unexpected'))
     } finally {
       setLoading(false)
     }
@@ -71,10 +73,10 @@ export default function AnnalesNewPage() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-up">
-        <Eyebrow className="mb-2">Annales</Eyebrow>
-        <h1 className="section-h">Générer une annale</h1>
+        <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
+        <h1 className="section-h">{t('newPage.title')}</h1>
         <p className="mt-3 text-sm" style={{ color: 'var(--ink-500)' }}>
-          Uploade une ancienne annale, choisis ton cours — Studra génère un nouveau sujet dans le même style avec corrigé.
+          {t('newPage.description')}
         </p>
       </div>
 
@@ -84,10 +86,10 @@ export default function AnnalesNewPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
       >
         <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>
-          1. Ancienne annale
+          {t('newPage.stepExam')}
         </h2>
         <p className="text-xs mb-4" style={{ color: 'var(--ink-500)' }}>
-          Dépose un PDF ou colle le texte de l&apos;examen
+          {t('newPage.stepExamDescription')}
         </p>
 
         {/* PDF drop zone */}
@@ -114,7 +116,7 @@ export default function AnnalesNewPage() {
             }}
           />
           {extracting ? (
-            <p className="text-sm" style={{ color: 'var(--ink-500)' }}>Extraction…</p>
+            <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('newPage.extracting')}</p>
           ) : examFile ? (
             <div className="flex items-center gap-2">
               <FileText size={16} style={{ color: COLOR }} />
@@ -124,18 +126,18 @@ export default function AnnalesNewPage() {
             <>
               <Upload size={20} style={{ color: 'var(--ink-400)' }} />
               <p className="text-sm" style={{ color: 'var(--ink-500)' }}>
-                Dépose un PDF ici ou clique pour sélectionner
+                {t('newPage.dropPdf')}
               </p>
             </>
           )}
         </label>
 
-        <p className="mono text-xs text-center mb-2" style={{ color: 'var(--ink-400)' }}>ou</p>
+        <p className="mono text-xs text-center mb-2" style={{ color: 'var(--ink-400)' }}>{t('newPage.or')}</p>
 
         <textarea
           value={examText}
           onChange={(e) => setExamText(e.target.value)}
-          placeholder="Colle ici le texte de l'ancienne annale…"
+          placeholder={t('newPage.examPlaceholder')}
           rows={6}
           className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none transition-colors"
           style={{
@@ -148,7 +150,7 @@ export default function AnnalesNewPage() {
         />
         {examText.length > 0 && (
           <p className="mono text-xs mt-1" style={{ color: 'var(--ink-500)' }}>
-            {examText.length} caractères extraits
+            {t('newPage.characters', {count: examText.length})}
           </p>
         )}
       </div>
@@ -159,10 +161,10 @@ export default function AnnalesNewPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
       >
         <h2 className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>
-          2. Cours source
+          {t('newPage.stepCourse')}
         </h2>
         <p className="text-xs mb-4" style={{ color: 'var(--ink-500)' }}>
-          Sélectionne le cours sur lequel générer le nouveau sujet
+          {t('newPage.stepCourseDescription')}
         </p>
         <ContentPicker selected={courseContent} onSelect={setCourseContent} />
       </div>
@@ -173,13 +175,13 @@ export default function AnnalesNewPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '120ms' }}
       >
         <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--ink)' }}>
-          3. Titre du sujet généré
+          {t('newPage.stepTitle')}
         </h2>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Ex: Examen — Chapitre 3 — La photosynthèse"
+          placeholder={t('newPage.titlePlaceholder')}
           className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors"
           style={{
             background: 'var(--surface-2)',
@@ -198,11 +200,11 @@ export default function AnnalesNewPage() {
         style={{ padding: '14px', fontSize: '14px', animationDelay: '150ms' }}
       >
         <Sparkles size={15} />
-        {loading ? 'Génération en cours…' : 'Générer le sujet'}
+        {loading ? t('newPage.generating') : t('newPage.generate')}
       </button>
 
       <p className="mono text-xs text-center mt-3" style={{ color: 'var(--ink-400)' }}>
-        Compte comme 1 génération sur ton quota mensuel
+        {t('newPage.quota')}
       </p>
     </div>
   )

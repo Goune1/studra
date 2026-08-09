@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useParams } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { ChevronDown, ChevronUp, Printer } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -23,10 +25,11 @@ function QuestionCard({
   onToggle: () => void
   index: number
 }) {
+  const t = useTranslations('dashboard.annales')
   const typeColors: Record<string, { bg: string; fg: string; label: string }> = {
     mcq:      { bg: '#3B82F615', fg: '#3B82F6', label: 'QCM' },
-    open:     { bg: '#10B98115', fg: '#10B981', label: 'Question ouverte' },
-    default:  { bg: '#F59E0B15', fg: '#F59E0B', label: 'Cas pratique' },
+    open:     { bg: '#10B98115', fg: '#10B981', label: t('detail.answer') },
+    default:  { bg: '#F59E0B15', fg: '#F59E0B', label: t('detail.caseStudy') },
   }
   const tc = typeColors[q.type] ?? typeColors.default
 
@@ -53,7 +56,7 @@ function QuestionCard({
               </span>
               {q.points && (
                 <span className="mono text-xs" style={{ color: 'var(--ink-500)' }}>
-                  {q.points} pt{q.points > 1 ? 's' : ''}
+                  {t('detail.points', {count: q.points})}
                 </span>
               )}
             </div>
@@ -88,7 +91,7 @@ function QuestionCard({
               background: showAnswer ? COLOR + '08' : 'transparent',
             }}
           >
-            <span>Voir le corrigé</span>
+            <span>{t('detail.viewAnswer')}</span>
             {showAnswer ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
 
@@ -101,7 +104,7 @@ function QuestionCard({
               {answer.key_points && answer.key_points.length > 0 && (
                 <div className="mt-3">
                   <p className="mono text-xs font-semibold mb-1.5" style={{ color: 'var(--ink-500)' }}>
-                    Points clés attendus
+                    {t('detail.keyPoints')}
                   </p>
                   <ul className="space-y-1">
                     {answer.key_points.map((pt, i) => (
@@ -121,6 +124,7 @@ function QuestionCard({
 }
 
 export default function AnnalesExamPage() {
+  const t = useTranslations('dashboard.annales')
   const params = useParams()
   const router = useRouter()
   const examId = params.examId as string
@@ -163,7 +167,7 @@ export default function AnnalesExamPage() {
   if (loading || !exam) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>Chargement…</div>
+        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>{t('detail.loading')}</div>
       </div>
     )
   }
@@ -173,10 +177,10 @@ export default function AnnalesExamPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 animate-fade-up">
         <div>
-          <Eyebrow className="mb-2">Annales</Eyebrow>
+          <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
           <h1 className="section-h">{exam.title}</h1>
           <p className="mono text-xs mt-2" style={{ color: 'var(--ink-500)' }}>
-            {exam.questions_json.length} question{exam.questions_json.length > 1 ? 's' : ''}
+            {t('detail.questions', {count: exam.questions_json.length})}
           </p>
         </div>
         <div className="flex gap-2 shrink-0">
@@ -185,20 +189,20 @@ export default function AnnalesExamPage() {
             className="btn btn-outline"
             style={{ padding: '8px 14px', fontSize: '13px' }}
           >
-            {showAllAnswers ? 'Masquer corrigés' : 'Voir corrigés'}
+            {showAllAnswers ? t('detail.answer') : t('detail.viewAnswer')}
           </button>
           <button
             onClick={() => window.print()}
             className="btn btn-outline"
             style={{ padding: '8px 10px' }}
-            title="Imprimer"
+            title={t('detail.print')}
           >
             <Printer size={15} />
           </button>
           <DeleteEntityButton
             table="generated_past_exams"
             id={exam.id}
-            entityLabel="cette annale"
+            entityLabel={t('detail.entityLabel')}
             variant="button"
             color={COLOR}
             redirectTo="/annales"

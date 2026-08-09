@@ -1,5 +1,6 @@
 import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
+import {getTranslations} from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CheckoutButton } from '@/components/checkout-button'
@@ -7,24 +8,10 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 
 const COLOR = '#1F4D3F'
 
-const FEATURES_FREE = [
-  '5 générations IA par mois',
-  'Accès à tous les formats',
-  'Import PDF · texte · YouTube',
-  'Répétition espacée FSRS',
-]
-
-const FEATURES_PRO = [
-  'Générations IA illimitées',
-  'Mode Socrate (maïeutique)',
-  "Planning d'examen personnalisé",
-  'Analyse des lacunes avancée',
-  'Toutes les futures fonctionnalités',
-]
-
 export default async function UpgradePage({params}: {params: Promise<{locale: string}>}) {
   const {locale} = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('dashboard.upgrade')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from('profiles').select('plan, generations_used_this_month').eq('id', user!.id).single()
@@ -38,15 +25,15 @@ export default async function UpgradePage({params}: {params: Promise<{locale: st
     <div className="max-w-3xl mx-auto">
       {/* Header */}
       <div className="mb-10 animate-fade-up">
-        <Eyebrow className="mb-2">Abonnement</Eyebrow>
-        <h1 className="section-h">Passe à la vitesse supérieure</h1>
+        <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
+        <h1 className="section-h">{t('title')}</h1>
         {overQuota ? (
           <p className="text-sm mt-3" style={{ color: '#EF4444' }}>
-            Tu as utilisé tes 5 générations ce mois-ci. Passe Pro pour continuer sans limite.
+            {t('quota')}
           </p>
         ) : (
           <p className="text-sm mt-3" style={{ color: 'var(--ink-700)' }}>
-            Il te reste <strong style={{ color: 'var(--ink)' }}>{generationsLeft} génération{generationsLeft > 1 ? 's' : ''}</strong> ce mois-ci.
+            {t('remaining', {count: generationsLeft})}
           </p>
         )}
       </div>
@@ -59,14 +46,14 @@ export default async function UpgradePage({params}: {params: Promise<{locale: st
           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
         >
           <div>
-            <div className="text-lg font-semibold mb-1" style={{ color: 'var(--ink)' }}>Gratuit</div>
+            <div className="text-lg font-semibold mb-1" style={{ color: 'var(--ink)' }}>{t('free')}</div>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-semibold" style={{ color: 'var(--ink)' }}>0&nbsp;€</span>
-              <span className="text-sm" style={{ color: 'var(--ink-500)' }}>/pour toujours</span>
+              <span className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('forever')}</span>
             </div>
           </div>
           <ul className="flex flex-col gap-2.5 flex-1">
-            {FEATURES_FREE.map((f) => (
+            {(t.raw('freeFeatures') as string[]).map((f) => (
               <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: 'var(--ink-700)' }}>
                 <span
                   className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] flex-shrink-0"
@@ -80,7 +67,7 @@ export default async function UpgradePage({params}: {params: Promise<{locale: st
             className="py-3 rounded-xl text-center text-sm font-medium"
             style={{ border: '1px solid var(--border)', color: 'var(--ink-500)' }}
           >
-            Plan actuel
+            {t('currentPlan')}
           </div>
         </div>
 
@@ -97,17 +84,17 @@ export default async function UpgradePage({params}: {params: Promise<{locale: st
             className="mono absolute top-5 right-5 text-[10px] tracking-wide uppercase px-2.5 py-1 rounded-full font-medium"
             style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}30` }}
           >
-            Recommandé
+            {t('recommended')}
           </span>
           <div>
-            <div className="text-lg font-semibold mb-1" style={{ color: 'var(--ink)' }}>Pro</div>
+            <div className="text-lg font-semibold mb-1" style={{ color: 'var(--ink)' }}>{t('pro')}</div>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-semibold" style={{ color: 'var(--ink)' }}>4,99&nbsp;€</span>
-              <span className="text-sm" style={{ color: 'var(--ink-500)' }}>/mois</span>
+              <span className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('month')}</span>
             </div>
           </div>
           <ul className="flex flex-col gap-2.5 flex-1">
-            {FEATURES_PRO.map((f) => (
+            {(t.raw('proFeatures') as string[]).map((f) => (
               <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: 'var(--ink-700)' }}>
                 <span
                   className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] flex-shrink-0"
@@ -125,7 +112,7 @@ export default async function UpgradePage({params}: {params: Promise<{locale: st
         className="mono text-center text-xs animate-fade-up"
         style={{ color: 'var(--ink-400)', animationDelay: '90ms' }}
       >
-        Sans engagement · Annule en 1 clic depuis les paramètres · Paiement sécurisé via Stripe
+        {t('footer')}
       </p>
     </div>
   )

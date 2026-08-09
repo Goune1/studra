@@ -3,17 +3,19 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createHash } from 'crypto'
+import { getTranslations } from 'next-intl/server'
 
 function hashPassword(password: string) {
   return createHash('sha256').update(password).digest('hex')
 }
 
 export async function unlockBac(_prevState: string | null, formData: FormData): Promise<string | null> {
+  const t = await getTranslations('dashboard.bac')
   const password = formData.get('password') as string
   const expected = process.env.BAC_BETA_PASSWORD
 
   if (!expected || password !== expected) {
-    return 'Mot de passe incorrect.'
+    return t('wrongPassword')
   }
 
   const cookieStore = await cookies()

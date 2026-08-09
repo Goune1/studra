@@ -1,11 +1,11 @@
 import type {Locale} from 'next-intl'
+import {getFormatter, getTranslations, setRequestLocale} from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import {Link} from '@/i18n/navigation'
 import { FicheViewer } from '@/components/fiche-viewer'
 import { FileText, Clock, Type, Calendar, Layers } from 'lucide-react'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
-import { setRequestLocale } from 'next-intl/server'
 
 const COLOR = '#1F4D3F'
 
@@ -17,13 +17,11 @@ function extractHeadings(content: string): string[] {
   return content.split('\n').filter((l) => l.startsWith('## ')).map((l) => l.replace(/^#+\s+/, '').trim())
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
 export default async function FichePage({ params }: { params: Promise<{ ficheId: string; locale: string }> }) {
   const { ficheId, locale } = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('fiches.detail')
+  const format = await getFormatter()
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -38,7 +36,7 @@ export default async function FichePage({ params }: { params: Promise<{ ficheId:
   return (
     <div className="max-w-350">
       <Link href="/fiches" className="inline-flex items-center gap-1.5 text-xs transition-colors mb-6" style={{ color: 'var(--ink-500)' }}>
-        <FileText size={12} />← Mes fiches
+        <FileText size={12} />← {t('back')}
       </Link>
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,65fr)_minmax(0,35fr)] gap-8">
@@ -53,7 +51,7 @@ export default async function FichePage({ params }: { params: Promise<{ ficheId:
                 </span>
               )}
               <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                {formatDate(fiche.created_at)}
+                {format.dateTime(new Date(fiche.created_at), { day: 'numeric', month: 'long', year: 'numeric' })}
               </span>
             </div>
             <h1 className="section-h leading-tight">
@@ -72,7 +70,7 @@ export default async function FichePage({ params }: { params: Promise<{ ficheId:
           <div className="xl:sticky xl:top-8 space-y-4">
             {headings.length > 0 && (
               <div className="rounded-2xl border p-5" style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
-                <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--ink-400)' }}>Sommaire</p>
+                <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--ink-400)' }}>{t('summary')}</p>
                 <nav className="space-y-0.5">
                   {headings.map((h, i) => (
                     <a key={i} href={`#${h.toLowerCase().replace(/\s+/g, '-')}`}
@@ -89,12 +87,12 @@ export default async function FichePage({ params }: { params: Promise<{ ficheId:
             )}
 
             <div className="rounded-2xl border p-5" style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
-              <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--ink-400)' }}>Statistiques</p>
+              <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--ink-400)' }}>{t('stats')}</p>
               <div className="space-y-3">
                 {[
-                  { Icon: Type, label: 'Mots', value: `~${wc}` },
-                  { Icon: Clock, label: 'Lecture', value: `${rt} min` },
-                  { Icon: Calendar, label: 'Créée le', value: formatDate(fiche.created_at) },
+                  { Icon: Type, label: t('words'), value: `~${wc}` },
+                  { Icon: Clock, label: t('reading'), value: t('minutes', { count: rt }) },
+                  { Icon: Calendar, label: t('created'), value: format.dateTime(new Date(fiche.created_at), { day: 'numeric', month: 'long', year: 'numeric' }) },
                 ].map(({ Icon, label, value }) => (
                   <div key={label} className="flex items-center gap-3">
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: COLOR + '12' }}>
@@ -116,8 +114,8 @@ export default async function FichePage({ params }: { params: Promise<{ ficheId:
                 <Layers size={15} style={{ color: 'var(--accent)' }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold transition-colors" style={{ color: 'var(--ink)' }}>Créer des flashcards</p>
-                <p className="text-[10px] mt-0.5" style={{ color: 'var(--ink-500)' }}>Depuis cette fiche →</p>
+                <p className="text-xs font-semibold transition-colors" style={{ color: 'var(--ink)' }}>{t('createFlashcards')}</p>
+                <p className="text-[10px] mt-0.5" style={{ color: 'var(--ink-500)' }}>{t('fromFiche')} →</p>
               </div>
             </Link>
 

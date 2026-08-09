@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useRouter } from '@/i18n/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import type { FreeRecallSession } from '@/types'
@@ -15,6 +17,7 @@ function formatTime(seconds: number): string {
 }
 
 export default function RecallSessionPage() {
+  const t = useTranslations('dashboard.recall')
   const params = useParams()
   const router = useRouter()
   const sessionId = params.sessionId as string
@@ -59,18 +62,18 @@ export default function RecallSessionPage() {
       })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? 'Erreur lors de l\'évaluation')
+      toast.error(json.error ?? t('evaluationError'))
         setEnded(false)
         setSubmitting(false)
         return
       }
       router.push(`/recall/${sessionId}/results`)
     } catch {
-      toast.error('Erreur de connexion')
+      toast.error(t('connectionError'))
       setEnded(false)
       setSubmitting(false)
     }
-  }, [submitting, ended, sessionId, router])
+  }, [submitting, ended, sessionId, router, t])
 
   const textRef = useRef(text)
   useEffect(() => { textRef.current = text }, [text])
@@ -102,7 +105,7 @@ export default function RecallSessionPage() {
   if (!session || timeLeft === null) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>Chargement…</div>
+        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>{t('loading')}</div>
       </div>
     )
   }
@@ -121,14 +124,14 @@ export default function RecallSessionPage() {
               {session.content_title}
             </p>
             <p className="mono text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
-              Rappel libre — écris tout ce que tu sais
+              {t('label')} — {t('writePrompt')}
             </p>
           </div>
           <div
             className="text-3xl font-mono font-bold tabular-nums"
             style={{ color: timerColor }}
             aria-live="polite"
-            aria-label={`Temps restant : ${formatTime(timeLeft)}`}
+            aria-label={t('remaining', {time: formatTime(timeLeft)})}
           >
             {formatTime(timeLeft)}
           </div>
@@ -148,13 +151,10 @@ export default function RecallSessionPage() {
           <div className="flex-1 flex flex-col items-center justify-center gap-6">
             <div className="text-center">
               <p className="text-lg font-semibold mb-2" style={{ color: 'var(--ink)' }}>
-                Prêt ?
+                {t('start')} ?
               </p>
               <p className="text-sm max-w-sm" style={{ color: 'var(--ink-700)' }}>
-                Une fois lancé, tu as{' '}
-                <span style={{ color: COLOR }}>{formatTime(session.duration_seconds)}</span> pour
-                écrire tout ce que tu sais sur <strong>&laquo;{session.content_title}&raquo;</strong>.
-                Pas de correction orthographique, pas d&apos;aide.
+                {t('readyDescription', {duration: formatTime(session.duration_seconds), title: session.content_title})}
               </p>
             </div>
             <button
@@ -162,7 +162,7 @@ export default function RecallSessionPage() {
               className="btn btn-primary"
               style={{ padding: '14px 32px' }}
             >
-              Lancer le chronomètre
+              {t('start')}
             </button>
           </div>
         ) : (
@@ -171,7 +171,7 @@ export default function RecallSessionPage() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             disabled={ended}
-            placeholder="Commence à écrire tout ce que tu sais…"
+            placeholder={t('writePlaceholder')}
             spellCheck={false}
             autoCorrect="off"
             autoCapitalize="off"
@@ -184,7 +184,7 @@ export default function RecallSessionPage() {
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
             onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
-            aria-label="Zone de rappel libre"
+            aria-label={t('writeAria')}
           />
         )}
       </div>
@@ -200,7 +200,7 @@ export default function RecallSessionPage() {
             disabled={submitting}
             className="btn btn-primary"
           >
-            {submitting ? 'Évaluation…' : 'Terminer et évaluer'}
+            {submitting ? t('evaluating') : t('finish')}
           </button>
         </div>
       )}
@@ -208,7 +208,7 @@ export default function RecallSessionPage() {
       {ended && submitting && (
         <div className="shrink-0 px-4 md:px-0 pb-6 text-center">
           <p className="text-sm" style={{ color: 'var(--ink-700)' }}>
-            Évaluation en cours…
+            {t('evaluating')}
           </p>
         </div>
       )}

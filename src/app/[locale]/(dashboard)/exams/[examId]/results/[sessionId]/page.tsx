@@ -1,6 +1,7 @@
 import type {Locale} from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { notFound } from 'next/navigation'
 import { Sparkles, Check, X, ClipboardCheck } from 'lucide-react'
 import type { ExamAnswer, ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen } from '@/types'
@@ -40,6 +41,7 @@ export default async function ExamResultsPage({
 }) {
   const { examId, sessionId, locale } = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations({locale: locale as Locale, namespace: 'dashboard.exams'})
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -72,7 +74,7 @@ export default async function ExamResultsPage({
               <h1 className="text-5xl font-normal leading-none mb-2 tracking-tight" style={{ color: sc }}>
                 {correctCount}/{answers.length}
               </h1>
-              <p className="text-sm" style={{ color: 'var(--ink-500)' }}>questions correctes</p>
+              <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('results.correct')}</p>
               <h2 className="text-lg mt-2 line-clamp-1" style={{ color: 'var(--ink)' }}>
                 {exam.title}
               </h2>
@@ -87,27 +89,27 @@ export default async function ExamResultsPage({
 
           <div className="md:ml-auto flex gap-3 flex-wrap">
             <Link href={`/exams/${examId}`} className="btn btn-outline">
-              Recommencer
+              {t('results.back')}
             </Link>
             <Link href="/exams" className="btn btn-primary">
-              <ClipboardCheck size={14} />Mes examens
+              <ClipboardCheck size={14} />{t('results.mine')}
             </Link>
           </div>
         </div>
       </div>
 
       {/* Correction détaillée */}
-      <p className="mono text-[10px] font-medium uppercase tracking-widest mb-5" style={{ color: 'var(--ink-400)' }}>Correction détaillée</p>
+      <p className="mono text-[10px] font-medium uppercase tracking-widest mb-5" style={{ color: 'var(--ink-400)' }}>{t('results.detailedCorrection')}</p>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* QCM column */}
         {mcqQs.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-2">
-              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#3E6B7A' }}>QCM</span>
+              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#3E6B7A' }}>{t('results.mcq')}</span>
               <div className="flex-1 h-px" style={{ background: 'var(--ink-200)' }} />
               <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                {mcqQs.length} questions
+                {t('questions', {count: mcqQs.length})}
               </span>
             </div>
             {mcqQs.map((q, i) => {
@@ -130,15 +132,15 @@ export default async function ExamResultsPage({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>Q{i + 1}</span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#3E6B7A15', color: '#3E6B7A' }}>QCM</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#3E6B7A15', color: '#3E6B7A' }}>{t('results.mcq')}</span>
                       </div>
                       <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink)' }}>{q.question}</p>
                       <div className="space-y-1.5 text-xs">
                         <p style={{ color: ans.is_correct ? OK : KO }}>
-                          {ans.is_correct ? '✓' : '✗'} Ta réponse : <span className={ans.is_correct ? '' : 'line-through opacity-70'}>{chosen}</span>
+                          {ans.is_correct ? '✓' : '✗'} {t('results.yourAnswer')} <span className={ans.is_correct ? '' : 'line-through opacity-70'}>{chosen}</span>
                         </p>
                         {!ans.is_correct && (
-                          <p style={{ color: OK }}>✓ Bonne réponse : {correct}</p>
+                          <p style={{ color: OK }}>✓ {t('results.correctAnswer')} {correct}</p>
                         )}
                         {!ans.is_correct && mcq.explanation && (
                           <p className="italic mt-2 pt-2 border-t" style={{ color: 'var(--ink-500)', borderColor: 'var(--ink-200)' }}>{mcq.explanation}</p>
@@ -156,10 +158,10 @@ export default async function ExamResultsPage({
         {openQs.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-2">
-              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#A8762E' }}>Ouvertes</span>
+              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#A8762E' }}>{t('results.open')}</span>
               <div className="flex-1 h-px" style={{ background: 'var(--ink-200)' }} />
               <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                {openQs.length} questions
+                {t('questions', {count: openQs.length})}
               </span>
             </div>
             {openQs.map((q, i) => {
@@ -174,7 +176,7 @@ export default async function ExamResultsPage({
                     <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
                       Q{mcqQs.length + i + 1}
                     </span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#A8762E15', color: '#A8762E' }}>Ouverte</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#A8762E15', color: '#A8762E' }}>{t('results.openSingular')}</span>
                     <span className="mono text-[9px] px-2 py-0.5 rounded-full font-semibold ml-auto"
                       style={{ background: scoreColor(aiScore * 10) + '15', color: scoreColor(aiScore * 10) }}>
                       {aiScore}/10
@@ -187,14 +189,14 @@ export default async function ExamResultsPage({
                       {ans.user_answer}
                     </div>
                   ) : (
-                    <p className="text-xs italic mb-3" style={{ color: 'var(--ink-400)' }}>Aucune réponse</p>
+                    <p className="text-xs italic mb-3" style={{ color: 'var(--ink-400)' }}>{t('results.noAnswer')}</p>
                   )}
                   {ans.feedback && (
                     <div className="px-3 py-2.5 rounded-lg text-xs leading-relaxed"
                       style={{ background: 'var(--accent-soft)' }}>
                       <div className="flex items-center gap-1.5 mb-1">
                         <Sparkles size={11} style={{ color: 'var(--accent)' }} />
-                        <span className="text-[10px] font-semibold" style={{ color: 'var(--accent)' }}>Retour IA</span>
+                        <span className="text-[10px] font-semibold" style={{ color: 'var(--accent)' }}>{t('results.aiFeedback')}</span>
                       </div>
                       <p style={{ color: 'var(--ink-700)' }}>{ans.feedback}</p>
                     </div>

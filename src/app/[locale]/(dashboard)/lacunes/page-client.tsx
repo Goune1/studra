@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { RefreshCw } from 'lucide-react'
 import { KpiStrip } from '@/components/lacunes/KpiStrip'
 import { WeaknessCardList } from '@/components/lacunes/WeaknessCardList'
@@ -29,6 +30,7 @@ interface ApiResponse {
 }
 
 export default function LacunesPage() {
+  const t = useTranslations('dashboard.lacunes')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [data, setData] = useState<ApiResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -112,10 +114,10 @@ export default function LacunesPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
         <div>
-          <Eyebrow className="mb-2">Lacunes</Eyebrow>
-          <h1 className="section-h">Mes points faibles</h1>
+          <Eyebrow className="mb-2">{t('label')}</Eyebrow>
+          <h1 className="section-h">{t('title')}</h1>
           <p className="mono text-xs mt-2" style={{ color: 'var(--ink-400)' }}>
-            Basé sur {data.stats.sessions} révisions &nbsp;·&nbsp; {data.lacunes.length} point{data.lacunes.length > 1 ? 's' : ''} faible{data.lacunes.length > 1 ? 's' : ''}
+            {t('basedOn', {sessions: data.stats.sessions, count: data.lacunes.length})}
           </p>
         </div>
 
@@ -126,7 +128,7 @@ export default function LacunesPage() {
           style={{ padding: '10px 16px', fontSize: '13px' }}
         >
           <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-          {refreshing ? 'Analyse...' : "Relancer l'analyse"}
+          {refreshing ? t('refreshing') : t('refresh')}
         </button>
       </div>
 

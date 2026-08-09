@@ -1,4 +1,5 @@
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
+import { useFormatter, useTranslations } from 'next-intl'
 import type { DashboardData, RecentItem, ToolType } from '@/lib/dashboard/queries'
 
 // Minimum de reviews sur 30j pour afficher un % de rétention significatif
@@ -27,7 +28,7 @@ const TYPE_LABEL: Record<ToolType, string> = {
   examen: 'Examen',
 }
 
-function relativeTime(dateStr: string): string {
+function relativeTime(dateStr: string, formatDate: (date: Date) => string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const m = Math.floor(diff / 60_000)
   if (m < 1) return "à l'instant"
@@ -37,7 +38,7 @@ function relativeTime(dateStr: string): string {
   const days = Math.floor(h / 24)
   if (days === 1) return 'hier'
   if (days < 7) return `il y a ${days}j`
-  return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+  return formatDate(new Date(dateStr))
 }
 
 function TypeIcon({ type }: { type: ToolType }) {
@@ -84,6 +85,8 @@ const CREATE_TOOLS = [
 ]
 
 export function DashboardActive({ data, dateLabel }: { data: DashboardData; dateLabel: string }) {
+  const t = useTranslations('dashboard')
+  const format = useFormatter()
   const { user, dueCards, dueDecks, reviewEstimateMin, todayTasks, week, upcomingExams, recentItems } = data
 
   // Determine MAINTENANT content
@@ -146,7 +149,7 @@ export function DashboardActive({ data, dateLabel }: { data: DashboardData; date
 
       {/* MAINTENANT */}
       <div style={{ ...card, borderLeft: '3px solid var(--accent)', padding: '26px 30px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={monoSm}>MAINTENANT</div>
+        <div style={monoSm}>{t('now')}</div>
         <h1 style={{ fontSize: 'clamp(20px, 3.2vw, 27px)', fontWeight: 600, letterSpacing: '-.02em', lineHeight: 1.15, color: 'var(--ink)', margin: 0 }}>
           {nowTitle}
         </h1>
@@ -305,7 +308,7 @@ export function DashboardActive({ data, dateLabel }: { data: DashboardData; date
                   {TYPE_LABEL[item.type]} · {item.title}
                 </span>
                 <span style={{ fontSize: 12.5, color: 'var(--ink-500)', flexShrink: 0 }}>
-                  {relativeTime(item.createdAt)}
+                  {relativeTime(item.createdAt, (date) => format.dateTime(date, { day: 'numeric', month: 'short' }))}
                 </span>
               </Link>
             ))}

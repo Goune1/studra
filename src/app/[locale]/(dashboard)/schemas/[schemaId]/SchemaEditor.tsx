@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import type { SchemaData, SchemaEdge, SchemaNode, SchemaNodeColor, SchemaViewport } from '@/types'
 import { Canvas } from '@/components/schema/Canvas'
@@ -28,6 +29,8 @@ function vibrate(pattern: number | number[]) {
 }
 
 export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProps) {
+  const t = useTranslations('dashboard.schemas.toast')
+  const schemaT = useTranslations('dashboard.schemas')
   const [state, dispatch] = useSchemaStore({
     nodes: initialData.nodes,
     edges: initialData.edges,
@@ -76,11 +79,11 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
       savedRef.current = payload
       dispatch({ type: 'mark-clean' })
       setStatus('saved')
-      toast.success('Schéma sauvegardé')
+      toast.success(t('saved'))
       vibrate(8)
     } catch {
       setStatus('dirty')
-      toast.error('Échec de la sauvegarde')
+      toast.error(t('saveError'))
     }
   }, [schemaId, dispatch])
 
@@ -286,7 +289,7 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
 
   const handleToggleLock = useCallback(() => {
     dispatch({ type: 'toggle-lock' })
-    toast(state.locked ? 'Schéma déverrouillé' : 'Schéma verrouillé')
+    toast(state.locked ? t('unlocked') : t('locked'))
   }, [dispatch, state.locked])
 
   const handleMinimapRecenter = useCallback(
@@ -433,7 +436,7 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
       >
         {Math.round(state.viewport.zoom * 100)}%
         <span style={{ marginLeft: 8, opacity: 0.6 }}>
-          {state.nodes.length} nœuds · {state.edges.length} relations
+          {schemaT('detail.stats', {nodes: state.nodes.length, edges: state.edges.length})}
         </span>
       </div>
 

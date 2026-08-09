@@ -1,5 +1,6 @@
 import type {Locale} from 'next-intl'
 import {setRequestLocale} from 'next-intl/server'
+import {getTranslations} from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/checkout-button'
 import { ManageSubscriptionButton } from '@/components/manage-subscription-button'
@@ -10,6 +11,7 @@ const COLOR = '#1F4D3F'
 export default async function BillingPage({params}: {params: Promise<{locale: string}>}) {
   const {locale} = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('dashboard.billing')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
@@ -21,8 +23,8 @@ export default async function BillingPage({params}: {params: Promise<{locale: st
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-up">
-        <Eyebrow className="mb-2">Compte</Eyebrow>
-        <h1 className="section-h">Abonnement</h1>
+        <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
+        <h1 className="section-h">{t('title')}</h1>
       </div>
 
       <div
@@ -31,8 +33,8 @@ export default async function BillingPage({params}: {params: Promise<{locale: st
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>Plan actuel</h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>Votre abonnement Studra</p>
+            <h2 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>{t('currentPlan')}</h2>
+            <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>{t('description')}</p>
           </div>
           <span
             className="mono px-3 py-1.5 rounded-full text-xs font-semibold"
@@ -41,7 +43,7 @@ export default async function BillingPage({params}: {params: Promise<{locale: st
               : { background: 'var(--surface-2)', color: 'var(--ink-500)', border: '1px solid var(--border)' }
             }
           >
-            {isPro ? 'Pro' : 'Gratuit'}
+            {isPro ? t('pro') : t('free')}
           </span>
         </div>
 
@@ -52,17 +54,17 @@ export default async function BillingPage({params}: {params: Promise<{locale: st
           >
             <p className="text-sm" style={{ color: COLOR }}>
               {generationsLeft === 0
-                ? 'Tu as utilisé toutes tes générations ce mois-ci.'
-                : `Il te reste ${generationsLeft} génération${generationsLeft! > 1 ? 's' : ''} ce mois-ci.`}
+                ? t('allGenerationsUsed')
+                : t('generationsRemaining', {count: generationsLeft!})}
             </p>
           </div>
         )}
 
         <div className="space-y-3 mb-8">
           {[
-            { label: 'Flashcards illimitées', included: isPro },
-            { label: 'Fiches illimitées', included: isPro },
-            { label: 'Générations par mois', value: isPro ? 'Illimitées' : '5' },
+            { label: t('flashcards'), included: isPro },
+            { label: t('notes'), included: isPro },
+            { label: t('generations'), value: isPro ? t('unlimited') : '5' },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
               <span className="text-sm" style={{ color: 'var(--ink-700)' }}>{item.label}</span>

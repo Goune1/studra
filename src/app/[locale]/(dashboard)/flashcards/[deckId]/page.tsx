@@ -1,18 +1,19 @@
 import type {Locale} from 'next-intl'
+import {getFormatter, getTranslations, setRequestLocale} from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
+import {Link} from '@/i18n/navigation'
 import { notFound } from 'next/navigation'
-import { formatDate } from '@/lib/utils'
 import { Layers, BookOpen } from 'lucide-react'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
-import { setRequestLocale } from 'next-intl/server'
 
 const COLOR = '#1F4D3F'
 
 export default async function DeckPage({ params }: { params: Promise<{ deckId: string; locale: string }> }) {
   const { deckId, locale } = await params
   setRequestLocale(locale as Locale)
+  const t = await getTranslations('flashcards.detail')
+  const format = await getFormatter()
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -30,7 +31,7 @@ export default async function DeckPage({ params }: { params: Promise<{ deckId: s
         className="inline-flex items-center gap-1.5 text-xs mb-6 transition-colors"
         style={{ color: 'var(--ink-500)' }}
       >
-        <Layers size={12} />← Mes decks
+        <Layers size={12} />← {t('back')}
       </Link>
 
       {/* Header */}
@@ -48,13 +49,13 @@ export default async function DeckPage({ params }: { params: Promise<{ deckId: s
             className="mono text-[10px] tabular-nums"
             style={{ color: 'var(--ink-400)' }}
           >
-            {formatDate(deck.created_at)}
+            {format.dateTime(new Date(deck.created_at), { day: 'numeric', month: 'short', year: 'numeric' })}
           </span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1">
-            <Eyebrow className="mb-2">Deck</Eyebrow>
+            <Eyebrow className="mb-2">{t('deck')}</Eyebrow>
             <h1 className="section-h">{deck.title}</h1>
           </div>
 
@@ -71,7 +72,7 @@ export default async function DeckPage({ params }: { params: Promise<{ deckId: s
               href={`/flashcards/${deckId}/study`}
               className="btn btn-primary"
             >
-              <BookOpen size={14} />Réviser
+              <BookOpen size={14} />{t('study')}
             </Link>
           </div>
         </div>
@@ -81,7 +82,7 @@ export default async function DeckPage({ params }: { params: Promise<{ deckId: s
             className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
             style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25` }}
           >
-            {cards?.length ?? 0} carte{(cards?.length ?? 0) > 1 ? 's' : ''}
+            {t('cardCount', { count: cards?.length ?? 0 })}
           </span>
         </div>
       </div>
@@ -91,7 +92,7 @@ export default async function DeckPage({ params }: { params: Promise<{ deckId: s
         className="mono text-[10px] font-semibold uppercase tracking-widest mb-5"
         style={{ color: 'var(--ink-400)' }}
       >
-        Aperçu des cartes
+        {t('preview')}
       </p>
 
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -119,7 +120,7 @@ export default async function DeckPage({ params }: { params: Promise<{ deckId: s
                 className="mono text-[9px] font-bold uppercase tracking-widest"
                 style={{ color: COLOR }}
               >
-                Réponse
+                {t('answer')}
               </span>
               <p className="text-xs mt-1 leading-relaxed line-clamp-3" style={{ color: 'var(--ink-700)' }}>
                 {card.answer}

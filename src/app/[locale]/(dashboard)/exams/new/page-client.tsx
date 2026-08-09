@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
@@ -11,6 +12,7 @@ import { trackExamGenerate, trackAIGenerationSuccess, trackAIGenerationError } f
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'schema', 'timeline']
 
 export default function NewExamPage() {
+  const t = useTranslations('dashboard.exams')
   const [loading, setLoading] = useState(false)
   const [also, setAlso] = useState<Set<AlsoKey>>(new Set())
   const [results, setResults] = useState<GeneratedResource[] | null>(null)
@@ -27,21 +29,21 @@ export default function NewExamPage() {
       const { primary, also: alsoRes } = await generateWithAlso('exam', [...also], data, toast.error)
       if (!primary.ok) {
         trackAIGenerationError('exam', 'generation_failed')
-        toast.error('Erreur lors de la génération de l\'examen')
+        toast.error(t('toast.generationError'))
         return
       }
       trackAIGenerationSuccess('exam', Date.now() - startedAt)
-      toast.success('Contenu généré avec succès !')
+      toast.success(t('toast.success'))
       setResults(buildResources('exam', primary.id!, alsoRes))
     } catch {
       trackAIGenerationError('exam', 'exception')
-      toast.error('Une erreur est survenue')
+      toast.error(t('toast.unexpected'))
     } finally {
       setLoading(false)
     }
   }
 
-  if (results) return <GenerationResultsScreen resources={results} newPath="/exams/new" newLabel="Créer un autre examen" />
+  if (results) return <GenerationResultsScreen resources={results} newPath="/exams/new" newLabel={t('newPage.another')} />
 
   if (loading) {
     return (
@@ -51,8 +53,8 @@ export default function NewExamPage() {
           <div className="absolute inset-0 flex items-center justify-center text-2xl">📝</div>
         </div>
         <div>
-          <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--ink)' }}>Génération en cours...</h2>
-          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>L&apos;IA rédige tes questions et prépare les corrections</p>
+          <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--ink)' }}>{t('newPage.loading')}</h2>
+          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{t('newPage.loadingDescription')}</p>
         </div>
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
@@ -66,16 +68,16 @@ export default function NewExamPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <Eyebrow className="mb-2">Examens</Eyebrow>
-        <h1 className="section-h">Nouvel examen</h1>
-        <p className="lede mt-3">L&apos;IA génère 7 QCM + 3 questions ouvertes avec correction automatique.</p>
+        <Eyebrow className="mb-2">{t('eyebrow')}</Eyebrow>
+        <h1 className="section-h">{t('newPage.title')}</h1>
+        <p className="lede mt-3">{t('newPage.description')}</p>
       </div>
       <div className="app-card p-8">
         <ContentInputForm
           onSubmit={handleGenerate}
-          submitLabel={also.size > 0 ? `📝 Générer l'examen + ${also.size} autre${also.size > 1 ? 's' : ''}` : '📝 Générer l\'examen'}
-          titlePlaceholder="Ex: Examen - Chapitre 3 Photosynthèse"
-          contentPlaceholder="Collez ici le contenu de votre cours à évaluer..."
+          submitLabel={also.size > 0 ? t('newPage.submitWithExtras', {count: also.size}) : t('newPage.submit')}
+          titlePlaceholder={t('newPage.titlePlaceholder')}
+          contentPlaceholder={t('newPage.contentPlaceholder')}
           loading={loading}
           extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
         />

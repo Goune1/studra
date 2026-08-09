@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
+import { Link } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
 import { CheckCircle, XCircle, AlertCircle, RefreshCw, Layers } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Eyebrow } from '@/components/ui/Eyebrow'
@@ -38,6 +40,7 @@ function ScoreRing({ score }: { score: number }) {
 }
 
 export default function RecallResultsPage() {
+  const t = useTranslations('dashboard.recall')
   const params = useParams()
   const router = useRouter()
   const sessionId = params.sessionId as string
@@ -63,7 +66,7 @@ export default function RecallResultsPage() {
   if (loading || !session?.evaluation) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>Chargement…</div>
+        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>{t('loading')}</div>
       </div>
     )
   }
@@ -75,8 +78,8 @@ export default function RecallResultsPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 animate-fade-up">
         <div>
-          <Eyebrow className="mb-2">Rappel libre</Eyebrow>
-          <h1 className="section-h">Résultats</h1>
+          <Eyebrow className="mb-2">{t('label')}</Eyebrow>
+          <h1 className="section-h">{t('results')}</h1>
           <p className="text-sm mt-2" style={{ color: 'var(--ink-500)' }}>
             {session.content_title}
           </p>
@@ -115,7 +118,7 @@ export default function RecallResultsPage() {
           <div className="flex items-center gap-2 mb-3">
             <XCircle size={16} style={{ color: '#EF4444' }} />
             <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              Notions oubliées ({evaluation.notions_oubliees.length})
+              {t('gaps')} ({evaluation.notions_oubliees.length})
             </h2>
           </div>
           <ul className="space-y-1.5">
@@ -138,7 +141,7 @@ export default function RecallResultsPage() {
           <div className="flex items-center gap-2 mb-3">
             <AlertCircle size={16} style={{ color: '#F59E0B' }} />
             <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              Points imprécis ou incorrects
+              {t('analysis')}
             </h2>
           </div>
           <ul className="space-y-1.5">
@@ -161,7 +164,7 @@ export default function RecallResultsPage() {
           <div className="flex items-center gap-2 mb-3">
             <Layers size={16} style={{ color: COLOR }} />
             <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              Flashcards suggérées
+              {t('flashcards')}
             </h2>
           </div>
           <div className="space-y-3">

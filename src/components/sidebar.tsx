@@ -1,9 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -33,22 +34,6 @@ interface NavItem {
   Icon: LucideIcon
   pro?: boolean
 }
-
-const navItems: NavItem[] = [
-  { href: '/dashboard',   label: 'Dashboard',    Icon: LayoutDashboard },
-  { href: '/flashcards',  label: 'Flashcards',   Icon: Layers },
-  { href: '/fiches',      label: 'Fiches',        Icon: FileText },
-  { href: '/socrate',     label: 'Socrate',       Icon: Lightbulb },
-  { href: '/exams',       label: 'Examens',       Icon: ClipboardCheck },
-  { href: '/planning',    label: 'Planning',      Icon: CalendarDays },
-  { href: '/timelines',   label: 'Frises',        Icon: AlignLeft },
-  { href: '/schemas',     label: 'Schémas',       Icon: GitBranch },
-  { href: '/recall',      label: 'Rappel libre',  Icon: PenLine },
-  { href: '/annales',     label: 'Annales',       Icon: Scroll },
-  { href: '/lacunes',     label: 'Lacunes',       Icon: Target },
-  { href: '/bac',         label: 'Notes Pronote', Icon: GraduationCap },
-]
-
 
 interface SidebarProps {
   isOpen: boolean
@@ -91,6 +76,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 }
 
 export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvatar }: SidebarProps) {
+  const t = useTranslations('shell')
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -120,13 +106,28 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    toast.success('Déconnecté')
+    toast.success(t('loggedOut'))
     router.push('/')
     router.refresh()
   }
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + '/')
+
+  const navItems: NavItem[] = [
+    { href: '/dashboard', label: t('nav.dashboard'), Icon: LayoutDashboard },
+    { href: '/flashcards', label: t('nav.flashcards'), Icon: Layers },
+    { href: '/fiches', label: t('nav.fiches'), Icon: FileText },
+    { href: '/socrate', label: t('nav.socrate'), Icon: Lightbulb },
+    { href: '/exams', label: t('nav.exams'), Icon: ClipboardCheck },
+    { href: '/planning', label: t('nav.planning'), Icon: CalendarDays },
+    { href: '/timelines', label: t('nav.timelines'), Icon: AlignLeft },
+    { href: '/schemas', label: t('nav.schemas'), Icon: GitBranch },
+    { href: '/recall', label: t('nav.recall'), Icon: PenLine },
+    { href: '/annales', label: t('nav.annales'), Icon: Scroll },
+    { href: '/lacunes', label: t('nav.gaps'), Icon: Target },
+    { href: '/bac', label: t('nav.grades'), Icon: GraduationCap },
+  ]
 
   return (
     <aside
@@ -149,7 +150,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
           onClick={onClose}
           className="md:hidden p-1.5 rounded-lg hover:bg-black/5 transition-colors"
           style={{ color: 'var(--ink-400)' }}
-          aria-label="Fermer"
+          aria-label={t('close')}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -166,7 +167,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
         {!isPro && (
           <div className="pt-3 mt-3 border-t" style={{ borderColor: 'var(--border-sub)' }}>
             <NavLink
-              item={{ href: '/upgrade', label: 'Passer Pro', Icon: Sparkles }}
+              item={{ href: '/upgrade', label: t('nav.upgrade'), Icon: Sparkles }}
               active={isActive('/upgrade')}
             />
           </div>
@@ -185,7 +186,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
               style={{ color: 'var(--text-2)' }}
             >
               <Settings size={15} />
-              Paramètres
+              {t('settings')}
             </Link>
             <button
               onClick={handleLogout}
@@ -193,7 +194,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
               style={{ color: 'var(--text-2)' }}
             >
               <LogOut size={15} />
-              Déconnexion
+              {t('logout')}
             </button>
           </div>
         )}

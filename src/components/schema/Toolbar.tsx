@@ -1,6 +1,7 @@
 'use client'
 
 import { memo } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Plus,
   ZoomIn,
@@ -46,6 +47,7 @@ function ToolbarImpl({
   status,
   compact,
 }: ToolbarProps) {
+  const t = useTranslations('components.schema')
   return (
     <div
       className="schema-toolbar"
@@ -64,15 +66,15 @@ function ToolbarImpl({
         justifyContent: 'center',
       }}
     >
-      <IconBtn label="Zoom arrière" onClick={onZoomOut}><ZoomOut size={16} /></IconBtn>
-      <IconBtn label="Zoom avant" onClick={onZoomIn}><ZoomIn size={16} /></IconBtn>
-      <IconBtn label="Zoom 100%" onClick={onResetZoom}><span style={{ fontSize: 11, fontWeight: 600, lineHeight: 1 }}>1:1</span></IconBtn>
-      <IconBtn label="Ajuster à la vue" onClick={onFitToView}><Maximize size={15} /></IconBtn>
+      <IconBtn label={t('zoomOut')} onClick={onZoomOut}><ZoomOut size={16} /></IconBtn>
+      <IconBtn label={t('zoomIn')} onClick={onZoomIn}><ZoomIn size={16} /></IconBtn>
+      <IconBtn label={t('zoomReset')} onClick={onResetZoom}><span style={{ fontSize: 11, fontWeight: 600, lineHeight: 1 }}>1:1</span></IconBtn>
+      <IconBtn label={t('fit')} onClick={onFitToView}><Maximize size={15} /></IconBtn>
       <Divider />
-      <IconBtn label="Ajouter un nœud" onClick={onAddNode} tone="primary"><Plus size={16} /></IconBtn>
-      <IconBtn label="Mise en page auto" onClick={onAutoLayout}><LayoutGrid size={15} /></IconBtn>
-      {compact ? <IconBtn label="Afficher la minimap" onClick={onToggleMinimap}><MapIcon size={15} /></IconBtn> : null}
-      <IconBtn label={locked ? 'Déverrouiller' : 'Verrouiller'} onClick={onToggleLock}>
+      <IconBtn label={t('addNode')} onClick={onAddNode} tone="primary"><Plus size={16} /></IconBtn>
+      <IconBtn label={t('autoLayout')} onClick={onAutoLayout}><LayoutGrid size={15} /></IconBtn>
+      {compact ? <IconBtn label={t('showMinimap')} onClick={onToggleMinimap}><MapIcon size={15} /></IconBtn> : null}
+      <IconBtn label={locked ? t('unlock') : t('lock')} onClick={onToggleLock}>
         {locked ? <Lock size={15} /> : <Unlock size={15} />}
       </IconBtn>
       <Divider />
@@ -133,25 +135,26 @@ function Divider() {
 }
 
 function SaveBtn({ onSave, status }: { onSave: () => void; status: SaveStatus }) {
+  const t = useTranslations('components.schema')
   const saving = status === 'saving'
   const saved = status === 'saved'
   const dirty = status === 'dirty'
-  let label = 'Sauvegardé'
+  let label = t('saved')
   let icon: React.ReactNode = <Check size={14} />
   let bg = 'rgba(34,197,94,0.15)'
   let color = '#86efac'
   if (saving) {
-    label = 'Sauvegarde...'
+    label = t('saving')
     icon = <Loader2 size={14} style={{ animation: 'schema-spin 1s linear infinite' }} />
     bg = 'rgba(139,122,255,0.18)'
     color = '#d4ccff'
   } else if (dirty) {
-    label = 'Sauvegarder'
+    label = t('save')
     icon = <Save size={14} />
     bg = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
     color = '#fff'
   } else if (saved) {
-    label = 'Sauvegardé'
+    label = t('saved')
   }
   return (
     <button

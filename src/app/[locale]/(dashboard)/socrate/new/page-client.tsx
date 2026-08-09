@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 import ContentPicker from '@/components/ContentPicker'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { ProGate } from '@/components/pro-gate'
@@ -11,6 +12,7 @@ import type { ContentItem } from '@/types'
 import type { Profile } from '@/types'
 
 export default function SocrateNewPage() {
+  const t = useTranslations('dashboard.socrate')
   const [selected, setSelected] = useState<ContentItem | null>(null)
   const [loading, setLoading] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -42,12 +44,12 @@ export default function SocrateNewPage() {
       })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? 'Erreur lors du démarrage')
+        toast.error(json.error ?? t('startError'))
         return
       }
       router.push(`/socrate/${json.sessionId}`)
     } catch {
-      toast.error('Une erreur est survenue')
+      toast.error(t('error'))
     } finally {
       setLoading(false)
     }
@@ -60,16 +62,16 @@ export default function SocrateNewPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <Eyebrow className="mb-2">Socrate</Eyebrow>
-        <h1 className="section-h">Mode Socrate</h1>
+        <Eyebrow className="mb-2">{t('label')}</Eyebrow>
+        <h1 className="section-h">{t('label')}</h1>
         <p className="lede mt-3">
-          Explique une notion à Socrate. Il t&apos;interroge par la maïeutique pour révéler ce que tu n&apos;as pas encore bien compris.
+          {t('description')}
         </p>
       </div>
 
       <div className="app-card p-6 mb-4">
         <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--ink-700)' }}>
-          Choisis le contenu à expliquer
+          {t('content')}
         </h2>
         <ContentPicker selected={selected} onSelect={setSelected} />
       </div>
@@ -91,11 +93,11 @@ export default function SocrateNewPage() {
         disabled={!selected || loading}
         className="btn btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {loading ? 'Démarrage…' : 'Démarrer la session Socrate'}
+        {loading ? t('starting') : t('start')}
       </button>
 
       <p className="text-xs text-center mt-3" style={{ color: 'var(--ink-500)' }}>
-        Compte comme 1 génération sur ton quota mensuel
+        {t('quota')}
       </p>
     </div>
   )
