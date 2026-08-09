@@ -871,6 +871,21 @@
       "unlimitedNotes": "Fiches illimitées",
       "generationsPerMonth": "Générations par mois",
       "unlimited": "Illimitées",
+      "deleteAccount": {
+        "title": "Supprimer mon compte",
+        "description": "Supprime définitivement ton compte Studra et toutes tes données (fiches, flashcards, examens, planning...). Cette action est irréversible.",
+        "cta": "Supprimer mon compte",
+        "confirmTitle": "Supprimer définitivement ton compte ?",
+        "warning": "Cette action est irréversible. Toutes tes données seront supprimées et ton abonnement, s'il est actif, sera immédiatement résilié.",
+        "typeEmailLabel": "Tape {email} pour confirmer",
+        "cancel": "Annuler",
+        "confirmCta": "Supprimer définitivement",
+        "deleting": "Suppression…",
+        "deleted": "Ton compte a été supprimé.",
+        "sessionExpired": "Session expirée.",
+        "emailMismatch": "L'email saisi ne correspond pas à ton compte.",
+        "genericError": "Impossible de supprimer le compte. Réessaie ou contacte le support."
+      },
       "fsrs": {
         "eyebrow": "Paramètres",
         "title": "Répétition espacée (FSRS)",

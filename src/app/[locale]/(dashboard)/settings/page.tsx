@@ -7,9 +7,10 @@ import { createClient } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/checkout-button'
 import { ManageSubscriptionButton } from '@/components/manage-subscription-button'
 import { MarketingConsentToggle } from '@/components/settings/MarketingConsentToggle'
+import { DeleteAccountButton } from '@/components/settings/DeleteAccountButton'
 import { LanguageSelector } from '@/components/LanguageSelector'
 import { Eyebrow } from '@/components/ui/Eyebrow'
-import { updateMarketingConsent } from './actions'
+import { updateMarketingConsent, deleteAccount } from './actions'
 
 const COLOR = '#1F4D3F'
 
@@ -162,6 +163,18 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
         </div>
 
         {!isPro ? <CheckoutButton /> : <ManageSubscriptionButton />}
+      </div>
+
+      {/* Zone de danger */}
+      <div
+        className="rounded-2xl p-8 space-y-4 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid #B4503C30', animationDelay: '90ms' }}
+      >
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>{t('deleteAccount.title')}</h2>
+          <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>{t('deleteAccount.description')}</p>
+        </div>
+        <DeleteAccountButton userEmail={user!.email ?? ''} deleteAccount={deleteAccount} />
       </div>
     </div>
   )

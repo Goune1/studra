@@ -78,3 +78,21 @@ export async function createPortalSession(
 
   return session.url
 }
+
+/**
+ * Cancels a subscription immediately (not at period end). Used when a user
+ * deletes their account: we must stop billing right away rather than let it
+ * run until the next renewal. Safe to call on an already-canceled subscription.
+ */
+export async function cancelSubscriptionImmediately(subscriptionId: string): Promise<void> {
+  const stripe = getStripe()
+  try {
+    await stripe.subscriptions.cancel(subscriptionId)
+  } catch (error) {
+    // Already canceled / doesn't exist: not fatal for account deletion.
+    if (error instanceof Stripe.errors.StripeError && error.code === 'resource_missing') {
+      return
+    }
+    throw error
+  }
+}
