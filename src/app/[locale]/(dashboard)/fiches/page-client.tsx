@@ -118,7 +118,7 @@ export default function FichesPage() {
                 border: matiere === m ? `1px solid ${COLOR}30` : '1px solid transparent',
               }}
             >
-              {t(`subjects.${m}`)}
+              {t(`subjects.${m}` as never)}
             </button>
           ))}
         </div>

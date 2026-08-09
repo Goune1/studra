@@ -18,7 +18,12 @@ export default function NewExamPage() {
   const [results, setResults] = useState<GeneratedResource[] | null>(null)
 
   function toggleAlso(key: AlsoKey) {
-    setAlso((prev) => { const s = new Set(prev); s.has(key) ? s.delete(key) : s.add(key); return s })
+    setAlso((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
   }
 
   async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {

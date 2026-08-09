@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
+const messages = JSON.parse(read('messages/fr.json'))
 
 test('le contenu principal du hero reste visible avant les animations', () => {
   const hero = read('src/components/landing/hero/Hero.tsx')
@@ -32,11 +33,11 @@ test('la FAQ visible et le JSON-LD partagent une source unique', () => {
 
 test('les titres locaux ne dupliquent pas le template Studra', () => {
   const files = [
-    'src/app/(seo)/flashcards-ia/page.tsx',
-    'src/app/(seo)/fiches-de-revision-ia/page.tsx',
-    'src/app/(seo)/repetition-espacee/page.tsx',
-    'src/app/(seo)/examen-blanc-ia/page.tsx',
-    'src/app/changelog/page.tsx',
+    'src/app/[locale]/(seo)/flashcards-ia/page.tsx',
+    'src/app/[locale]/(seo)/fiches-de-revision-ia/page.tsx',
+    'src/app/[locale]/(seo)/repetition-espacee/page.tsx',
+    'src/app/[locale]/(seo)/examen-blanc-ia/page.tsx',
+    'src/app/[locale]/changelog/page.tsx',
   ]
   for (const file of files) {
     const source = read(file)
@@ -51,13 +52,13 @@ test('le sitemap référence le changelog', () => {
 })
 
 test('la page blog déclare une image Open Graph', () => {
-  const source = read('src/app/blog/page.tsx')
+  const source = read('src/app/[locale]/blog/page.tsx')
   const openGraph = source.match(/openGraph:\s*\{([\s\S]*?)\n\s*\},\n\}/)?.[1] ?? ''
   assert.match(openGraph, /images:/)
 })
 
 test('les pages légales restent suivables', () => {
-  for (const file of ['src/app/cgu/page.tsx', 'src/app/cgv/page.tsx', 'src/app/confidentialite/page.tsx']) {
+  for (const file of ['src/app/[locale]/cgu/page.tsx', 'src/app/[locale]/cgv/page.tsx', 'src/app/[locale]/confidentialite/page.tsx']) {
     assert.match(read(file), /robots:\s*\{\s*index:\s*true,\s*follow:\s*true\s*\}/)
   }
 })
@@ -93,34 +94,34 @@ test('les articles ne promettent pas une année ou un gain obsolète', () => {
 
 test('les pages noindex ne canonisent pas vers l’accueil', () => {
   for (const file of [
-    'src/app/(auth)/layout.tsx',
-    'src/app/(dashboard)/layout.tsx',
+    'src/app/[locale]/(auth)/layout.tsx',
+    'src/app/[locale]/(dashboard)/layout.tsx',
     'src/app/admin/layout.tsx',
-    'src/app/unsubscribe/page.tsx',
+    'src/app/[locale]/unsubscribe/page.tsx',
   ]) {
     const source = read(file)
     assert.match(source, /robots:\s*\{\s*index:\s*false/)
     assert.match(source, /canonical:\s*null/)
   }
-  const notFound = read('src/app/not-found.tsx')
+  const notFound = read('src/app/[locale]/not-found.tsx')
   assert.match(notFound, /robots:\s*\{\s*index:\s*false/)
   assert.match(notFound, /canonical:\s*null/)
 })
 
 test('le pricing décrit le quota réellement appliqué au plan gratuit', () => {
-  const pricing = read('src/components/landing/Pricing.tsx')
+  const pricing = JSON.stringify(messages.landing.pricing)
   assert.match(pricing, /5 générations IA par mois/)
   assert.doesNotMatch(pricing, /3 decks de flashcards|Fiches illimitées|2 par semaine/)
 })
 
 test('le hero positionne Studra sur la décision de révision quotidienne', () => {
-  const hero = read('src/components/landing/hero/Hero.tsx')
+  const hero = JSON.stringify(messages.landing.hero)
   assert.match(hero, /quoi réviser aujourd’hui/)
   assert.doesNotMatch(hero, /Pour le bac 2026 et après/)
 })
 
 test('la page FSRS évite les certitudes scientifiques et techniques trompeuses', () => {
-  const page = read('src/app/(seo)/repetition-espacee/page.tsx')
+  const page = read('src/app/[locale]/(seo)/repetition-espacee/page.tsx')
   assert.doesNotMatch(page, /moment exact|scientifiquement prouvée|SM-2 \(Anki\)|dernière version|15 à 20 %/)
   assert.match(page, /Encore \/ Difficile \/ Bien \/ Facile/)
   assert.match(page, /prochain intervalle/)

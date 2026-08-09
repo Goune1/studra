@@ -85,7 +85,7 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
       setStatus('dirty')
       toast.error(t('saveError'))
     }
-  }, [schemaId, dispatch])
+  }, [schemaId, dispatch, t])
 
   // Auto-save debounce — re-arms on every structural change while dirty.
   // handleSave is stable so this effect only runs when nodes/edges/viewport/dirty actually change.
@@ -290,7 +290,7 @@ export default function SchemaEditor({ schemaId, initialData }: SchemaEditorProp
   const handleToggleLock = useCallback(() => {
     dispatch({ type: 'toggle-lock' })
     toast(state.locked ? t('unlocked') : t('locked'))
-  }, [dispatch, state.locked])
+  }, [dispatch, state.locked, t])
 
   const handleMinimapRecenter = useCallback(
     (canvasPt: { x: number; y: number }) => {

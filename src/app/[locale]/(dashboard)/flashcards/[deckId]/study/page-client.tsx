@@ -168,7 +168,6 @@ export default function StudyPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ flashcard_id: cards[currentIndex].id, rating, duration_ms: durationMs }),
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cards, currentIndex, finished, deckId, isFlipped])
 
   function restart() {

@@ -7,7 +7,7 @@ import { useRouter, Link } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { ClipboardCheck, X, ChevronLeft, ChevronRight } from 'lucide-react'
-import type { Exam, ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen, ExamSession } from '@/types'
+import type { Exam, ExamQuestion, ExamQuestionMCQ, ExamSession } from '@/types'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
 
 const COLOR = '#1F4D3F'

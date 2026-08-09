@@ -98,7 +98,7 @@ export default function PlanningViewPage() {
       await load()
       return json.session as StudyPlanTask
     },
-    [planId, load],
+    [planId, load, t],
   )
 
   const handleRegenerate = async () => {

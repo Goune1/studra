@@ -65,7 +65,7 @@ export default function ExamsPage() {
       if (sort === 'date_asc') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       return a.title.localeCompare(b.title, 'fr')
     })
-  }, [exams, search, matiere, sort])
+  }, [exams, search, matiere, sort, t])
 
   return (
     <div className="max-w-350">

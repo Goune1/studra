@@ -75,7 +75,7 @@ export default function SchemasPage() {
       if (sort === 'date_asc') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       return a.title.localeCompare(b.title, 'fr')
     })
-  }, [schemas, search, matiere, sort])
+  }, [schemas, search, matiere, sort, t])
 
   return (
     <div className="max-w-350">

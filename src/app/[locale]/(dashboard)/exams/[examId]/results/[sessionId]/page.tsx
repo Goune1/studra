@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/i18n/navigation'
 import { notFound } from 'next/navigation'
 import { Sparkles, Check, X, ClipboardCheck } from 'lucide-react'
-import type { ExamAnswer, ExamQuestion, ExamQuestionMCQ, ExamQuestionOpen } from '@/types'
+import type { ExamAnswer, ExamQuestion, ExamQuestionMCQ } from '@/types'
 import { setRequestLocale } from 'next-intl/server'
 
 function scoreColor(s: number) { return s >= 75 ? '#1F4D3F' : s >= 50 ? '#A8762E' : '#B4503C' }

@@ -37,15 +37,6 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
     onFlipChange?.(next)
   }
 
-  function resetCard() {
-    setFlipped(false)
-    setExplanation(null)
-    setShowExplain(false)
-    onFlipChange?.(false)
-  }
-
-  // Called by the parent (study page) to reset between cards
-  // We expose this pattern via a key reset instead — parent remounts with new key
 
   async function handleExplain(style: ExplainStyle) {
     setExplaining(true)
