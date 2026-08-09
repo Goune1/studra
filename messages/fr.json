@@ -20,6 +20,18 @@
       "cta": "Passer en Pro — 4,99€/mois"
     }
   },
+  "languageSelector": {
+    "label": "Langue",
+    "saveError": "La langue a changé, mais la préférence du compte n’a pas pu être enregistrée.",
+    "locales": {
+      "fr": "Français",
+      "en": "English",
+      "es": "Español",
+      "pt": "Português",
+      "de": "Deutsch",
+      "it": "Italiano"
+    }
+  },
   "landing": {
     "metadata": {
       "title": "Studra – Ton plan de révision avec flashcards IA",
@@ -845,6 +857,8 @@
       "marketingEnabled": "Emails marketing activés",
       "marketingDisabled": "Emails marketing désactivés",
       "marketingAriaLabel": "Autoriser les emails marketing",
+      "language": "Langue de l’interface",
+      "languageDescription": "Choisis la langue utilisée dans Studra.",
       "sessionExpired": "Session expirée.",
       "preferenceUpdateError": "Impossible de mettre à jour cette préférence.",
       "subscription": "Abonnement",

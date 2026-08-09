@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/checkout-button'
 import { ManageSubscriptionButton } from '@/components/manage-subscription-button'
 import { MarketingConsentToggle } from '@/components/settings/MarketingConsentToggle'
+import { LanguageSelector } from '@/components/LanguageSelector'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import { updateMarketingConsent } from './actions'
 
@@ -56,6 +57,19 @@ export default async function SettingsPage({params}: {params: Promise<{locale: s
           style={{ color: 'var(--ink-400)' }}
         />
       </Link>
+
+      <div
+        className="rounded-2xl p-5 animate-fade-up"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '50ms' }}
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium" style={{ color: 'var(--ink-700)' }}>{t('language')}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--ink-500)' }}>{t('languageDescription')}</p>
+          </div>
+          <LanguageSelector />
+        </div>
+      </div>
 
       {/* Profil */}
       <div

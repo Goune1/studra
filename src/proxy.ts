@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware'
 import type {NextRequest} from 'next/server'
 import {
+  getPathnameLocale,
   getPathnameWithoutLocale,
   shouldHandleI18n,
 } from '@/i18n/pathname'
@@ -13,10 +14,12 @@ import {
 const handleI18nRouting = createMiddleware(routing)
 
 export async function proxy(request: NextRequest) {
-  const {locale, pathname} = getPathnameWithoutLocale(
-    request.nextUrl.pathname
-  )
-  const sessionResponse = await updateSession(request, {locale, pathname})
+  const pathnameLocale = getPathnameLocale(request.nextUrl.pathname)
+  const {pathname} = getPathnameWithoutLocale(request.nextUrl.pathname)
+  const {response: sessionResponse} = await updateSession(request, {
+    pathnameLocale,
+    pathname,
+  })
 
   if (sessionResponse.headers.has('location')) {
     return sessionResponse
