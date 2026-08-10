@@ -1358,6 +1358,19 @@
   },
   "fiches": {
     "title": "Fiches",
+    "newPage": {
+      "title": "Fiches",
+      "newFiche": "Nouvelle fiche",
+      "description": "Colle ton cours, l'IA génère ta fiche de révision.",
+      "generationError": "Erreur lors de la génération de la fiche",
+      "success": "Fiche générée avec succès !",
+      "error": "Une erreur est survenue",
+      "createAnother": "Créer une autre fiche",
+      "generate": "Générer la fiche",
+      "generateWithAlso": "Générer la fiche + {count, plural, one {# autre} other {# autres}}",
+      "titlePlaceholder": "Ex : Chapitre 3 - La photosynthèse",
+      "contentPlaceholder": "Colle ici le contenu de ton cours, tes notes, ou tout texte à résumer..."
+    },
     "detail": {
       "back": "Mes fiches",
       "summary": "Sommaire",
