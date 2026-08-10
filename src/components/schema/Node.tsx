@@ -1,6 +1,7 @@
 'use client'
 
 import { memo, useLayoutEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import type { SchemaNode, SchemaNodeColor } from '@/types'
 import { NODE_DEFAULT_H, NODE_DEFAULT_W, type Side } from './utils/geometry'
 
@@ -104,6 +105,7 @@ function NodeImpl({
   onCancelLabel,
   onHandlePointerDown,
 }: NodeProps) {
+  const t = useTranslations('components.schema')
   const w = node.width ?? NODE_DEFAULT_W
   const h = node.height ?? NODE_DEFAULT_H
   const colors = COLOR_STYLES[node.color ?? 'neutral']
@@ -111,6 +113,7 @@ function NodeImpl({
   return (
     <div
       data-node-id={node.id}
+      aria-label={t('editNode')}
       onPointerDown={(e) => onPointerDown(e, node.id)}
       onDoubleClick={(e) => {
         e.stopPropagation()

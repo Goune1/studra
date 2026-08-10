@@ -3,16 +3,18 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import {useTranslations} from 'next-intl'
 import SceneImport from "./scenes/SceneImport";
 import SceneGenerate from "./scenes/SceneGenerate";
 import SceneReview from "./scenes/SceneReview";
 import ScenePlanning from "./scenes/ScenePlanning";
 
-const SCENE_LABELS = ["Import", "Decks", "Révision", "Fiches", "Schémas", "Planning", "Examens"];
 const SCENE_ACTIVE = [0, 1, 2, -1, -1, 3, -1];
 const DURATIONS = [4500, 5000, 5000, 4500];
 
 export default function MockupWindow() {
+  const t = useTranslations('landing.mockup')
+  const sceneLabels = (['import', 'decks', 'review', 'fiches', 'schemas', 'planning', 'exams'] as const).map((key) => t(key))
   const [scene, setScene] = useState(0);
   const [reduced, setReduced] = useState(false);
 
@@ -89,9 +91,9 @@ export default function MockupWindow() {
               <span key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: "#E4E4E7", display: "inline-block" }} />
             ))}
           </div>
-          <div style={{ justifySelf: "center", background: "rgba(0,0,0,.04)", padding: "3px 10px", borderRadius: 6, fontSize: 11, color: "var(--ink-500)", display: "inline-flex", alignItems: "center", gap: 6, maxWidth: 200 }} className="mono">
+          <div style={{ justifySelf: "center", background: "rgba(0,0,0,.04)", padding: "3px 10px", borderRadius: 6, fontSize: 11, color: "var(--ink-700)", display: "inline-flex", alignItems: "center", gap: 6, maxWidth: 200 }} className="mono">
             <span style={{ fontSize: 9, opacity: 0.55 }}>⌁</span>
-            <span>studra.fr/app</span>
+            <span>{t('address')}</span>
           </div>
           {/* Right buttons — hidden on mobile */}
           <div className="mock-topbar-actions" style={{ display: "flex", gap: 6, justifySelf: "end" }}>
@@ -112,12 +114,12 @@ export default function MockupWindow() {
             style={{ background: "#FAFAF9", borderRight: "1px solid rgba(0,0,0,.05)", padding: "14px 10px", display: "flex", flexDirection: "column", gap: 10 }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 6px", fontSize: 13 }}>
-              <Image src="/studra-logo.png" alt="" width={18} height={18} unoptimized />
-              <span style={{ fontWeight: 600, letterSpacing: "-.02em" }}>Studra</span>
+              <Image src="/studra-logo.png" alt="" width={18} height={18} />
+              <span style={{ fontWeight: 600, letterSpacing: "-.02em" }}>{t('brand')}</span>
             </div>
-            <div className="mono" style={{ fontSize: 9.5, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", padding: "8px 6px 2px" }}>Espace</div>
+            <div className="mono" style={{ fontSize: 9.5, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", padding: "8px 6px 2px" }}>{t('workspace')}</div>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 1 }}>
-              {SCENE_LABELS.map((label, idx) => {
+              {sceneLabels.map((label, idx) => {
                 const active = SCENE_ACTIVE[idx] === scene;
                 return (
                   <li key={label} style={{

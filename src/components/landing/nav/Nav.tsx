@@ -1,27 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { List, X } from "@phosphor-icons/react";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
-
-const LINKS = [
-  { label: "Fonctionnalités", href: "#features" },
-  { label: "Méthode", href: "#methode" },
-  { label: "Tarifs", href: "#tarifs" },
-  { label: "FAQ", href: "#faq" },
-];
+import {useTranslations} from 'next-intl'
+import {Link} from '@/i18n/navigation'
 
 export default function Nav() {
+  const t = useTranslations('landing.nav')
+  const links = [
+    {label: t('features'), href: '#features'},
+    {label: t('method'), href: '#methode'},
+    {label: t('pricing'), href: '#tarifs'},
+    {label: t('faq'), href: '#faq'},
+  ]
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    createClient().auth.getUser().then(({ data }) => {
-      if (!cancelled && data.user) setLoggedIn(true);
+    const hasSupabaseSession = document.cookie
+      .split(';')
+      .some((cookie) => /^\s*sb-[^=]+-auth-token(?:\.\d+)?=/.test(cookie));
+    queueMicrotask(() => {
+      if (!cancelled) setLoggedIn(hasSupabaseSession);
     });
     return () => { cancelled = true; };
   }, []);
@@ -38,6 +45,43 @@ export default function Nav() {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const menuButton = menuButtonRef.current;
+    closeButtonRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      menuButton?.focus();
+    };
+  }, [open]);
+
   return (
     <>
       <header style={{
@@ -51,14 +95,14 @@ export default function Nav() {
         }}>
         <div className="container nav-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", height: 68 }}>
           {/* Logo */}
-          <a href="/" className="nav-logo" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
-            <Image src="/studra-logo.png" alt="Studra" width={40} height={40} priority unoptimized />
+          <Link href="/" className="nav-logo" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
+            <Image src="/studra-logo.png" alt="Studra" width={40} height={40} priority />
             <span>Studra</span>
-          </a>
+          </Link>
 
           {/* Links desktop */}
           <nav style={{ display: "flex", gap: 28, justifyContent: "center" }} className="nav-links-desktop">
-            {LINKS.map((l) => (
+            {links.map((l) => (
               <a key={l.href} href={l.href} style={{ fontSize: 14, fontWeight: 450, color: "var(--ink-700)", padding: "6px 2px", transition: "color .15s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "var(--ink)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "var(--ink-700)")}>
@@ -70,16 +114,19 @@ export default function Nav() {
           {/* CTAs + burger */}
           <div style={{ display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
             {loggedIn ? (
-              <a href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>Accéder à l&apos;app</a>
+              <Link href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{t('openApp')}</Link>
             ) : (
               <>
-                <a href="/login" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>Se connecter</a>
-                <a href="/register" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>Essayer gratuitement</a>
+                <Link href="/login" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>{t('login')}</Link>
+                <Link href="/register" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{t('tryFree')}</Link>
               </>
             )}
             <button
+              ref={menuButtonRef}
               className="nav-burger"
-              aria-label="Menu"
+              aria-label={t('openMenu')}
+              aria-expanded={open}
+              aria-controls="mobile-navigation"
               onClick={() => setOpen(true)}
               style={{ display: "none", appearance: "none", border: 0, background: "transparent", padding: 8, color: "var(--ink)", cursor: "pointer", borderRadius: 8 }}
             >
@@ -93,6 +140,11 @@ export default function Nav() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={drawerRef}
+            id="mobile-navigation"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('mainNavigation')}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -105,17 +157,17 @@ export default function Nav() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 4px", height: 48 }}>
-              <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
-                <Image src="/studra-logo.png" alt="Studra" width={40} height={40} unoptimized />
+              <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 9, fontSize: 17, fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)" }}>
+                <Image src="/studra-logo.png" alt="Studra" width={40} height={40} />
                 <span>Studra</span>
-              </a>
-              <button onClick={() => setOpen(false)} style={{ appearance: "none", border: 0, background: "transparent", padding: 8, color: "var(--ink)", cursor: "pointer", borderRadius: 8 }}>
+              </Link>
+              <button ref={closeButtonRef} aria-label={t('closeMenu')} onClick={() => setOpen(false)} style={{ appearance: "none", border: 0, background: "transparent", padding: 8, color: "var(--ink)", cursor: "pointer", borderRadius: 8 }}>
                 <X size={24} />
               </button>
             </div>
 
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, padding: "48px 8px 0" }}>
-              {LINKS.map((l, i) => (
+              {links.map((l, i) => (
                 <motion.a
                   key={l.href}
                   href={l.href}
@@ -132,11 +184,11 @@ export default function Nav() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 0 24px" }}>
               {loggedIn ? (
-                <a href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Accéder à l&apos;app</a>
+                <Link href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('openApp')}</Link>
               ) : (
                 <>
-                  <a href="/login" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Se connecter</a>
-                  <a href="/register" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>Essayer gratuitement</a>
+                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('login')}</Link>
+                  <Link href="/register" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('tryFree')}</Link>
                 </>
               )}
             </div>

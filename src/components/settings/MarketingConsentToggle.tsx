@@ -3,6 +3,7 @@
 import { Check, Loader2, X } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 type UpdateMarketingConsentResult = {
   ok: boolean
@@ -20,6 +21,7 @@ export function MarketingConsentToggle({
 }: MarketingConsentToggleProps) {
   const [enabled, setEnabled] = useState(initialValue)
   const [isPending, startTransition] = useTransition()
+  const t = useTranslations('dashboard.settings')
 
   function handleToggle() {
     const nextValue = !enabled
@@ -34,7 +36,7 @@ export function MarketingConsentToggle({
         return
       }
 
-      toast.success(nextValue ? 'Emails marketing activés' : 'Emails marketing désactivés')
+      toast.success(nextValue ? t('marketingEnabled') : t('marketingDisabled'))
     })
   }
 
@@ -43,7 +45,7 @@ export function MarketingConsentToggle({
       type="button"
       role="switch"
       aria-checked={enabled}
-      aria-label="Autoriser les emails marketing"
+      aria-label={t('marketingAriaLabel')}
       disabled={isPending}
       onClick={handleToggle}
       className="group relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border p-0.5 transition-all duration-200 focus:outline-none disabled:cursor-wait disabled:opacity-75"

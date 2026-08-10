@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+:root {
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
 @plugin "@tailwindcss/typography";
 
 /* ====================== LANDING DESIGN TOKENS ====================== */
@@ -462,7 +466,7 @@
   --ink:         #18181B;
   --ink-700:     #3F3F46;
   --ink-500:     #71717A;
-  --ink-400:     #A1A1AA;
+  --ink-400:     #71717A;
   --ink-200:     #E4E4E7;
   --line:        rgba(228, 228, 231, 0.6);
   --dark:        #09090B;
@@ -679,7 +683,7 @@
   --ink:         #18181B;
   --ink-700:     #3F3F46;
   --ink-500:     #71717A;
-  --ink-400:     #A1A1AA;
+  --ink-400:     #71717A;
   --ink-200:     #E4E4E7;
   --line:        rgba(228, 228, 231, 0.6);
   --accent:      #1F4D3F;

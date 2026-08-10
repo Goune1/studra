@@ -1,22 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-const QUESTIONS = [
-  "Tu peux me redéfinir ce qu'est une fonction affine sans tes notes ?",
-  "Pourquoi 1789 marque la fin de l'Ancien Régime, concrètement ?",
-  "Donne-moi un exemple où la mitose se déclenche dans le corps.",
-];
+import { useEffect, useMemo, useState } from "react";
+import {useTranslations} from 'next-intl'
 
 type Phase = "typing" | "hold" | "erasing";
 
 export default function AnimSocrate() {
+  const t = useTranslations('landing.animations.socrate')
+  const questions = useMemo(() => [t('question1'), t('question2'), t('question3')], [t])
   const [qi, setQi] = useState(0);
   const [shown, setShown] = useState("");
   const [phase, setPhase] = useState<Phase>("typing");
 
   useEffect(() => {
-    const target = QUESTIONS[qi];
+    const target = questions[qi];
     let id: ReturnType<typeof setInterval> | ReturnType<typeof setTimeout>;
 
     if (phase === "typing") {
@@ -38,7 +35,7 @@ export default function AnimSocrate() {
         setShown(target.slice(0, Math.max(0, i)));
         if (i <= 0) {
           clearInterval(id as ReturnType<typeof setInterval>);
-          setQi((q) => (q + 1) % QUESTIONS.length);
+          setQi((q) => (q + 1) % questions.length);
           setPhase("typing");
         }
       }, 18);

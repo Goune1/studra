@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { generateFiche } from '@/lib/openai'
 import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
+import { resolveContentLanguage, resolveServerLocale } from '@/i18n/server-locale'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -39,13 +40,15 @@ export async function POST(request: Request) {
 
   if (profile.plan === 'free' && currentGenerations >= 5) {
     return NextResponse.json(
-      { error: 'Limite mensuelle atteinte. Passez en Pro pour des générations illimitées.' },
+      { error: 'Limite mensuelle atteinte. Passez en Pro pour des générations illimitées.', code: 'quota_exceeded' },
       { status: 403 }
     )
   }
 
   const body = await request.json()
-  const { title, subject, content, language = 'fr', isPublic = false } = body as { title: string; subject: string; content: string; language?: string; isPublic?: boolean }
+  const { title, subject, content, language, isPublic = false } = body as { title: string; subject: string; content: string; language?: string; isPublic?: boolean }
+  const locale = resolveServerLocale(request, {profile})
+  const generationLanguage = resolveContentLanguage(language, locale)
 
   if (!title || typeof title !== 'string' || title.length > 200) {
     return NextResponse.json({ error: 'Titre invalide' }, { status: 400 })
@@ -55,7 +58,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Contenu invalide (50-100000 caractères)' }, { status: 400 })
   }
 
-  const generatedContent = await generateFiche(content, language)
+  const generatedContent = await generateFiche(content, generationLanguage)
 
   const { data: fiche, error: ficheError } = await supabase.from('fiches').insert({
     user_id: user.id,

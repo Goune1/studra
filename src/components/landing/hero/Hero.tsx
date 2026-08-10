@@ -1,19 +1,9 @@
-"use client";
-
-import { motion } from "framer-motion";
+import {useTranslations} from 'next-intl'
+import {Link} from '@/i18n/navigation'
 import MockupWindow from "./MockupWindow";
 
-const ease = [0.2, 0.7, 0.3, 1] as [number, number, number, number];
-
-function FadeUp({ delay, children }: { delay: number; children: React.ReactNode }) {
-  return (
-    <div className="fade-up" style={{ animationDelay: `${delay}s` }}>
-      {children}
-    </div>
-  );
-}
-
 export default function Hero() {
+  const t = useTranslations('landing.hero')
   return (
     <section style={{ position: "relative", minHeight: "100dvh", paddingTop: 96, paddingBottom: 60, display: "flex", alignItems: "center", overflowX: "hidden" }}>
       {/* Ebbinghaus forgetting curve — hidden on mobile */}
@@ -43,71 +33,41 @@ export default function Hero() {
 
           {/* Left — text */}
           <div className="hero-left-order" style={{ display: "flex", flexDirection: "column", gap: 28, maxWidth: 620 }}>
-            <FadeUp delay={0}>
-              <div className="eyebrow" style={{ textAlign: "left" }}>
-                <span className="eyebrow-dot" />
-                <span>Pour le bac 2026 et après</span>
-              </div>
-            </FadeUp>
+            <div className="eyebrow" style={{ textAlign: "left" }}>
+              <span className="eyebrow-dot" />
+              <span>{t('eyebrow')}</span>
+            </div>
 
-            <FadeUp delay={0.1}>
-              <h1 className="hero-h1" style={{ margin: 0, fontSize: "clamp(40px, 6.4vw, 78px)", fontWeight: 500, letterSpacing: "-0.035em", lineHeight: 0.96 }}>
-                <span>Réviser sérieusement.</span>
-                <br />
-                <span className="dim">Sans y passer ses nuits.</span>
-              </h1>
-            </FadeUp>
+            <h1 className="hero-h1" style={{ margin: 0, fontSize: "clamp(40px, 6.4vw, 78px)", fontWeight: 500, letterSpacing: "-0.035em", lineHeight: 0.96 }}>
+              <span>{t('title')}</span>
+              <br />
+              <span className="dim">{t('titleAccent')}</span>
+            </h1>
 
-            <FadeUp delay={0.2}>
-              <p className="lede">
-                Colle ton cours. Studra le transforme en flashcards, fiches, schémas
-                et examens blancs. Le moteur de répétition espacée s&apos;occupe du reste.
-              </p>
-            </FadeUp>
+            <p className="lede">
+              {t('description')}
+            </p>
 
-            <FadeUp delay={0.3}>
-              <div className="hero-ctas" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                <a href="/register" className="btn btn-primary hero-cta-primary">Commencer gratuitement</a>
-              </div>
-            </FadeUp>
+            <div className="hero-ctas" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <Link href="/register" className="btn btn-primary hero-cta-primary">{t('cta')}</Link>
+            </div>
 
-            <FadeUp delay={0.4}>
-              <div style={{ fontSize: 13.5, color: "var(--ink-500)" }}>
-                Gratuit pour commencer. Pas de carte demandée.
-              </div>
-            </FadeUp>
+            <div style={{ fontSize: 13.5, color: "var(--ink-500)" }}>
+              {t('note')}
+            </div>
           </div>
 
           {/* Right — mockup */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.9, ease }}
+          <div
             className="hero-right-order hero-right-height"
             style={{ position: "relative", height: 540 }}
           >
             <MockupWindow />
-          </motion.div>
+          </div>
         </div>
       </div>
 
       <style>{`
-        .fade-up {
-          opacity: 0;
-          transform: translateY(24px);
-          animation: fade-up-kf 0.7s cubic-bezier(.2,.7,.3,1) forwards;
-          animation-fill-mode: forwards;
-        }
-        @keyframes fade-up-kf {
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .fade-up {
-            opacity: 1;
-            transform: none;
-            animation: none;
-          }
-        }
 
         .ebb-curve {
           stroke-dasharray: 2400;

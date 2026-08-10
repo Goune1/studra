@@ -1,17 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { ChevronDown } from 'lucide-react'
 import type { TimelineEvent, TimelineData } from '@/types'
 
 // Catégories — palette désaturée, cohérente avec le système clair
-const categoryConfig: Record<string, { color: string; label: string }> = {
-  politique:   { color: '#3E6B7A', label: 'Politique' },
-  militaire:   { color: '#B4503C', label: 'Militaire' },
-  economique:  { color: '#A8762E', label: 'Économique' },
-  social:      { color: '#1F4D3F', label: 'Social' },
-  culturel:    { color: '#7A5E8A', label: 'Culturel' },
-  default:     { color: '#6b7280', label: 'Autre' },
+const categoryColors: Record<string, string> = {
+  politique: '#3E6B7A', militaire: '#B4503C', economique: '#A8762E',
+  social: '#1F4D3F', culturel: '#7A5E8A', default: '#6b7280',
 }
 
 function CardContent({
@@ -64,12 +61,14 @@ function EventRow({
   event,
   index,
   visible,
+  categoryLabel,
 }: {
   event: TimelineEvent
   index: number
   visible: boolean
+  categoryLabel: string
 }) {
-  const config = categoryConfig[event.category ?? 'default'] ?? categoryConfig.default
+  const config = { color: categoryColors[event.category ?? 'default'] ?? categoryColors.default, label: categoryLabel }
   const isRight = index % 2 !== 0
 
   const dot = (
@@ -115,6 +114,7 @@ function EventRow({
 }
 
 export function TimelineViewer({ data }: { data: TimelineData }) {
+  const t = useTranslations('dashboard.timelines.viewer')
   const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set())
   const refs = useRef<Map<string, HTMLDivElement>>(new Map())
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
@@ -153,10 +153,10 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
             border: `1px solid ${activeFilter === null ? 'rgba(31,77,63,0.3)' : 'var(--ink-200)'}`,
           }}
         >
-          Tous
+          {t('all')}
         </button>
         {usedCategories.map((cat) => {
-          const c = categoryConfig[cat] ?? categoryConfig.default
+          const c = {color: categoryColors[cat] ?? categoryColors.default, label: t(`categories.${cat}` as never)}
           const active = activeFilter === cat
           return (
             <button key={cat} onClick={() => setActiveFilter(active ? null : cat)}
@@ -191,14 +191,14 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
               data-id={event.id}
               ref={(el) => { if (el) refs.current.set(event.id, el) }}
             >
-              <EventRow event={event} index={i} visible={visibleIds.has(event.id)} />
+              <EventRow event={event} index={i} visible={visibleIds.has(event.id)} categoryLabel={t(`categories.${event.category ?? 'default'}` as never)} />
             </div>
           ))}
         </div>
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-center text-sm py-10" style={{ color: 'var(--ink-400)' }}>Aucun événement dans cette catégorie.</p>
+        <p className="text-center text-sm py-10" style={{ color: 'var(--ink-400)' }}>{t('empty')}</p>
       )}
     </div>
   )

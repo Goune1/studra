@@ -1,0 +1,1495 @@
+{
+  "common": {
+    "delete": {
+      "delete": "Supprimer",
+      "deleted": "Supprimé",
+      "deleting": "Suppression…",
+      "cancel": "Annuler",
+      "error": "Erreur lors de la suppression",
+      "confirm": "Supprimer {entity} ?",
+      "warning": "Cette action est définitive et ne peut pas être annulée."
+    },
+    "proGate": {
+      "title": "Fonctionnalité Pro",
+      "description": "Cette section est réservée aux membres Pro. Débloquez toutes les fonctionnalités avancées.",
+      "features": {
+        "generations": "Générations illimitées",
+        "socrate": "Mode Socrate — apprentissage par dialogue",
+        "gaps": "Analyse des lacunes — coaching IA personnalisé"
+      },
+      "cta": "Passer en Pro — 4,99€/mois"
+    }
+  },
+  "languageSelector": {
+    "label": "Langue",
+    "saveError": "La langue a changé, mais la préférence du compte n’a pas pu être enregistrée.",
+    "locales": {
+      "fr": "Français",
+      "en": "English",
+      "es": "Español",
+      "pt": "Português",
+      "de": "Deutsch",
+      "it": "Italiano"
+    }
+  },
+  "landing": {
+    "metadata": {
+      "title": "Studra – Ton plan de révision avec flashcards IA",
+      "description": "Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère tes supports et planifie les prochains rappels selon tes réponses."
+    },
+    "nav": {
+      "features": "Fonctionnalités",
+      "method": "Méthode",
+      "pricing": "Tarifs",
+      "faq": "FAQ",
+      "openMenu": "Ouvrir le menu",
+      "closeMenu": "Fermer le menu",
+      "mainNavigation": "Navigation principale",
+      "openApp": "Accéder à l'app",
+      "login": "Se connecter",
+      "tryFree": "Essayer gratuitement"
+    },
+    "hero": {
+      "eyebrow": "Pour les partiels, concours et examens",
+      "title": "Réviser sérieusement.",
+      "titleAccent": "Sans y passer ses nuits.",
+      "description": "Ajoute ton cours. Studra te montre quoi réviser aujourd’hui, génère tes supports et planifie les prochains rappels selon tes réponses.",
+      "cta": "Commencer gratuitement",
+      "note": "Gratuit pour commencer. Pas de carte demandée."
+    },
+    "mockup": {
+      "address": "studra.fr/app",
+      "brand": "Studra",
+      "workspace": "Espace",
+      "import": "Import",
+      "decks": "Decks",
+      "review": "Révision",
+      "fiches": "Fiches",
+      "schemas": "Schémas",
+      "planning": "Planning",
+      "exams": "Examens"
+    },
+    "howItWorks": {
+      "eyebrow": "Comment ça marche",
+      "title": "Trois étapes.",
+      "titleAccent": "Pas plus.",
+      "steps": {
+        "choose": {
+          "number": "01",
+          "title": "Choisis ton outil.",
+          "body": "Flashcards, fiche, schéma, frise, examen blanc, dialogue socratique. Tout sort du même cours."
+        },
+        "import": {
+          "number": "02",
+          "title": "Colle ton cours.",
+          "body": "Texte, PDF, image ou lien YouTube. Studra lit, structure, comprend."
+        },
+        "study": {
+          "number": "03",
+          "title": "Révise sans réfléchir.",
+          "body": "L'algorithme te dit quoi réviser et quand. Tu ouvres l'app, tu fais ce qui apparaît."
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Fonctionnalités",
+      "title": "Un cours.",
+      "titleAccent": "Sept manières de le réviser.",
+      "guides": "Lire les guides de révision",
+      "cards": {
+        "flashcards": {
+          "label": "Mémorisation",
+          "title": "Flashcards",
+          "body": "Espace les révisions au bon moment. Ce que tu commences à oublier revient en premier."
+        },
+        "socrate": {
+          "label": "Dialogue",
+          "title": "Mode Socrate",
+          "body": "Une IA qui pose les bonnes questions, jusqu'à ce que tu expliques vraiment."
+        },
+        "fiches": {
+          "label": "Structure",
+          "title": "Fiches",
+          "body": "Un résumé propre, hiérarchisé, exportable. Pas un mur de surlignage."
+        },
+        "schemas": {
+          "label": "Visuel",
+          "title": "Schémas",
+          "body": "Concepts, liens, dépendances. Lisible d'un coup d'œil."
+        },
+        "exams": {
+          "label": "Évaluation",
+          "title": "Examens blancs",
+          "body": "Sujets adaptés, correction détaillée, note sur 20."
+        },
+        "planning": {
+          "label": "Organisation",
+          "title": "Planning",
+          "body": "L'algorithme décide quand. Toi, tu ouvres l'app et tu fais ce qui apparaît."
+        },
+        "recall": {
+          "label": "Rappel actif",
+          "title": "Rappel libre",
+          "body": "Écris tout ce que tu sais. Studra compare avec le cours et te montre les trous."
+        }
+      }
+    },
+    "method": {
+      "eyebrow": "La Méthode",
+      "blocks": {
+        "spacing": {
+          "title": "La répétition espacée, expliquée simplement.",
+          "body": "Ton cerveau oublie selon une courbe prévisible. Réviser juste avant d'oublier ancre l'information en mémoire long terme. Studra calcule ce moment pour chaque carte avec l'algorithme de répétition espacée le plus précis disponible aujourd'hui (FSRS-5, le même standard que la recherche en sciences cognitives)."
+        },
+        "recall": {
+          "title": "Le rappel actif, pas le surlignage.",
+          "body": "Relire ses cours ne marche pas. Se forcer à retrouver l'information sans regarder, si. Studra te met dans cette position systématiquement, sur flashcards, en rappel libre, en examen blanc."
+        },
+        "socrate": {
+          "title": "La maïeutique, version 2026.",
+          "body": "Si tu peux expliquer un concept à voix haute en répondant à des questions précises, tu l'as compris. Sinon, tu ne l'as pas compris. Le Mode Socrate met cette vérité en pratique avec une IA qui te pose les bonnes questions."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Tarifs",
+      "title": "Gratuit pour commencer.",
+      "titleAccent": "Pas cher pour aller au bout.",
+      "recommended": "Recommandé",
+      "perMonth": "par mois",
+      "free": {
+        "name": "Free",
+        "description": "Pour découvrir Studra sans carte bancaire.",
+        "cta": "Commencer gratuitement",
+        "features": {
+          "generations": "5 générations IA par mois, tous outils confondus",
+          "tools": "Flashcards, fiches, examens et schémas",
+          "imports": "Import texte et PDF",
+          "spacing": "Répétition espacée FSRS",
+          "socrate": "Mode Socrate",
+          "planning": "Planning de révision"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Pour réviser plusieurs matières sans limite de génération.",
+        "cta": "Passer à Pro",
+        "features": {
+          "free": "Tout le plan Free",
+          "generations": "Générations IA illimitées",
+          "youtube": "Import YouTube",
+          "gaps": "Analyse des lacunes",
+          "annales": "Annales adaptatives",
+          "planning": "Planning personnalisé",
+          "socrate": "Mode Socrate illimité"
+        }
+      },
+      "generationNote": "Une génération correspond à la création d'un support ou d'une analyse par IA.",
+      "usageNote": "Réviser des flashcards déjà créées ne consomme pas de génération. Annulable à tout moment, sans engagement."
+    },
+    "faq": {
+      "eyebrow": "Questions fréquentes",
+      "title": "Tout ce que tu peux te demander",
+      "titleAccent": "avant de t'inscrire.",
+      "items": {
+        "difference": {
+          "question": "C'est différent d'Anki ou de Quizlet ?",
+          "answer": "Anki ne génère rien — tu écris tes cartes à la main. Quizlet fait des QCM basiques. Studra prend ton cours et génère flashcards, fiches, schémas, examens et dialogues socratiques, le tout connecté au même algorithme de répétition espacée."
+        },
+        "accuracy": {
+          "question": "L'IA peut se tromper sur les flashcards générées ?",
+          "answer": "Oui, ça arrive. Chaque carte est éditable en un clic. On affiche un score de confiance quand la génération hésite, et tu peux corriger ou supprimer en deux secondes."
+        },
+        "privacy": {
+          "question": "Mes cours sont confidentiels ?",
+          "answer": "Tes cours te restent. On ne les utilise pas pour entraîner de modèle. Les fichiers sont chiffrés, hébergés en Europe, et tu peux tout supprimer depuis ton compte."
+        },
+        "subjects": {
+          "question": "Ça marche pour quelles matières ?",
+          "answer": "Toutes les matières textuelles fonctionnent très bien — histoire, philo, SVT, langues, droit, médecine. Pour les maths et la physique, les flashcards et les fiches sont solides ; les schémas conceptuels marchent moins bien sur des démonstrations longues."
+        },
+        "results": {
+          "question": "Combien de temps avant de voir un effet ?",
+          "answer": "Dès la première semaine, tu remarques ce que tu retiens vraiment et ce que tu pensais retenir. L'effet sur la mémoire long terme est mesurable après deux à trois semaines de sessions régulières."
+        },
+        "cancel": {
+          "question": "Je peux annuler Pro à tout moment ?",
+          "answer": "Oui, en un clic depuis les paramètres. Pas de période d'engagement. Tu gardes Pro jusqu'à la fin du mois en cours, puis tu repasses sur Free sans rien perdre."
+        },
+        "trial": {
+          "question": "Vous avez un essai gratuit ?",
+          "answer": "Le plan Free n'est pas une démo limitée dans le temps : il reste gratuit. Pour tester Pro, on rembourse les 14 premiers jours si ça ne te convient pas."
+        },
+        "teacher": {
+          "question": "Studra remplace mon prof ?",
+          "answer": "Non."
+        }
+      }
+    },
+    "seoLinks": {
+      "eyebrow": "Explorer en détail",
+      "title": "Chaque fonctionnalité expliquée en profondeur.",
+      "learnMore": "En savoir plus →",
+      "pages": {
+        "flashcards": {
+          "label": "Créer des flashcards avec l'IA",
+          "description": "Génère 10 à 25 flashcards depuis ton cours, PDF ou YouTube. Répétition espacée FSRS 5 intégrée."
+        },
+        "fiches": {
+          "label": "Générer des fiches de révision automatiques",
+          "description": "Des fiches structurées avec titres, définitions et points clés — en 15 secondes depuis n'importe quel cours."
+        },
+        "spacing": {
+          "label": "La répétition espacée avec FSRS 5",
+          "description": "L'algorithme le plus précis pour mémoriser durablement. Chaque carte modélisée individuellement."
+        },
+        "exam": {
+          "label": "Passer un examen blanc depuis son cours",
+          "description": "7 QCM + 3 questions ouvertes corrigées par IA. Feedback détaillé, score mémorisé."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Tes examens arrivent.",
+      "titleAccent": "Studra aussi.",
+      "cta": "Commencer maintenant",
+      "note": "Gratuit · sans carte"
+    },
+    "footer": {
+      "tagline": "Réviser sans y passer ses nuits.",
+      "product": "Produit",
+      "formats": "Formats",
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "changelog": "Changelog",
+      "featureColumn": "Fonctionnalités",
+      "flashcards": "Flashcards IA",
+      "fiches": "Fiches de révision IA",
+      "spacing": "Répétition espacée",
+      "exams": "Examens blancs IA",
+      "blog": "Blog",
+      "legal": "Légal",
+      "terms": "CGU",
+      "salesTerms": "CGV",
+      "privacy": "Confidentialité",
+      "copyright": "© 2026 Studra. Tous droits réservés."
+    },
+    "jsonLd": {
+      "websiteDescription": "Révision intelligente avec l'IA",
+      "softwareDescription": "Plateforme de révision IA pour étudiants : flashcards FSRS 5, fiches de révision, mode Socrate, examens blancs, planning de révision.",
+      "freeOffer": "Studra Free",
+      "proOffer": "Studra Pro",
+      "features": {
+        "flashcards": "Génération de flashcards depuis PDF",
+        "spacing": "Répétition espacée FSRS 5",
+        "fiches": "Fiches de révision automatiques",
+        "socrate": "Mode Socrate",
+        "exams": "Examens blancs IA",
+        "planning": "Planning de révision personnalisé",
+        "youtube": "Import YouTube avec transcription automatique",
+        "schemas": "Schémas conceptuels générés par IA"
+      }
+    },
+    "animations": {
+      "flashcards": {
+        "math": "Maths",
+        "history": "Histoire",
+        "chemistry": "Chimie",
+        "pythagoras": "Théorème de Pythagore",
+        "war": "Causes de la 1re GM",
+        "acid": "Acide carboxylique",
+        "due": "Dans 2j",
+        "rating": "Bien"
+      },
+      "socrate": {
+        "question1": "Tu peux me redéfinir ce qu'est une fonction affine sans tes notes ?",
+        "question2": "Pourquoi 1789 marque la fin de l'Ancien Régime, concrètement ?",
+        "question3": "Donne-moi un exemple où la mitose se déclenche dans le corps."
+      },
+      "recall": {
+        "line1": "Les causes de la Révolution sont",
+        "line2": "d'abord économiques. La dette de",
+        "line3": "l'État après les guerres et",
+        "line4": "le déficit chronique",
+        "wordCount": "{count, plural, =0 {# mot} =1 {# mot} other {# mots}}",
+        "submit": "↵ Soumettre"
+      },
+      "planning": {
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mer",
+        "thursday": "Jeu",
+        "friday": "Ven",
+        "saturday": "Sam",
+        "sunday": "Dim"
+      },
+      "exam": {
+        "progress": "Question 12 / 18",
+        "prompt": "La fonction f définie par f(x) = …",
+        "instruction": "Étudier les variations de f sur ℝ.",
+        "time": "Temps · {minutes} min"
+      },
+      "schemas": {
+        "revolution": "Révolution",
+        "causes": "Causes",
+        "actors": "Acteurs",
+        "crisis": "Crise"
+      },
+      "fiche": {
+        "title": "III. La Révolution française",
+        "causes": "1. Les causes",
+        "debtStart": "La dette de l'État après les guerres de Louis XV et XVI",
+        "debtEnd": "fragilise la monarchie.",
+        "harvestStart": "Les mauvaises récoltes",
+        "harvestEnd": "de 1788 provoquent une flambée des prix.",
+        "break": "2. La rupture",
+        "estatesStart": "Les états généraux convoqués",
+        "estatesEnd": "en mai 1789.",
+        "oathStart": "Le serment du Jeu de paume",
+        "oathEnd": "radicalise les députés.",
+        "august": "3. La nuit du 4 août",
+        "abolition": "Abolition des privilèges et droits féodaux"
+      },
+      "hero": {
+        "generateTitle": "Génération",
+        "generatedCards": "{count, plural, one {# carte — Révolution française} other {# cartes — Révolution française}}",
+        "history": "Histoire",
+        "importTitle": "Import",
+        "pasteCourse": "Coller un cours",
+        "text": "Texte",
+        "pdf": "PDF",
+        "youtube": "YouTube",
+        "characters": "caractères",
+        "characterCount": "{count, plural, one {# caractère} other {# caractères}}",
+        "generate": "Générer",
+        "courseText": "Chapitre 3 — La Révolution française.\nLes causes profondes de la crise prérévolutionnaire sont à la fois économiques, sociales et politiques. La dette de l'État, le poids des impôts indirects et les mauvaises récoltes des années 1788-1789 alimentent un mécontentement généralisé...",
+        "card1": "Quels sont les états généraux ?",
+        "card2": "Date de la prise de la Bastille ?",
+        "card3": "Qui était le ministre des finances en 1789 ?",
+        "card4": "Qu'est-ce que le tiers état ?",
+        "card5": "Pourquoi convoquer les états généraux ?",
+        "card6": "Qu'apporte la nuit du 4 août 1789 ?",
+        "planningTitle": "Planning · semaine 15",
+        "plannedSessions": "Sessions prévues",
+        "plannedTime": "4h 20 / 7h",
+        "reviewTitle": "Révision · 03 / 22",
+        "activeRecall": "Rappel actif",
+        "question": "Question",
+        "bastilleQuestion": "Date de la prise de la Bastille ?",
+        "flip": "Espace · Retourner",
+        "answer": "Réponse",
+        "bastilleAnswer": "14 juillet 1789. Prise par les insurgés parisiens, symbole de la fin de l'absolutisme.",
+        "bastilleAnswerDate": "14 juillet 1789.",
+        "bastilleAnswerDetail": "Prise par les insurgés parisiens, symbole de la fin de l'absolutisme.",
+        "rate": "Évalue ta réponse ↓",
+        "again": "Encore",
+        "hard": "Difficile",
+        "good": "Bien",
+        "easy": "Facile",
+        "nextReview": "{count, plural, one {Revoir dans # jour} other {Revoir dans # jours}}"
+      }
+    }
+  },
+  "auth": {
+    "common": {
+      "brand": "Studra",
+      "googleRedirecting": "Redirection...",
+      "continueWithGoogle": "Continuer avec Google",
+      "or": "ou",
+      "email": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "password": "Mot de passe",
+      "checkoutError": "Erreur lors du checkout"
+    },
+    "login": {
+      "metadata": {
+        "title": "Connexion",
+        "description": "Connectez-vous à votre compte Studra pour accéder à vos supports de révision générés par IA."
+      },
+      "title": "Connexion",
+      "subtitle": "Bon retour parmi nous !",
+      "passwordPlaceholder": "••••••••",
+      "submitting": "Connexion...",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "register": "S'inscrire",
+      "forgotPassword": "Mot de passe oublié ?"
+    },
+    "register": {
+      "metadata": {
+        "title": "Créer un compte",
+        "description": "Inscrivez-vous gratuitement sur Studra et commencez à générer des flashcards, fiches de révision et examens avec l'IA."
+      },
+      "title": "Créer un compte",
+      "subtitle": "Commencez à réviser intelligemment",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "passwordPlaceholder": "Minimum 6 caractères",
+      "submittingCheckout": "Création et redirection vers le paiement...",
+      "submitting": "Création...",
+      "submit": "Créer mon compte",
+      "hasAccount": "Déjà un compte ?",
+      "login": "Se connecter",
+      "createError": "Erreur lors de la création du compte",
+      "success": "Compte créé !"
+    },
+    "forgotPassword": {
+      "metadata": {
+        "title": "Mot de passe oublié",
+        "description": "Réinitialisez le mot de passe de votre compte Studra en recevant un lien sécurisé par email."
+      },
+      "title": "Mot de passe oublié",
+      "subtitle": "On t'envoie un lien pour en choisir un nouveau",
+      "sentSubtitle": "Vérifie ta boîte mail",
+      "sentBody": "Si un compte Studra existe avec cette adresse, tu vas recevoir un email contenant un lien de réinitialisation. Il expire dans 1 heure. Pense à regarder tes spams.",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi...",
+      "error": "Une erreur est survenue. Réessaie dans un instant.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "metadata": {
+        "title": "Nouveau mot de passe",
+        "description": "Choisissez un nouveau mot de passe pour votre compte Studra."
+      },
+      "title": "Nouveau mot de passe",
+      "subtitle": "Choisis un mot de passe pour ton compte",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Minimum 8 caractères",
+      "confirmPassword": "Confirme le mot de passe",
+      "confirmPasswordPlaceholder": "••••••••",
+      "submit": "Mettre à jour",
+      "submitting": "Mise à jour...",
+      "success": "Mot de passe mis à jour !",
+      "mismatch": "Les deux mots de passe ne correspondent pas.",
+      "error": "Ce lien est invalide ou a expiré. Demande-en un nouveau.",
+      "missingToken": "Ce lien de réinitialisation est incomplet ou invalide. Demande un nouveau lien.",
+      "requestNewLink": "Demander un nouveau lien"
+    }
+  },
+  "dashboard": {
+    "home": {},
+    "flashcards": {},
+    "fiches": {},
+    "schemas": {
+      "eyebrow": "Schémas",
+      "title": "Mes schémas",
+      "count": "{count, plural, =0 {Aucun schéma} one {# schéma} other {# schémas}}",
+      "new": "Nouveau schéma",
+      "searchPlaceholder": "Rechercher un schéma…",
+      "subjects": {
+        "all": "Tous",
+        "ses": "SES",
+        "hggsp": "HGGSP",
+        "maths": "Maths",
+        "history": "Histoire",
+        "physics": "Physique",
+        "other": "Autre"
+      },
+      "sort": {
+        "dateDesc": "Date ↓",
+        "dateAsc": "Date ↑",
+        "alpha": "Titre A→Z"
+      },
+      "open": "Ouvrir →",
+      "empty": {
+        "title": "Aucun schéma",
+        "subtitle": "Créez votre premier schéma conceptuel à partir de votre cours",
+        "search": "Aucun schéma ne correspond à votre recherche."
+      },
+      "newPage": {
+        "title": "Nouveau schéma",
+        "description": "L’IA crée un schéma interactif des relations entre les concepts",
+        "submit": "✨ Générer le schéma",
+        "submitWithExtras": "✨ Générer le schéma + {count} autre{count, plural, one {} other {s}}",
+        "titlePlaceholder": "Ex: Les causes de la Révolution française",
+        "contentPlaceholder": "Collez ici le contenu de votre cours…",
+        "another": "Créer un autre schéma"
+      },
+      "toast": {
+        "generationError": "Erreur lors de la génération du schéma",
+        "success": "Contenu généré avec succès !",
+        "unexpected": "Une erreur est survenue",
+        "saved": "Schéma sauvegardé",
+        "saveError": "Échec de la sauvegarde",
+        "unlocked": "Schéma déverrouillé",
+        "locked": "Schéma verrouillé"
+      },
+      "detail": {
+        "back": "← Mes schémas",
+        "nodes": "nœuds",
+        "edges": "liens",
+        "stats": "{nodes} nœuds · {edges} liens",
+        "open": "Ouvrir",
+        "entityLabel": "ce schéma"
+      }
+    },
+    "timelines": {
+      "eyebrow": "Frises",
+      "title": "Mes frises",
+      "count": "{count, plural, =0 {Aucune frise} one {# frise} other {# frises}}",
+      "new": "Nouvelle frise",
+      "searchPlaceholder": "Rechercher une frise…",
+      "subjects": {
+        "all": "Tous",
+        "ses": "SES",
+        "hggsp": "HGGSP",
+        "maths": "Maths",
+        "history": "Histoire",
+        "physics": "Physique",
+        "other": "Autre"
+      },
+      "sort": {
+        "dateDesc": "Date ↓",
+        "dateAsc": "Date ↑",
+        "alpha": "Titre A→Z"
+      },
+      "open": "Ouvrir →",
+      "empty": {
+        "title": "Aucune frise",
+        "subtitle": "Créez votre première frise chronologique à partir de votre cours d’histoire",
+        "search": "Aucune frise ne correspond à votre recherche."
+      },
+      "newPage": {
+        "title": "Nouvelle frise",
+        "description": "L’IA extrait et organise les événements de ton cours",
+        "submit": "✨ Générer la frise",
+        "submitWithExtras": "✨ Générer la frise + {count} autre{count, plural, one {} other {s}}",
+        "titlePlaceholder": "Ex: La Révolution française (1789-1799)",
+        "contentPlaceholder": "Collez ici votre cours d’histoire, une chronologie, des notes…",
+        "another": "Créer une autre frise"
+      },
+      "toast": {
+        "generationError": "Erreur lors de la génération de la frise",
+        "success": "Contenu généré avec succès !",
+        "unexpected": "Une erreur est survenue"
+      },
+      "detail": {
+        "back": "← Mes frises",
+        "events": "{count, plural, one {# événement} other {# événements}}",
+        "categories": "catégories",
+        "entityLabel": "cette frise"
+      },
+      "viewer": {
+        "all": "Tous",
+        "empty": "Aucun événement dans cette catégorie.",
+        "categories": {
+          "politique": "Politique",
+          "militaire": "Militaire",
+          "economique": "Économique",
+          "social": "Social",
+          "culturel": "Culturel",
+          "default": "Autre"
+        }
+      }
+    },
+    "exams": {
+      "eyebrow": "Examens",
+      "title": "Mes examens",
+      "count": "{count, plural, =0 {Aucun examen} one {# examen} other {# examens}}",
+      "new": "Nouvel examen",
+      "searchPlaceholder": "Rechercher un examen…",
+      "subjects": {
+        "all": "Tous",
+        "ses": "SES",
+        "hggsp": "HGGSP",
+        "maths": "Maths",
+        "history": "Histoire",
+        "physics": "Physique",
+        "other": "Autre"
+      },
+      "sort": {
+        "dateDesc": "Date ↓",
+        "dateAsc": "Date ↑",
+        "alpha": "Titre A→Z"
+      },
+      "open": "Voir →",
+      "neverAttempted": "Jamais tenté",
+      "questions": "{count, plural, one {# question} other {# questions}}",
+      "openQuestions": "{count} QCM · {open} ouverte{open, plural, one {} other {s}}",
+      "bestScore": "Meilleur score : {score}%",
+      "empty": {
+        "title": "Aucun examen",
+        "subtitle": "Générez votre premier examen blanc depuis vos cours",
+        "search": "Aucun examen ne correspond à votre recherche."
+      },
+      "newPage": {
+        "title": "Nouvel examen",
+        "description": "L’IA génère 7 QCM + 3 questions ouvertes avec correction automatique",
+        "submit": "📝 Générer l’examen",
+        "submitWithExtras": "📝 Générer l’examen + {count} autre{count, plural, one {} other {s}}",
+        "titlePlaceholder": "Ex: Examen - Chapitre 3 Photosynthèse",
+        "contentPlaceholder": "Collez ici le contenu de votre cours à évaluer…",
+        "another": "Créer un autre examen",
+        "loading": "Génération en cours…",
+        "loadingDescription": "L’IA rédige tes questions et prépare les corrections"
+      },
+      "toast": {
+        "generationError": "Erreur lors de la génération de l’examen",
+        "success": "Contenu généré avec succès !",
+        "unexpected": "Une erreur est survenue",
+        "submitError": "Erreur lors de la soumission"
+      },
+      "detail": {
+        "back": "← Mes examens",
+        "attempts": "Tentatives précédentes",
+        "noAttempts": "Aucune tentative",
+        "startFirst": "Lance ton premier examen !",
+        "start": "Commencer l’examen",
+        "quit": "Quitter",
+        "question": "Question {current} / {total}",
+        "previous": "Préc.",
+        "next": "Suiv.",
+        "submit": "Terminer",
+        "answerPlaceholder": "Rédige ta réponse ici…",
+        "analyzing": "L’IA analyse tes réponses",
+        "analyzingTitle": "Correction en cours…",
+        "instructions": "Les QCM sont corrigés automatiquement. Les questions ouvertes sont évaluées par l’IA selon ta réponse et les mots-clés attendus.",
+        "openLabel": "Ouverte",
+        "correctAnswers": "{correct}/{total} correctes",
+        "entityLabel": "cet examen"
+      },
+      "results": {
+        "correct": "questions correctes",
+        "back": "← Refaire l’examen",
+        "mine": "Mes examens",
+        "detailedCorrection": "Correction détaillée",
+        "mcq": "QCM",
+        "open": "Ouvertes",
+        "openSingular": "Ouverte",
+        "noAnswer": "Aucune réponse",
+        "aiFeedback": "Retour IA",
+        "yourAnswer": "Ta réponse :",
+        "correctAnswer": "Bonne réponse :"
+      }
+    },
+    "annales": {
+      "eyebrow": "Annales",
+      "title": "Mes annales",
+      "count": "{count, plural, =0 {Aucune annale} one {# annale} other {# annales}}",
+      "new": "Nouvelle annale",
+      "empty": {
+        "title": "Aucune annale générée",
+        "subtitle": "Uploade une ancienne annale et choisis un cours pour générer un nouveau sujet dans le même style."
+      },
+      "newPage": {
+        "title": "Générer une annale",
+        "description": "Uploade une ancienne annale, choisis ton cours — Studra génère un nouveau sujet dans le même style avec corrigé.",
+        "stepExam": "1. Ancienne annale",
+        "stepExamDescription": "Dépose un PDF ou colle le texte de l’examen",
+        "extracting": "Extraction…",
+        "dropPdf": "Dépose un PDF ici ou clique pour sélectionner",
+        "or": "ou",
+        "examPlaceholder": "Colle ici le texte de l’ancienne annale…",
+        "characters": "{count} caractères extraits",
+        "stepCourse": "2. Cours source",
+        "stepCourseDescription": "Sélectionne le cours sur lequel générer le nouveau sujet",
+        "stepTitle": "3. Titre du sujet généré",
+        "titlePlaceholder": "Ex: Examen — Chapitre 3 — La photosynthèse",
+        "generate": "Générer le sujet",
+        "generating": "Génération en cours…",
+        "quota": "Compte comme 1 génération sur ton quota mensuel"
+      },
+      "toast": {
+        "pdfOnly": "Seuls les fichiers PDF sont acceptés",
+        "extractError": "Erreur extraction PDF",
+        "pdfSuccess": "PDF extrait ({pages, plural, one {# page} other {# pages}})",
+        "readError": "Erreur lors de la lecture du PDF",
+        "generationError": "Erreur lors de la génération",
+        "success": "Annale générée !",
+        "unexpected": "Une erreur est survenue"
+      },
+      "detail": {
+        "loading": "Chargement…",
+        "viewAnswer": "Voir le corrigé",
+        "print": "Imprimer",
+        "back": "Retour aux annales",
+        "answer": "Réponse",
+        "keyPoints": "Points clés attendus",
+        "questions": "{count, plural, one {# question} other {# questions}}",
+        "points": "{count, plural, one {# point} other {# points}}",
+        "caseStudy": "Cas pratique",
+        "entityLabel": "cette annale"
+      }
+    },
+    "planning": {
+      "label": "Planning",
+      "loading": "Chargement…",
+      "error": "Une erreur est survenue",
+      "errorShort": "Erreur",
+      "created": "Planning créé ({count} {count, plural, one {session} other {sessions}})",
+      "updated": "Planning mis à jour",
+      "deleted": "Planning supprimé",
+      "regenerated": "Planning régénéré ({count} {count, plural, one {session} other {sessions}})",
+      "regenerationError": "Erreur de régénération",
+      "deleteError": "Erreur lors de la suppression",
+      "confirmRegenerate": "Régénérer le planning ? Les sessions non terminées seront réécrites.",
+      "confirmDelete": "Supprimer ce planning ? Cette action est irréversible.",
+      "listTitle": "Mes plannings",
+      "new": "Nouveau planning",
+      "count": "{count} {count, plural, one {plan} other {plans}}",
+      "noneTitle": "Aucun planning",
+      "noneSubtitle": "Génère un planning personnalisé jour par jour pour ton prochain examen.",
+      "createFirst": "Créer mon premier planning",
+      "examOn": "Examen le {date}",
+      "newTitle": "Nouveau planning",
+      "newDescription": "Studra génère un plan de révision jour par jour adapté à ta maîtrise et à ton temps disponible.",
+      "examName": "Nom de l’examen",
+      "examPlaceholder": "Ex: Bac de philosophie",
+      "examDate": "Date de l’examen",
+      "timePerDay": "Temps dispo/jour",
+      "chapters": "Chapitres à réviser",
+      "chaptersDescription": "Coche les contenus et évalue ta maîtrise actuelle (1 = très difficile, 5 = maîtrisé)",
+      "noContent": "Aucun contenu trouvé. Crée d’abord des fiches ou des decks.",
+      "mastery": [
+        "",
+        "Très difficile",
+        "Difficile",
+        "Moyen",
+        "Maîtrisé",
+        "Très maîtrisé"
+      ],
+      "selected": "{count} {count, plural, one {contenu} other {contenus}} sélectionné{count, plural, one {} other {s}}",
+      "generate": "Générer mon planning",
+      "generating": "Génération du planning…",
+      "quota": "Compte comme 1 génération sur ton quota mensuel",
+      "completed": "Planning terminé 🎉",
+      "back": "← Tous les plannings",
+      "minutesPerDay": "{minutes} min/jour",
+      "progress": "Progression",
+      "sessions": "{completed}/{total} sessions",
+      "completion": "{progress}% complété",
+      "skipped": "{count} session{count, plural, one {} other {s}} sautée{count, plural, one {} other {s}}",
+      "overdue": "{count} session{count, plural, one {} other {s}} en retard",
+      "overdueDescription": "Reporte-les ou régénère le planning pour les recompacter.",
+      "recompact": "Recompacter le planning",
+      "today": "Aujourd’hui",
+      "nothingToday": "Rien à faire aujourd’hui",
+      "nothingTodayDescription": "Profites-en pour réviser à ton rythme.",
+      "upcoming": "Prochaines sessions",
+      "calendar": "Calendrier complet",
+      "history": "Historique ({count})",
+      "start": "Commencer",
+      "markDone": "Marquer fait",
+      "cancel": "Annuler",
+      "postpone": "Reporter",
+      "skip": "Sauter",
+      "actions": "Actions",
+      "closeMenu": "Fermer le menu",
+      "editSettings": "Modifier les paramètres",
+      "regenerate": "Régénérer",
+      "delete": "Supprimer",
+      "editTitle": "Modifier le planning",
+      "title": "Titre",
+      "availableTime": "Temps disponible par jour (min)",
+      "editHint": "Si tu changes la date ou le temps/jour, lance « Régénérer » ensuite pour rebâtir les sessions.",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "taskTypes": {
+        "flashcards": "Flashcards",
+        "fiche": "Fiche",
+        "exam": "Examen blanc",
+        "review": "Révision",
+        "general_review": "Révision générale"
+      }
+    },
+    "recall": {
+      "label": "Rappel libre",
+      "loading": "Chargement…",
+      "error": "Une erreur est survenue",
+      "startError": "Erreur lors du démarrage",
+      "connectionError": "Erreur de connexion",
+      "evaluationError": "Erreur lors de l’évaluation",
+      "newTitle": "Lance une session",
+      "description": "Écris tout ce que tu sais sur un sujet en temps limité. L’IA évalue ta complétude et pointe les oublis.",
+      "content": "Contenu à rappeler",
+      "duration": "Durée",
+      "start": "Lancer le chronomètre",
+      "starting": "Démarrage…",
+      "quota": "Compte comme 1 génération lors de l’évaluation finale",
+      "writePlaceholder": "Commence à écrire tout ce que tu sais…",
+      "writeAria": "Zone de rappel libre",
+      "remaining": "Temps restant : {time}",
+      "readyDescription": "Une fois lancé, tu as {duration} pour écrire tout ce que tu sais sur « {title} ». Pas de correction orthographique, pas d’aide.",
+      "finish": "Terminer et évaluer",
+      "evaluating": "Évaluation…",
+      "results": "Résultats",
+      "strengths": "Points maîtrisés",
+      "gaps": "Points à revoir",
+      "analysis": "Analyse détaillée",
+      "newSession": "Nouveau rappel",
+      "flashcards": "Voir mes flashcards",
+      "score": "Score"
+      ,"writePrompt": "écris tout ce que tu sais"
+    },
+    "socrate": {
+      "label": "Mode Socrate",
+      "loading": "Chargement…",
+      "error": "Une erreur est survenue",
+      "startError": "Impossible de démarrer la session",
+      "sendError": "Erreur lors de l’envoi",
+      "newTitle": "Dialogue socratique",
+      "description": "Teste ta compréhension en répondant aux questions de l’IA.",
+      "content": "Contenu à étudier",
+      "start": "Commencer la session",
+      "starting": "Démarrage…",
+      "placeholder": "Réponds à Socrate…",
+      "send": "Envoyer",
+      "finish": "Terminer & diagnostiquer",
+      "cancel": "Quitter",
+      "finishConfirm": "Terminer cette session ?",
+      "question": "Question",
+      "yourAnswer": "Ta réponse",
+      "bestExplanation": "Ta meilleure explication",
+      "toReview": "À revoir",
+      "unclear": "Encore flou",
+      "diagnosis": "Diagnostic",
+      "sessionFinished": "Session terminée",
+      "quota": "Compte comme 1 génération sur ton quota mensuel",
+      "assistantName": "Socrate"
+    },
+    "lacunes": {
+      "label": "Lacunes",
+      "title": "Mes points faibles",
+      "basedOn": "Basé sur {sessions} révisions · {count} point{count, plural, one {} other {s}} faible{count, plural, one {} other {s}}",
+      "refresh": "Relancer l’analyse",
+      "refreshing": "Analyse…",
+      "loading": "Analyse en cours…",
+      "emptyTitle": "Aucune donnée de révision",
+      "emptyDescription": "Lance une session de flashcards pour que l’IA puisse analyser tes lacunes.",
+      "analysis": "Analyse",
+      "diagnosis": "Diagnostic",
+      "strengths": "Points forts",
+      "weaknesses": "Points faibles",
+      "priority": "Priorité",
+      "recommendation": "Conseils ciblés",
+      "review": "À retravailler",
+      "lastSeen": "Vu pour la dernière fois : {date}",
+      "cardsToReview": "Cartes à retravailler",
+      "sessions": "Sessions analysées",
+      "mastery": "maîtrisées",
+      "score": "Taux de réussite",
+      "flashcards": "Voir mes flashcards",
+      "socrate": "Mode Socrate",
+      "proTitle": "Analyse tes lacunes",
+      "proDescription": "Passe à Pro pour identifier précisément les notions à renforcer.",
+      "proCta": "Passer à Pro",
+      "error": "Impossible de charger l’analyse"
+    },
+    "settings": {
+      "eyebrow": "Compte",
+      "title": "Paramètres",
+      "revision": "Répétition espacée (FSRS)",
+      "revisionSummary": "Stats, rétention cible, prévision",
+      "profile": "Profil",
+      "email": "Email",
+      "fullName": "Nom complet",
+      "notProvided": "Non renseigné",
+      "memberSince": "Membre depuis",
+      "marketingEmails": "Emails marketing",
+      "marketingDescription": "Recevoir les actualités et offres Studra par email.",
+      "marketingEnabled": "Emails marketing activés",
+      "marketingDisabled": "Emails marketing désactivés",
+      "marketingAriaLabel": "Autoriser les emails marketing",
+      "language": "Langue de l’interface",
+      "languageDescription": "Choisis la langue utilisée dans Studra.",
+      "sessionExpired": "Session expirée.",
+      "preferenceUpdateError": "Impossible de mettre à jour cette préférence.",
+      "subscription": "Abonnement",
+      "subscriptionDescription": "Votre abonnement Studra",
+      "pro": "Pro",
+      "free": "Gratuit",
+      "allGenerationsUsed": "Tu as utilisé toutes tes générations ce mois-ci.",
+      "generationsRemaining": "Il te reste {count, plural, =0 {aucune génération} one {# génération} other {# générations}} ce mois-ci.",
+      "unlimitedFlashcards": "Flashcards illimitées",
+      "unlimitedNotes": "Fiches illimitées",
+      "generationsPerMonth": "Générations par mois",
+      "unlimited": "Illimitées",
+      "deleteAccount": {
+        "title": "Supprimer mon compte",
+        "description": "Supprime définitivement ton compte Studra et toutes tes données (fiches, flashcards, examens, planning...). Cette action est irréversible.",
+        "cta": "Supprimer mon compte",
+        "confirmTitle": "Supprimer définitivement ton compte ?",
+        "warning": "Cette action est irréversible. Toutes tes données seront supprimées et ton abonnement, s'il est actif, sera immédiatement résilié.",
+        "typeEmailLabel": "Tape {email} pour confirmer",
+        "cancel": "Annuler",
+        "confirmCta": "Supprimer définitivement",
+        "deleting": "Suppression…",
+        "deleted": "Ton compte a été supprimé.",
+        "sessionExpired": "Session expirée.",
+        "emailMismatch": "L'email saisi ne correspond pas à ton compte.",
+        "genericError": "Impossible de supprimer le compte. Réessaie ou contacte le support."
+      },
+      "fsrs": {
+        "eyebrow": "Paramètres",
+        "title": "Répétition espacée (FSRS)",
+        "description": "Free Spaced Repetition Scheduler · algorithme par défaut.",
+        "dueToday": "À réviser aujourd'hui",
+        "retention30d": "Rétention (30 j)",
+        "totalReviews": "Révisions totales",
+        "totalCards": "Cartes totales",
+        "cardState": "État des cartes",
+        "new": "Nouvelles",
+        "learning": "Apprentissage",
+        "review": "Révision",
+        "relearning": "Réapprentissage",
+        "forecast": "Prévision révisions · 30 prochains jours",
+        "card": "carte",
+        "cards": "cartes",
+        "today": "Aujourd'hui",
+        "day30": "J+30",
+        "retentionTarget": "Rétention cible",
+        "lessReviews": "moins de révisions",
+        "moreReviews": "plus de révisions",
+        "retentionHelp": "Probabilité de rappel souhaitée lors de chaque révision. 90% est le réglage recommandé.",
+        "maximumInterval": "Intervalle maximum",
+        "years": "an",
+        "yearsPlural": "ans",
+        "days": "j",
+        "intervalHelp": "Intervalle maximal entre deux révisions, en jours (défaut : 36 500 j ≈ 100 ans).",
+        "save": "Enregistrer",
+        "saving": "Enregistrement...",
+        "saved": "Paramètres enregistrés."
+        ,"spacedRepetition": "Répétition espacée (FSRS)"
+        ,"targetRetention": "Rétention cible"
+        ,"saveSettings": "Enregistrer les paramètres"
+        ,"saveSettingsLoading": "Sauvegarde…"
+        ,"reviewsRecorded": "{count, plural, one {# révision enregistrée} other {# révisions enregistrées}}"
+        ,"algorithmSubtitle": "Free Spaced Repetition Scheduler · algorithme par défaut."
+        ,"forecast": "Prévision révisions · 30 prochains jours"
+        ,"forecastCardTitle": "{date} : {count, plural, one {# carte} other {# cartes}}"
+        ,"todayLabel": "Aujourd’hui"
+        ,"dayThirty": "J+30"
+        ,"parameters": "Paramètres"
+        ,"retentionLow": "70% · moins de révisions"
+        ,"retentionHigh": "98% · plus de révisions"
+        ,"algorithm": "Algorithme"
+        ,"standards": "Standards FSRS v5"
+        ,"algorithmHelp": "Studra utilise les paramètres FSRS v5 par défaut, validés sur des millions de révisions. La personnalisation algorithmique basée sur votre historique sera disponible dans une prochaine mise à jour."
+        ,"intervalValue": "{count, plural, one {# an} other {# ans}}"
+        ,"daysValue": "{count} j"
+      }
+    },
+    "billing": {
+      "eyebrow": "Compte",
+      "title": "Abonnement",
+      "currentPlan": "Plan actuel",
+      "description": "Votre abonnement Studra",
+      "allGenerationsUsed": "Tu as utilisé toutes tes générations ce mois-ci.",
+      "generationsRemaining": "Il te reste {count, plural, one {# génération} other {# générations}} ce mois-ci.",
+      "flashcards": "Flashcards illimitées",
+      "notes": "Fiches illimitées",
+      "generations": "Générations par mois",
+      "unlimited": "Illimitées",
+      "pro": "Pro",
+      "free": "Gratuit",
+      "checkoutError": "Erreur lors du checkout",
+      "genericError": "Une erreur est survenue",
+      "redirecting": "Redirection...",
+      "upgradeButton": "✨ Passer en Pro — 4,99€/mois",
+      "manageButton": "⚙️ Gérer mon abonnement"
+    },
+    "affiliate": {
+      "beta": "Affiliation",
+      "title": "Programme d'affiliation",
+      "soon": "Bientôt disponible",
+      "deployment": "Le programme d'affiliation est en cours de déploiement. Il sera disponible prochainement pour tous les utilisateurs.",
+      "access": "Accès bêta",
+      "accessHelp": "Vous avez un accès anticipé ? Entrez le mot de passe pour continuer.",
+      "password": "Mot de passe",
+      "checking": "Vérification...",
+      "accessButton": "Accéder",
+      "wrongPassword": "Mot de passe incorrect.",
+      "description": "Parrainez vos amis et gagnez une commission récurrente à vie.",
+      "welcome": "Bienvenue dans le programme d'affiliation !",
+      "commission": "✨ 20% de commission à vie",
+      "commissionHelp": "Partagez votre lien, vos filleuls s'abonnent, vous gagnez 20% de chaque abonnement pour toujours.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "contactEmail": "Email de contact",
+      "paymentMethod": "Moyen de paiement",
+      "paypal": "💳 PayPal",
+      "bankTransfer": "🏦 Virement bancaire",
+      "paypalEmail": "Email PayPal",
+      "accountHolder": "Titulaire du compte",
+      "iban": "IBAN",
+      "bic": "BIC / SWIFT (optionnel)",
+      "join": "Rejoindre le programme d'affiliation",
+      "registering": "Inscription...",
+      "error": "Une erreur est survenue.",
+      "suspended": "⚠️ Votre compte est suspendu. Contactez le support.",
+      "hello": "Bonjour {name} ! Voici votre tableau de bord.",
+      "referralLink": "Votre lien de parrainage",
+      "copied": "Copié !",
+      "copy": "Copier",
+      "code": "Code :",
+      "clicks": "Clics",
+      "signups": "Inscriptions",
+      "activeSubscribers": "Abonnés actifs",
+      "commissionsDue": "Commissions dues",
+      "balance": "Solde des commissions",
+      "pending": "En attente",
+      "approved": "Validées",
+      "payable": "Payables",
+      "paid": "Payées",
+      "validation": "En cours de validation",
+      "readyToPay": "Prêtes à verser",
+      "threshold": "Seuil : {amount} €",
+      "totalPaid": "Total versé",
+      "missingThreshold": "Il vous manque {amount} pour atteindre le seuil de paiement.",
+      "commissionHistory": "Historique des commissions",
+      "none": "Aucune commission pour le moment.",
+      "date": "Date",
+      "revenue": "Revenu",
+      "commissionLabel": "Commission",
+      "status": "Statut",
+      "paymentHistory": "Historique des paiements",
+      "amount": "Montant",
+      "method": "Méthode",
+      "reference": "Référence",
+      "paymentMethodTitle": "Méthode de paiement",
+      "edit": "Modifier",
+      "notProvided": "Non renseigné",
+      "holder": "Titulaire : {name}",
+      "update": "Mise à jour...",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "updated": "Moyen de paiement mis à jour.",
+      "paymentError": "Erreur.",
+      "sessionExpired": "Session expirée.",
+      "firstNameRequired": "Prénom requis.",
+      "lastNameRequired": "Nom requis.",
+      "invalidEmail": "Email invalide.",
+      "paymentRequired": "Moyen de paiement requis.",
+      "invalidPaypalEmail": "Email PayPal invalide.",
+      "accountHolderRequired": "Titulaire du compte requis.",
+      "invalidIban": "IBAN invalide.",
+      "alreadyRegistered": "Vous êtes déjà inscrit au programme.",
+      "registrationError": "Erreur lors de l'inscription. Réessayez.",
+      "invalidPaymentMethod": "Moyen de paiement invalide.",
+      "updateError": "Erreur lors de la mise à jour."
+    },
+    "bac": {
+      "title": "Notes Pronote",
+      "soon": "Bientôt disponible",
+      "development": "Cette fonctionnalité est en cours de développement. Elle sera disponible prochainement pour tous les utilisateurs.",
+      "access": "Accès bêta",
+      "accessHelp": "Vous avez un accès anticipé ? Entrez le mot de passe pour continuer.",
+      "password": "Mot de passe",
+      "checking": "Vérification...",
+      "accessButton": "Accéder",
+      "wrongPassword": "Mot de passe incorrect.",
+      "login": "Connexion à Pronote",
+      "username": "Identifiant Pronote",
+      "passwordPronote": "Mot de passe Pronote",
+      "connect": "Connecter Pronote",
+      "connecting": "Connexion en cours...",
+      "disconnect": "Déconnexion de Pronote",
+      "changeSchool": "Changer d'établissement",
+      "city": "Nom de votre ville ou commune...",
+      "searching": "Recherche...",
+      "searchSchools": "Recherche des établissements...",
+      "schoolsFound": "Établissements trouvés",
+      "startSearch": "Tapez le nom de votre commune pour commencer la recherche.",
+      "importQr": "Importer la capture du QR code",
+      "qrHelp": "PNG, JPEG, WEBP - cliquez ou glissez-déposez",
+      "pin": "Code PIN (4 chiffres)",
+      "connectQr": "Connecter via QR code",
+      "qrConnecting": "Connexion en cours...",
+      "credentialsSafe": "Vos identifiants ne sont jamais stockés. Seul un token de reconnexion sécurisé est conservé.",
+      "stepOne": "Étape 1 - Trouver votre établissement",
+      "stepTwo": "Étape 2 - Connexion à Pronote",
+      "grades": "Notes",
+      "average": "Moyenne générale",
+      "classAverage": "Moyenne de classe",
+      "difficulty": "en difficulté",
+      "good": "bien",
+      "absent": "Absent",
+      "notRendered": "Non rendu",
+      "optional": "Optionnel",
+      "bonus": "Bonus",
+      "coefficient": "coeff.",
+      "back": "Retour",
+      "noData": "Aucune note disponible.",
+      "analysisError": "Impossible d'analyser les matières.",
+      "estimatedAverage": "Moyenne estimée au bac général",
+      "period": "par période",
+      "classAverageShort": "Classe",
+      "minMax": "Min {min} - Max {max}",
+      "notesFor": "Notes - {subject}",
+      "noPeriodGrades": "Aucune note pour cette période.",
+      "noPeriodSubjects": "Aucune matière disponible pour cette période.",
+      "analysisDescription": "Analyse tes matières Pronote pour associer les bons coefficients du bac 2026.",
+      "identifySubjects": "Analyser mes matières pour le bac",
+      "identifyingSubjects": "Identification des matières en cours avec l'IA...",
+      "subject": "Matière",
+      "type": "Type",
+      "coefficientShort": "Coef.",
+      "aggregatedAverage": "Moyenne Pronote agrégée",
+      "confidence": "Confiance",
+      "estimatedDay": "Notes estimées le jour J",
+      "philosophy": "Philosophie (coef. 8)",
+      "specialty": "Spécialité {number} (coef. 16)",
+      "grandOral": "Grand Oral (coef. 10)",
+      "knownFrenchNotes": "Notes de français déjà connues",
+      "writtenFrench": "Français écrit (coef. 5)",
+      "oralFrench": "Français oral (coef. 5)",
+      "estimatedAverageShort": "Moyenne estimée",
+      "estimatedMention": "Mention estimée : {mention}",
+      "progressTo": "Progression vers {mention}",
+      "partialEstimate": "Estimation partielle ({count}/100 coefficients renseignés)",
+      "confidenceLabel": "Confiance {confidence}",
+      "periodGrades": "Notes {period}",
+      "syncSuccess": "Données synchronisées",
+      "sync": "Synchroniser les données",
+      "syncing": "Synchronisation...",
+      "disconnectPronote": "Déconnecter Pronote",
+      "disconnecting": "Déconnexion...",
+      "connectSuccess": "Pronote connecté avec succès",
+      "schoolSearchError": "Erreur lors de la recherche des établissements",
+      "stepOneLabel": "Étape 1 - Trouver votre établissement",
+      "simulation": "Simulation bac",
+      "uncertainIdentification": "Identification incertaine : {subject}",
+      "classAverageDisplay": "Moyenne de classe : {value}/20",
+      "lastSync": "Dernière synchronisation : {date}",
+      "noSync": "Aucune synchronisation effectuée - cliquez sur « Synchroniser » pour récupérer vos notes.",
+      "syncError": "Impossible de synchroniser avec Pronote",
+      "disconnected": "Pronote déconnecté",
+      "disconnectError": "Impossible de se déconnecter",
+      "qrInstructions": "Pour te connecter via QR code Pronote :",
+      "qrStep1": "1. Connecte-toi à ton espace Pronote depuis un navigateur",
+      "qrStep2": "2. Va dans Informations personnelles > Compte",
+      "qrStep3": "3. Clique sur QR Code et choisis un code PIN à 4 chiffres",
+      "qrStep4": "4. Fais une capture d’écran de la fenêtre QR Code",
+      "qrStep5": "5. Importe cette capture ci-dessous",
+      "eduConnectHelp": "Les utilisateurs EduConnect peuvent suivre ces étapes sans connaître leur mot de passe Pronote.",
+      "changeImage": "Changer l’image",
+      "searchCityPlaceholder": "Nom de votre ville ou commune...",
+      "searchingCommunes": "Recherche...",
+      "searchingSchools": "Recherche des établissements...",
+      "schoolsFound": "Établissements trouvés",
+      "startCitySearch": "Tapez le nom de votre commune pour commencer la recherche.",
+      "notesHeader": "Mes notes Pronote",
+      "connectHeader": "Connecter Pronote",
+      "notesDescription": "Récupérez vos notes directement depuis votre espace Pronote.",
+      "credentialsTab": "Identifiants",
+      "qrTab": "QR Code",
+      "mention": {
+        "Non admis": "Non admis",
+        "Passable": "Passable",
+        "Assez bien": "Assez bien",
+        "Bien": "Bien",
+        "Très bien": "Très bien",
+        "Félicitations": "Félicitations"
+      },
+      "subjectType": {
+        "tronc_commun_cc": "Tronc commun",
+        "specialite_terminale": "Spécialité",
+        "specialite_abandonnee_1ere": "Spécialité de 1re",
+        "terminal_hors_cc": "Épreuve terminale",
+        "option": "Option",
+        "inconnu": "Inconnu"
+      }
+    },
+    "upgrade": {
+      "eyebrow": "Abonnement",
+      "title": "Passe à la vitesse supérieure",
+      "quota": "Tu as utilisé tes 5 générations ce mois-ci. Passe Pro pour continuer sans limite.",
+      "remaining": "Il te reste {count, plural, one {# génération} other {# générations}} ce mois-ci.",
+      "free": "Gratuit",
+      "forever": "/pour toujours",
+      "pro": "Pro",
+      "month": "/mois",
+      "recommended": "Recommandé",
+      "currentPlan": "Plan actuel",
+      "freeFeatures": [
+        "5 générations IA par mois",
+        "Accès à tous les formats",
+        "Import PDF · texte · YouTube",
+        "Répétition espacée FSRS"
+      ],
+      "proFeatures": [
+        "Générations IA illimitées",
+        "Mode Socrate (maïeutique)",
+        "Planning d'examen personnalisé",
+        "Analyse des lacunes avancée",
+        "Toutes les futures fonctionnalités"
+      ],
+      "footer": "Sans engagement · Annule en 1 clic depuis les paramètres · Paiement sécurisé via Stripe",
+      "checkoutError": "Erreur lors du checkout",
+        "error": "Une erreur est survenue"
+    },
+    "paywall": {
+      "banner": {
+        "text": "Tes 5 générations gratuites du mois sont épuisées.",
+        "cta": "Voir l'offre Pro"
+      },
+      "modal": {
+        "title": "Tes 5 générations gratuites sont utilisées",
+        "subtitle": "Passe Pro pour continuer à générer sans limite.",
+        "deleteNote": "Supprimer tes contenus ne restaure pas tes générations.",
+        "cancel": "Plus tard",
+        "cta": "Passer Pro",
+        "redirecting": "Redirection…",
+        "checkoutError": "Erreur lors du checkout",
+        "error": "Une erreur est survenue"
+      }
+    },
+    "date": "{date, date, ::EEEE d MMMM}",
+    "now": "MAINTENANT",
+    "welcome": "Bienvenue, {name}.",
+    "emptyDescription": "Transforme n'importe quel cours en cartes de révision, en 30 secondes."
+  },
+  "seo": {},
+  "blog": {},
+  "legal": {},
+  "components": {
+    "contentPicker": {
+      "tabs": {
+        "fiches": "Mes fiches",
+        "decks": "Mes flashcards",
+        "text": "Texte libre"
+      },
+      "empty": "Aucun contenu trouvé. Crée d'abord une fiche ou un deck.",
+      "titlePlaceholder": "Titre du sujet",
+      "textPlaceholder": "Collez ici votre cours, vos notes...",
+      "useText": "Utiliser ce texte"
+    },
+    "imageUpload": {
+      "heicUnsupported": "Format HEIC non supporté sur ce navigateur, convertis en JPG avant d'importer.",
+      "extractionFailed": "Désolé, nous n'avons pas réussi à lire cette image. Essaie avec une photo mieux éclairée ou un meilleur contraste.",
+      "unknownError": "Une erreur est survenue, réessaie.",
+      "maxFiles": "Maximum {count} images à la fois",
+      "success": "Texte extrait avec succès — il a été ajouté à ton cours.",
+      "extracting": "Extraction en cours…",
+      "import": "Importer une photo de cours",
+      "formats": "JPG, PNG, WEBP, HEIC · Max {count} photos",
+      "status": {
+        "compressing": "Compression…",
+        "extracting": "Extraction…",
+        "done": "Extrait",
+        "error": "Erreur"
+      }
+    },
+    "contentInput": {
+      "pdfError": "Erreur lors de l'extraction du PDF",
+      "pdfSuccess": "PDF extrait : {pages, plural, =1 {1 page} other {# pages}}, {characters} caractères",
+      "pdfReadError": "Erreur lors de la lecture du PDF",
+      "youtubeError": "Erreur lors de l'extraction YouTube",
+      "youtubeSuccess": "Transcription YouTube extraite !",
+      "titleRequired": "Titre *",
+      "subject": "Matière",
+      "subjectPlaceholder": "Maths, Histoire, Biologie...",
+      "language": "Langue de génération",
+      "courseRequired": "Contenu du cours *",
+      "pdfExtracting": "Extraction du PDF...",
+      "charactersExtracted": "{count} caractères extraits",
+      "changeFile": "Cliquez pour changer de fichier",
+      "dropPdf": "Déposez votre PDF ici",
+      "selectFile": "ou cliquez pour sélectionner un fichier",
+      "pdfLimit": "Max 10 Mo · PDF uniquement",
+      "youtubeUrl": "URL de la vidéo YouTube",
+      "youtubePlaceholder": "https://www.youtube.com/watch?v=...",
+      "extract": "Extraire",
+      "youtubeHelp": "La vidéo doit avoir des sous-titres activés (automatiques ou manuels).",
+      "transcriptExtracted": "✓ Transcription extraite ({count} caractères) — vous pouvez maintenant générer.",
+      "generating": "Génération en cours..."
+    },
+    "alsoGenerate": {
+      "title": "Générer aussi depuis ce contenu",
+      "parallel": "Tout sera généré en parallèle depuis le même contenu.",
+      "generated": "Contenu généré.",
+      "resourcesCreated": "{count, plural, =1 {1 ressource créée depuis ta source.} other {# ressources créées depuis ta source.}}",
+      "resourceCreated": "Ta ressource a été créée avec succès.",
+      "newContent": "Créer un autre contenu"
+    },
+    "schema": {
+      "rename": "Renommer",
+      "cancelConnection": "Annuler la connexion",
+      "connect": "Connecter",
+      "delete": "Supprimer",
+      "primary": "Principal",
+      "accent": "Accent",
+      "neutral": "Neutre",
+      "color": "Couleur",
+      "selectTarget": "Sélectionnez un nœud cible",
+      "escapeCancel": "Échap pour annuler",
+      "relationLabel": "Libellé de la relation",
+      "zoomOut": "Zoom arrière",
+      "zoomIn": "Zoom avant",
+      "zoomReset": "Zoom 100%",
+      "fit": "Ajuster à la vue",
+      "addNode": "Ajouter un nœud",
+      "autoLayout": "Mise en page auto",
+      "showMinimap": "Afficher la minimap",
+      "unlock": "Déverrouiller",
+      "lock": "Verrouiller",
+      "saved": "Sauvegardé",
+      "saving": "Sauvegarde…",
+      "save": "Sauvegarder",
+      "saveError": "Échec de la sauvegarde",
+      "editNode": "Modifier le nœud"
+    }
+  },
+  "shell": {
+    "openMenu": "Ouvrir le menu",
+    "close": "Fermer",
+    "loggedOut": "Déconnecté",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "nav": {
+      "dashboard": "Dashboard",
+      "flashcards": "Flashcards",
+      "fiches": "Fiches",
+      "socrate": "Socrate",
+      "exams": "Examens",
+      "planning": "Planning",
+      "timelines": "Frises",
+      "schemas": "Schémas",
+      "recall": "Rappel libre",
+      "annales": "Annales",
+      "gaps": "Lacunes",
+      "grades": "Notes Pronote",
+      "upgrade": "Passer Pro"
+    }
+  },
+  "home": {
+    "title": "Accueil"
+  },
+  "fiches": {
+    "title": "Fiches",
+    "detail": {
+      "back": "Mes fiches",
+      "summary": "Sommaire",
+      "stats": "Statistiques",
+      "words": "Mots",
+      "reading": "Lecture",
+      "created": "Créée le",
+      "minutes": "{count} min",
+      "createFlashcards": "Créer des flashcards",
+      "fromFiche": "Depuis cette fiche"
+    },
+    "new": {
+      "title": "Fiches",
+      "newFiche": "Nouvelle fiche",
+      "description": "Colle ton cours, l'IA crée une fiche structurée.",
+      "generationError": "Erreur lors de la génération de la fiche",
+      "success": "Contenu généré avec succès !",
+      "error": "Une erreur est survenue",
+      "createAnother": "Créer une autre fiche",
+      "generate": "Générer la fiche",
+      "generateWithAlso": "Générer la fiche + {count, plural, one {# autre} other {# autres}}",
+      "titlePlaceholder": "Ex: La Révolution Française",
+      "contentPlaceholder": "Collez ici le contenu de votre cours..."
+    },
+    "mine": "Mes fiches",
+    "count": "{count, plural, one {# fiche} other {# fiches}}",
+    "entityLabel": "cette fiche",
+    "subjects": {"all": "Tous", "SES": "SES", "HGGSP": "HGGSP", "Maths": "Maths", "Histoire": "Histoire", "Physique": "Physique", "Autre": "Autre"},
+    "sort": {"dateDesc": "Date ↓", "dateAsc": "Date ↑", "alpha": "Titre A→Z"},
+    "new": "Nouvelle fiche",
+    "emptyTitle": "Aucune fiche",
+    "emptySubtitle": "Créez votre première fiche à partir de votre cours",
+    "emptyCta": "Créer ma première fiche",
+    "read": "Lire →",
+    "wordsCount": "~{count} mots",
+    "noSearchResults": "Aucune fiche ne correspond à votre recherche.",
+    "new": "Nouvelle fiche",
+    "emptyTitle": "Aucune fiche",
+    "emptySubtitle": "Créez votre première fiche à partir de votre cours",
+    "emptyCta": "Créer ma première fiche",
+    "read": "Lire →",
+    "wordsCount": "~{count} mots",
+    "noSearchResults": "Aucune fiche ne correspond à votre recherche.",
+    "search": "Rechercher une fiche…",
+    "viewer": {
+      "saved": "Fiche sauvegardée !",
+      "saveError": "Erreur lors de la sauvegarde",
+      "edit": "Éditer",
+      "preview": "Aperçu",
+      "cancel": "Annuler",
+      "saving": "Sauvegarde...",
+      "save": "Sauvegarder",
+      "markdownHelp": "Markdown supporté : **gras**, *italique*, ## Titre, - liste, etc.",
+      "editFiche": "Modifier la fiche"
+    }
+  },
+  "flashcards": {
+    "list": {
+      "title": "Flashcards",
+      "decks": "Mes decks",
+      "search": "Rechercher un deck…",
+      "sort": {
+        "recent": "Plus récent",
+        "alpha": "Alphabétique",
+        "cards": "Nb de cartes"
+      },
+      "noResults": "Aucun résultat",
+      "firstDeckDescription": "Crée ton premier deck à partir de tes cours."
+      ,"new": "Nouveau deck"
+      ,"cardCount": "{count, plural, one {# carte} other {# cartes}}"
+      ,"allSubjects": "Tous"
+      ,"emptyTitle": "Aucun deck pour l'instant"
+      ,"createDeck": "Créer un deck"
+      ,"entityLabel": "ce deck"
+      ,"emptyTitle": "Aucun deck pour l'instant"
+      ,"createDeck": "Créer un deck"
+    },
+    "detail": {
+      "back": "Mes decks",
+      "deck": "Deck",
+      "study": "Réviser",
+      "cardCount": "{count, plural, =0 {Aucune carte} =1 {1 carte} other {# cartes}}",
+      "preview": "Aperçu des cartes",
+      "answer": "Réponse"
+    },
+    "new": {
+      "title": "Flashcards",
+      "newDeck": "Nouveau deck",
+      "description": "Colle ton cours, l'IA génère tes cartes de révision.",
+      "generationError": "Erreur lors de la génération des flashcards",
+      "success": "Contenu généré avec succès !",
+      "error": "Une erreur est survenue",
+      "createAnother": "Créer un autre deck",
+      "generate": "Générer les cartes",
+      "generateWithAlso": "Générer les cartes + {count, plural, one {# autre} other {# autres}}",
+      "titlePlaceholder": "Ex: Chapitre 3 - La photosynthèse",
+      "contentPlaceholder": "Collez ici le contenu de votre cours, vos notes, ou tout texte à réviser...",
+      "firstDeckDescription": "Crée ton premier deck à partir de tes cours.",
+      "new": "Nouveau deck"
+    },
+    "study": {
+      "error": "Erreur",
+      "generationError": "Erreur lors de la génération",
+      "question": "Question",
+      "answer": "Réponse",
+      "spaceToFlip": "[Espace] pour retourner",
+      "originalAnswer": "Voir la réponse originale",
+      "explanationStyle": "Style d'explication",
+      "cancel": "Annuler",
+      "generating": "Génération…",
+      "explainDifferently": "Expliquer autrement",
+      "flip": "Retourner la carte",
+      "cardProgress": "Carte {current} sur {total}",
+      "clickToAnswer": "Cliquez pour voir la réponse",
+      "didntKnow": "Je ne savais pas",
+      "knew": "Je savais",
+      "styles": {
+        "analogy": "Analogie",
+        "example": "Exemple concret",
+        "simple": "Explication simple",
+        "stepbystep": "Étape par étape"
+      },
+      "allCaughtUp": "Tout est à jour !"
+      ,"cardsInDeck": "{count, plural, one {# carte} other {# cartes}} dans ce deck — aucune révision due pour l'instant."
+      ,"nextReview": "Prochaine révision : {date}"
+      ,"sessionFinished": "Session terminée"
+      ,"restart": "Recommencer"
+      ,"backToDeck": "Retour au deck"
+      ,"again": "À revoir"
+      ,"hard": "Difficile"
+      ,"good": "Bien"
+      ,"easy": "Facile"
+    }
+  }
+}

@@ -1,17 +1,131 @@
-import { Resend } from 'resend'
+import {Resend} from 'resend'
+import {defaultLocale, getLocalizedPathname, type AppLocale} from '@/i18n/pathname'
 
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'Studra <noreply@studra.fr>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://studra.fr'
 
-// ---------------------------------------------------------------------------
-// Templates
-// ---------------------------------------------------------------------------
+type TransactionalEmailTemplate = {
+  subject: string
+  body: (actionUrl: string) => string
+}
 
-function baseLayout(content: string): string {
+type TransactionalEmailTemplateSet = {
+  welcome: TransactionalEmailTemplate
+  welcomePro: TransactionalEmailTemplate
+  subscriptionCancelled: TransactionalEmailTemplate
+  passwordReset: TransactionalEmailTemplate
+}
+
+// Other locales intentionally fall back to French until their copy is validated.
+// This keeps transactional templates separate from the next-intl UI catalog.
+const transactionalEmailTemplates: Partial<Record<AppLocale, TransactionalEmailTemplateSet>> = {
+  fr: {
+    welcome: {
+      subject: 'Bienvenue sur Studra 👋',
+      body: (dashboardUrl) => `
+        <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Bienvenue sur Studra 👋</h1>
+        <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
+          Ton compte est créé, tu peux maintenant réviser plus intelligemment.
+        </p>
+        <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+          Importe un cours, une vidéo YouTube ou un PDF et laisse Studra générer
+          tes fiches, flashcards, schémas et examens blancs en quelques secondes.
+        </p>
+        ${emailButton(dashboardUrl, 'Commencer à réviser →')}
+        <p style="margin:24px 0 0;font-size:13px;color:#9ca3af;">
+          Une question ? Réponds directement à cet email.
+        </p>
+      `,
+    },
+    welcomePro: {
+      subject: 'Bienvenue dans Studra Pro 🎉',
+      body: (dashboardUrl) => `
+        <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Bienvenue dans Studra Pro 🎉</h1>
+        <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
+          Ton abonnement Pro est maintenant actif. Tu as accès à toutes les fonctionnalités de Studra sans limite.
+        </p>
+        <ul style="margin:0 0 24px;padding-left:20px;font-size:15px;color:#374151;line-height:1.8;">
+          <li>Génération illimitée de fiches, flashcards et schémas</li>
+          <li>Examens blancs personnalisés</li>
+          <li>Mode Socrate (questions guidées)</li>
+          <li>Timelines interactives</li>
+        </ul>
+        ${emailButton(dashboardUrl, 'Accéder au tableau de bord →')}
+        <p style="margin:24px 0 0;font-size:13px;color:#9ca3af;">
+          Une question ? Réponds directement à cet email, on est là pour toi.
+        </p>
+      `,
+    },
+    subscriptionCancelled: {
+      subject: 'Ton abonnement Studra Pro a été annulé',
+      body: (dashboardUrl) => `
+        <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Ton abonnement a été annulé</h1>
+        <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
+          Ton abonnement Pro a bien été annulé. Tu conserves l'accès Pro jusqu'à la fin de la période déjà payée.
+        </p>
+        <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+          Après cela, ton compte passera automatiquement en formule gratuite.
+          Tu pourras te réabonner à tout moment depuis ton tableau de bord.
+        </p>
+        ${emailButton(dashboardUrl, 'Gérer mon compte')}
+        <p style="margin:24px 0 0;font-size:13px;color:#9ca3af;">
+          Si c'était une erreur ou si tu as des questions, réponds à cet email.
+        </p>
+      `,
+    },
+    passwordReset: {
+      subject: 'Réinitialise ton mot de passe Studra',
+      body: (resetUrl) => `
+        <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Réinitialise ton mot de passe</h1>
+        <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
+          Tu as demandé à réinitialiser le mot de passe de ton compte Studra.
+          Clique sur le bouton ci-dessous pour en choisir un nouveau.
+        </p>
+        ${emailButton(resetUrl, 'Choisir un nouveau mot de passe →')}
+        <p style="margin:24px 0 0;font-size:13px;color:#6b7280;line-height:1.6;">
+          Ce lien expire dans 1 heure et ne peut être utilisé qu'une seule fois.
+        </p>
+        <p style="margin:12px 0 0;font-size:13px;color:#9ca3af;line-height:1.6;">
+          Si tu n'es pas à l'origine de cette demande, ignore simplement cet email :
+          ton mot de passe actuel reste valable.
+        </p>
+      `,
+    },
+  },
+}
+
+function emailButton(href: string, label: string): string {
+  return `<table cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="background:#1a1a2e;border-radius:8px;">
+        <a href="${href}" style="display:inline-block;padding:12px 28px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
+          ${label}
+        </a>
+      </td>
+    </tr>
+  </table>`
+}
+
+function getTemplateSet(locale: AppLocale): {
+  contentLocale: AppLocale
+  templates: TransactionalEmailTemplateSet
+} {
+  const templates = transactionalEmailTemplates[locale] ?? transactionalEmailTemplates.fr!
+  return {
+    contentLocale: transactionalEmailTemplates[locale] ? locale : defaultLocale,
+    templates,
+  }
+}
+
+function localizedDashboardUrl(locale: AppLocale): string {
+  return new URL(getLocalizedPathname('/dashboard', locale), APP_URL).toString()
+}
+
+function baseLayout(content: string, locale: AppLocale): string {
   return `<!DOCTYPE html>
-<html lang="fr">
+<html lang="${locale}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,19 +136,12 @@ function baseLayout(content: string): string {
     <tr>
       <td align="center">
         <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
-          <!-- Header -->
           <tr>
             <td style="background:#1a1a2e;padding:28px 40px;">
               <span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">Studra</span>
             </td>
           </tr>
-          <!-- Body -->
-          <tr>
-            <td style="padding:40px;">
-              ${content}
-            </td>
-          </tr>
-          <!-- Footer -->
+          <tr><td style="padding:40px;">${content}</td></tr>
           <tr>
             <td style="background:#f4f4f5;padding:20px 40px;text-align:center;">
               <p style="margin:0;font-size:12px;color:#6b7280;">
@@ -50,104 +157,40 @@ function baseLayout(content: string): string {
 </html>`
 }
 
-// ---------------------------------------------------------------------------
-// Email senders
-// ---------------------------------------------------------------------------
-
-export async function sendWelcomeEmail(to: string) {
-  const body = baseLayout(`
-    <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Bienvenue sur Studra 👋</h1>
-    <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
-      Ton compte est créé, tu peux maintenant réviser plus intelligemment.
-    </p>
-    <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
-      Importe un cours, une vidéo YouTube ou un PDF et laisse Studra générer
-      tes fiches, flashcards, schémas et examens blancs en quelques secondes.
-    </p>
-    <table cellpadding="0" cellspacing="0">
-      <tr>
-        <td style="background:#1a1a2e;border-radius:8px;">
-          <a href="${APP_URL}/dashboard" style="display:inline-block;padding:12px 28px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-            Commencer à réviser →
-          </a>
-        </td>
-      </tr>
-    </table>
-    <p style="margin:24px 0 0;font-size:13px;color:#9ca3af;">
-      Une question ? Réponds directement à cet email.
-    </p>
-  `)
+async function sendTransactionalEmail(
+  to: string,
+  locale: AppLocale,
+  templateName: keyof TransactionalEmailTemplateSet,
+  actionUrl?: string,
+) {
+  const {contentLocale, templates} = getTemplateSet(locale)
+  const template = templates[templateName]
+  const url = actionUrl ?? localizedDashboardUrl(locale)
 
   return resend.emails.send({
     from: FROM,
     to,
-    subject: 'Bienvenue sur Studra 👋',
-    html: body,
+    subject: template.subject,
+    html: baseLayout(template.body(url), contentLocale),
   })
 }
 
-export async function sendWelcomeProEmail(to: string) {
-  const body = baseLayout(`
-    <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Bienvenue dans Studra Pro 🎉</h1>
-    <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
-      Ton abonnement Pro est maintenant actif. Tu as accès à toutes les fonctionnalités de Studra sans limite.
-    </p>
-    <ul style="margin:0 0 24px;padding-left:20px;font-size:15px;color:#374151;line-height:1.8;">
-      <li>Génération illimitée de fiches, flashcards et schémas</li>
-      <li>Examens blancs personnalisés</li>
-      <li>Mode Socrate (questions guidées)</li>
-      <li>Timelines interactives</li>
-    </ul>
-    <table cellpadding="0" cellspacing="0">
-      <tr>
-        <td style="background:#1a1a2e;border-radius:8px;">
-          <a href="${APP_URL}/dashboard" style="display:inline-block;padding:12px 28px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-            Accéder au tableau de bord →
-          </a>
-        </td>
-      </tr>
-    </table>
-    <p style="margin:24px 0 0;font-size:13px;color:#9ca3af;">
-      Une question ? Réponds directement à cet email, on est là pour toi.
-    </p>
-  `)
-
-  return resend.emails.send({
-    from: FROM,
-    to,
-    subject: 'Bienvenue dans Studra Pro 🎉',
-    html: body,
-  })
+export async function sendWelcomeEmail(to: string, locale: AppLocale = defaultLocale) {
+  return sendTransactionalEmail(to, locale, 'welcome')
 }
 
-export async function sendSubscriptionCancelledEmail(to: string) {
-  const body = baseLayout(`
-    <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Ton abonnement a été annulé</h1>
-    <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
-      Ton abonnement Pro a bien été annulé. Tu conserves l'accès Pro jusqu'à la fin de la période déjà payée.
-    </p>
-    <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
-      Après cela, ton compte passera automatiquement en formule gratuite.
-      Tu pourras te réabonner à tout moment depuis ton tableau de bord.
-    </p>
-    <table cellpadding="0" cellspacing="0">
-      <tr>
-        <td style="background:#1a1a2e;border-radius:8px;">
-          <a href="${APP_URL}/dashboard" style="display:inline-block;padding:12px 28px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-            Gérer mon compte
-          </a>
-        </td>
-      </tr>
-    </table>
-    <p style="margin:24px 0 0;font-size:13px;color:#9ca3af;">
-      Si c'était une erreur ou si tu as des questions, réponds à cet email.
-    </p>
-  `)
+export async function sendWelcomeProEmail(to: string, locale: AppLocale = defaultLocale) {
+  return sendTransactionalEmail(to, locale, 'welcomePro')
+}
 
-  return resend.emails.send({
-    from: FROM,
-    to,
-    subject: 'Ton abonnement Studra Pro a été annulé',
-    html: body,
-  })
+export async function sendSubscriptionCancelledEmail(to: string, locale: AppLocale = defaultLocale) {
+  return sendTransactionalEmail(to, locale, 'subscriptionCancelled')
+}
+
+export async function sendPasswordResetEmail(
+  to: string,
+  resetUrl: string,
+  locale: AppLocale = defaultLocale,
+) {
+  return sendTransactionalEmail(to, locale, 'passwordReset', resetUrl)
 }

@@ -1,14 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const NODES = [
-  { id: "a", x: 90, y: 30, label: "Révolution" },
-  { id: "b", x: 20, y: 90, label: "Causes" },
-  { id: "c", x: 160, y: 90, label: "Acteurs" },
-  { id: "d", x: 50, y: 160, label: "Crise" },
-  { id: "e", x: 130, y: 160, label: "1789" },
-];
+import {useTranslations} from 'next-intl'
 const EDGES = [
   { from: "a", to: "b" }, { from: "a", to: "c" },
   { from: "b", to: "d" }, { from: "c", to: "e" },
@@ -17,6 +10,14 @@ const EDGES = [
 const SEQUENCE = [["a"], ["b", "c"], ["d", "e"]];
 
 export default function AnimSchemas() {
+  const t = useTranslations('landing.animations.schemas')
+  const nodes = [
+    {id: 'a', x: 90, y: 30, label: t('revolution')},
+    {id: 'b', x: 20, y: 90, label: t('causes')},
+    {id: 'c', x: 160, y: 90, label: t('actors')},
+    {id: 'd', x: 50, y: 160, label: t('crisis')},
+    {id: 'e', x: 130, y: 160, label: '1789'},
+  ]
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function AnimSchemas() {
     SEQUENCE[i].forEach((id) => active.add(id));
   }
 
-  const find = (id: string) => NODES.find((n) => n.id === id)!;
+  const find = (id: string) => nodes.find((n) => n.id === id)!;
 
   return (
     <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -44,7 +45,7 @@ export default function AnimSchemas() {
                   style={{ transition: "stroke .5s" }} />
           );
         })}
-        {NODES.map((n) => {
+        {nodes.map((n) => {
           const on = active.has(n.id);
           return (
             <g key={n.id}>

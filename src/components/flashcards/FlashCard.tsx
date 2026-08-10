@@ -3,17 +3,11 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Lightbulb, GitMerge, Globe, BookOpen, ListOrdered, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const COLOR = '#1F4D3F'
 
 type ExplainStyle = 'analogy' | 'example' | 'simple' | 'stepbystep'
-
-const EXPLAIN_STYLES: { key: ExplainStyle; label: string; Icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }> }[] = [
-  { key: 'analogy',    label: 'Analogie',           Icon: GitMerge   },
-  { key: 'example',   label: 'Exemple concret',    Icon: Globe      },
-  { key: 'simple',    label: 'Explication simple',  Icon: BookOpen   },
-  { key: 'stepbystep',label: 'Étape par étape',    Icon: ListOrdered },
-]
 
 interface FlashCardProps {
   question: string
@@ -29,6 +23,13 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
   const [showExplain, setShowExplain] = useState(false)
   const [explaining, setExplaining] = useState(false)
   const [explanation, setExplanation] = useState<string | null>(null)
+  const t = useTranslations('flashcards.study')
+  const explainStyles = [
+    { key: 'analogy' as const, label: t('styles.analogy'), Icon: GitMerge },
+    { key: 'example' as const, label: t('styles.example'), Icon: Globe },
+    { key: 'simple' as const, label: t('styles.simple'), Icon: BookOpen },
+    { key: 'stepbystep' as const, label: t('styles.stepbystep'), Icon: ListOrdered },
+  ]
 
   function handleFlip() {
     const next = !flipped
@@ -36,15 +37,6 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
     onFlipChange?.(next)
   }
 
-  function resetCard() {
-    setFlipped(false)
-    setExplanation(null)
-    setShowExplain(false)
-    onFlipChange?.(false)
-  }
-
-  // Called by the parent (study page) to reset between cards
-  // We expose this pattern via a key reset instead — parent remounts with new key
 
   async function handleExplain(style: ExplainStyle) {
     setExplaining(true)
@@ -56,10 +48,10 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
         body: JSON.stringify({ question, answer, style }),
       })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Erreur'); return }
+      if (!res.ok) { toast.error(json.error ?? t('error')); return }
       setExplanation(json.explanation)
     } catch {
-      toast.error('Erreur lors de la génération')
+      toast.error(t('generationError'))
     } finally {
       setExplaining(false)
     }
@@ -88,12 +80,12 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
           <div className="card-front rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
             style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
             <span className="mono text-[9px] font-medium uppercase tracking-widest"
-              style={{ color: 'var(--ink-400)' }}>Question</span>
+              style={{ color: 'var(--ink-400)' }}>{t('question')}</span>
             <p className="text-xl text-center leading-snug" style={{ color: 'var(--ink)' }}>
               {question}
             </p>
             <span className="text-[10px] mt-2" style={{ color: 'var(--ink-400)' }}>
-              [Espace] pour retourner
+              {t('spaceToFlip')}
             </span>
           </div>
 
@@ -101,7 +93,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
           <div className="card-back rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
             style={{ background: 'var(--bg-elev)', border: `1px solid ${COLOR}40`, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
             <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: COLOR }}>
-              Réponse
+              {t('answer')}
             </span>
             {explanation ? (
               <div className="text-center space-y-2">
@@ -110,7 +102,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
                 <button onClick={(e) => { e.stopPropagation(); setExplanation(null) }}
                   className="flex items-center gap-1 text-[10px] mx-auto transition-opacity hover:opacity-70"
                   style={{ color: COLOR }}>
-                  <X size={10} />Voir la réponse originale
+                  <X size={10} />{t('originalAnswer')}
                 </button>
               </div>
             ) : (
@@ -125,10 +117,10 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
         <div className="w-full animate-fade-in">
           {showExplain ? (
             <div className="rounded-xl p-3 border" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-              <p className="text-[9px] font-semibold uppercase tracking-widest text-center mb-2.5"
-                style={{ color: 'var(--text-4)' }}>Style d&apos;explication</p>
+                <p className="text-[9px] font-semibold uppercase tracking-widest text-center mb-2.5"
+                style={{ color: 'var(--text-4)' }}>{t('explanationStyle')}</p>
               <div className="grid grid-cols-2 gap-1.5">
-                {EXPLAIN_STYLES.map(({ key, label, Icon }) => (
+                {explainStyles.map(({ key, label, Icon }) => (
                   <button key={key} onClick={() => handleExplain(key)} disabled={explaining}
                     className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-left transition-all hover:-translate-y-0.5 disabled:opacity-40"
                     style={{ background: 'var(--surface-2)', color: 'var(--text-2)', border: '1px solid var(--border)' }}>
@@ -140,7 +132,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
               <button onClick={() => setShowExplain(false)}
                 className="mt-2 w-full text-[10px] text-center transition-colors hover:opacity-60"
                 style={{ color: 'var(--text-4)' }}>
-                Annuler
+                {t('cancel')}
               </button>
             </div>
           ) : (
@@ -151,12 +143,12 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
               {explaining ? (
                 <>
                   <div className="w-3 h-3 rounded-full border border-t-transparent animate-spin" style={{ borderColor: COLOR }} />
-                  Génération…
+                  {t('generating')}
                 </>
               ) : (
                 <>
                   <Lightbulb size={12} style={{ color: COLOR }} />
-                  Expliquer autrement
+                  {t('explainDifferently')}
                 </>
               )}
             </button>
@@ -168,7 +160,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
         <button onClick={handleFlip}
           className="px-6 py-2.5 rounded-xl text-xs transition-all hover:-translate-y-0.5"
           style={{ background: 'var(--surface)', color: 'var(--text-3)', border: '1px solid var(--border)' }}>
-          Retourner la carte
+          {t('flip')}
         </button>
       )}
     </div>

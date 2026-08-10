@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { Sidebar } from './sidebar'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Menu } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface DashboardShellProps {
   children: React.ReactNode
@@ -15,6 +16,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children, isPro, userName, userEmail, userAvatar }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const t = useTranslations('shell')
 
   return (
     <div className="app-v2 min-h-screen" style={{ background: 'var(--app-bg)' }}>
@@ -45,7 +47,7 @@ export function DashboardShell({ children, isPro, userName, userEmail, userAvata
             onClick={() => setSidebarOpen(true)}
             className="p-2 rounded-lg transition-colors"
             style={{ color: 'var(--text-3)' }}
-            aria-label="Menu"
+            aria-label={t('openMenu')}
           >
             <Menu size={18} />
           </button>

@@ -1,63 +1,45 @@
-"use client";
+import {useTranslations} from 'next-intl'
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
+type StepData = {n: string; title: string; body: string}
 
-const STEPS = [
-  { n: "01", title: "Choisis ton outil.", body: "Flashcards, fiche, schéma, frise, examen blanc, dialogue socratique. Tout sort du même cours." },
-  { n: "02", title: "Colle ton cours.", body: "Texte, PDF, image ou lien YouTube. Studra lit, structure, comprend." },
-  { n: "03", title: "Révise sans réfléchir.", body: "L'algorithme te dit quoi réviser et quand. Tu ouvres l'app, tu fais ce qui apparaît." },
-];
-
-function Step({ step, index }: { step: typeof STEPS[0]; index: number }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+function Step({ step }: { step: StepData }) {
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: index * 0.12, duration: 0.7, ease: [0.2, 0.7, 0.3, 1] }}
-      style={{ position: "relative", paddingTop: 64 }}
-    >
-      <div className="mono" style={{ position: "absolute", top: -28, left: -8, fontSize: "clamp(120px, 14vw, 180px)", lineHeight: 1, fontWeight: 500, color: "rgba(228,228,231,.85)", letterSpacing: "-.06em", pointerEvents: "none", userSelect: "none" }}>
+    <div style={{ position: "relative", paddingTop: 64 }}>
+      <div aria-hidden="true" className="mono" style={{ position: "absolute", top: -28, left: -8, fontSize: "clamp(120px, 14vw, 180px)", lineHeight: 1, fontWeight: 500, color: "#8A8A93", letterSpacing: "-.06em", pointerEvents: "none", userSelect: "none" }}>
         {step.n}
       </div>
       <div style={{ position: "relative", zIndex: 1 }}>
         <div style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-.025em", color: "var(--ink)", lineHeight: 1.2, marginBottom: 12 }}>{step.title}</div>
         <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: "var(--ink-700)", maxWidth: "36ch" }}>{step.body}</p>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 export default function HowItWorks() {
-  const headRef = useRef(null);
-  const headInView = useInView(headRef, { once: true, margin: "-80px" });
+  const t = useTranslations('landing.howItWorks')
+  const steps = (['choose', 'import', 'study'] as const).map((key) => ({
+    n: t(`steps.${key}.number`),
+    title: t(`steps.${key}.title`),
+    body: t(`steps.${key}.body`),
+  }))
 
   return (
     <section className="sec" id="methode-bref">
       <div className="container">
-        <motion.div
-          ref={headRef}
-          initial={{ opacity: 0, y: 24 }}
-          animate={headInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: [0.2, 0.7, 0.3, 1] }}
-          style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 80, maxWidth: 720 }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 80, maxWidth: 720 }}>
           <div className="eyebrow">
             <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>Comment ça marche</span>
+            <span>{t('eyebrow')}</span>
           </div>
           <h2 className="section-h">
-            Trois étapes.<br />
-            <span className="dim">Pas plus.</span>
+            {t('title')}<br />
+            <span className="dim">{t('titleAccent')}</span>
           </h2>
-        </motion.div>
+        </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 48 }} className="hiw-grid-responsive">
-          {STEPS.map((s, i) => <Step key={s.n} step={s} index={i} />)}
+          {steps.map((step) => <Step key={step.n} step={step} />)}
         </div>
       </div>
 

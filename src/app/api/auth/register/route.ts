@@ -4,6 +4,7 @@ import { sendWelcomeEmail } from '@/lib/resend'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { getAffiliateByCode, attributeReferral } from '@/lib/affiliate'
 import { cookies } from 'next/headers'
+import { resolveServerLocale } from '@/i18n/server-locale'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const GENERIC_ERROR = 'Inscription impossible. Vérifiez vos informations ou réessayez plus tard.'
@@ -52,7 +53,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: GENERIC_ERROR }, { status: 400 })
   }
 
-  await sendWelcomeEmail(email).catch(console.error)
+  const locale = resolveServerLocale(request)
+  await supabase
+    .from('profiles')
+    .update({preferred_locale: locale})
+    .eq('id', data.user.id)
+  await sendWelcomeEmail(email, locale).catch(console.error)
 
   // Attribution d'affiliation si un cookie de parrainage est présent
   const cookieStore = await cookies()

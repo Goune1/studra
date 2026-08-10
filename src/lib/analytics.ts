@@ -1,4 +1,21 @@
-import posthog from 'posthog-js'
+import { withPostHog } from './posthog-client'
+
+const posthog = {
+  capture(event: string, properties?: Record<string, unknown>) {
+    withPostHog((client) => client.capture(event, properties))
+  },
+  identify(distinctId: string, properties?: Record<string, unknown>) {
+    withPostHog((client) => client.identify(distinctId, properties))
+  },
+  reset() {
+    withPostHog((client) => client.reset())
+  },
+  people: {
+    set(properties: Record<string, unknown>) {
+      withPostHog((client) => client.people.set(properties))
+    },
+  },
+}
 
 type Tool = 'flashcards' | 'fiches' | 'lacunes' | 'schemas' | 'frises' | 'exam'
 type PricingPlan = 'free' | 'premium'
@@ -279,6 +296,14 @@ export function trackExamCorrectionView(exam_id: string, score: number) {
 
 export function trackPaywallHit(tool: Tool, reason: string) {
   capture('paywall_hit', { tool, reason })
+}
+
+export function trackPaywallViewed(tool: Tool, source: 'banner' | 'modal') {
+  capture('paywall_viewed', { tool, source })
+}
+
+export function trackPaywallCtaClicked(tool: Tool, source: 'banner' | 'modal') {
+  capture('paywall_cta_clicked', { tool, source })
 }
 
 export function trackUpgradeClick(from: 'paywall' | 'settings' | 'navbar' | 'dashboard') {

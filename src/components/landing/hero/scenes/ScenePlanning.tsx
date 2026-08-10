@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check } from "@phosphor-icons/react";
-
-const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+import {useTranslations} from 'next-intl'
 const SESSIONS = [
   [{ top: 10, h: 14, c: "green", done: true }, { top: 34, h: 10, c: "blue" }, { top: 62, h: 18, c: "orange" }],
   [{ top: 8, h: 10, c: "blue" }, { top: 36, h: 16, c: "green", done: true }],
@@ -23,6 +22,8 @@ const COLOR_MAP: Record<string, string> = {
 interface Props { active: boolean }
 
 export default function ScenePlanning({ active }: Props) {
+  const t = useTranslations('landing.animations')
+  const days = (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const).map((key) => t(`planning.${key}`))
   const [reveal, setReveal] = useState<string[]>([]);
 
   useEffect(() => {
@@ -41,14 +42,14 @@ export default function ScenePlanning({ active }: Props) {
     <>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
         <div>
-          <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 4 }}>Planning · semaine 15</div>
-          <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>Sessions prévues</div>
+          <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 4 }}>{t('hero.planningTitle')}</div>
+          <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>{t('hero.plannedSessions')}</div>
         </div>
-        <div className="mono" style={{ fontSize: 10, color: "var(--ink-400)" }}>4h 20 / 7h</div>
+        <div className="mono" style={{ fontSize: 10, color: "var(--ink-400)" }}>{t('hero.plannedTime')}</div>
       </div>
 
       <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
-        {DAYS.map((d, di) => (
+        {days.map((d, di) => (
           <div key={d} style={{ display: "flex", flexDirection: "column", background: "#FAFAF9", borderRadius: 6, padding: "4px 4px 6px", overflow: "hidden" }}>
             <div className="mono" style={{ fontSize: 9, letterSpacing: ".12em", textTransform: "uppercase", color: "var(--ink-400)", textAlign: "center", padding: "2px 0 4px" }}>{d}</div>
             <div style={{ flex: 1, position: "relative", background: "rgba(0,0,0,.025)", borderRadius: 4 }}>

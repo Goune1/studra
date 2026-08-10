@@ -1,57 +1,134 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import {createServerClient} from '@supabase/ssr'
+import {NextResponse, type NextRequest} from 'next/server'
+import {
+  getLocalizedPathname,
+  isAppLocale,
+  resolveLocalePreference,
+  type AppLocale,
+} from '@/i18n/pathname'
 
-export async function updateSession(request: NextRequest) {
-  // If Supabase is not configured, allow all requests through
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!supabaseUrl || !supabaseKey || supabaseUrl.startsWith('your_')) {
-    return NextResponse.next({ request })
+const LOCALE_COOKIE = 'NEXT_LOCALE'
+const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+
+type SessionOptions = {
+  pathnameLocale?: AppLocale | null
+  pathname?: string
+}
+
+type SessionResult = {
+  response: NextResponse
+  locale: AppLocale
+}
+
+function copyResponseCookies(source: NextResponse, target: NextResponse) {
+  for (const cookie of source.cookies.getAll()) {
+    target.cookies.set(cookie)
   }
 
-  let supabaseResponse = NextResponse.next({
-    request,
+  return target
+}
+
+function persistLocaleCookie(
+  request: NextRequest,
+  response: NextResponse,
+  locale: AppLocale,
+) {
+  request.cookies.set(LOCALE_COOKIE, locale)
+  response.cookies.set(LOCALE_COOKIE, locale, {
+    maxAge: LOCALE_COOKIE_MAX_AGE,
+    path: '/',
+    sameSite: 'lax',
+  })
+}
+
+export async function updateSession(
+  request: NextRequest,
+  {
+    pathnameLocale = null,
+    pathname = request.nextUrl.pathname,
+  }: SessionOptions = {},
+): Promise<SessionResult> {
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value
+  const acceptLanguage = request.headers.get('accept-language')
+  const automaticLocale = resolveLocalePreference({
+    pathnameLocale,
+    cookieLocale,
+    acceptLanguage,
+  })
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.startsWith('your_')) {
+    const response = NextResponse.next({request})
+    persistLocaleCookie(request, response, automaticLocale)
+    return {response, locale: automaticLocale}
+  }
+
+  let supabaseResponse = NextResponse.next({request})
+
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({name, value}) => request.cookies.set(name, value))
+        supabaseResponse = NextResponse.next({request})
+        cookiesToSet.forEach(({name, value, options}) =>
+          supabaseResponse.cookies.set(name, value, options)
+        )
+      },
+    },
   })
 
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
   const {
-    data: { user },
+    data: {user},
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
+  let profileLocale: AppLocale | null = null
+  if (user) {
+    const {data: profile} = await supabase
+      .from('profiles')
+      .select('preferred_locale')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    profileLocale = isAppLocale(profile?.preferred_locale)
+      ? profile.preferred_locale
+      : null
+  }
+
+  const locale = resolveLocalePreference({
+    pathnameLocale,
+    profileLocale,
+    cookieLocale,
+    acceptLanguage,
+  })
+
+  if (user && (!profileLocale || (pathnameLocale && pathnameLocale !== profileLocale))) {
+    await supabase
+      .from('profiles')
+      .update({preferred_locale: locale})
+      .eq('id', user.id)
+  }
+
+  persistLocaleCookie(request, supabaseResponse, locale)
+
+  const redirect = (path: string) => {
+    const url = request.nextUrl.clone()
+    url.pathname = getLocalizedPathname(path, locale)
+    return copyResponseCookies(supabaseResponse, NextResponse.redirect(url))
+  }
 
   if (pathname.startsWith('/admin')) {
     const adminEmail = process.env.ADMIN_EMAIL
     if (!user || !adminEmail || user.email !== adminEmail) {
-      const url = request.nextUrl.clone()
-      url.pathname = user ? '/' : '/login'
-      return NextResponse.redirect(url)
+      return {response: redirect(user ? '/' : '/login'), locale}
     }
   }
 
-  const isDashboardRoute = pathname.startsWith('/dashboard') ||
+  const isDashboardRoute =
+    pathname.startsWith('/dashboard') ||
     pathname.startsWith('/flashcards') ||
     pathname.startsWith('/fiches') ||
     pathname.startsWith('/schemas') ||
@@ -67,16 +144,19 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/affiliate')
 
   if (isDashboardRoute && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    return {response: redirect('/login'), locale}
   }
 
   if ((pathname === '/login' || pathname === '/register') && user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+    return {response: redirect('/dashboard'), locale}
   }
 
-  return supabaseResponse
+  return {response: supabaseResponse, locale}
+}
+
+export function mergeSessionCookies(
+  sessionResponse: NextResponse,
+  response: NextResponse,
+) {
+  return copyResponseCookies(sessionResponse, response)
 }

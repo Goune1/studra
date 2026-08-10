@@ -3,6 +3,7 @@ import { sendWelcomeEmail } from '@/lib/resend'
 import { getAffiliateByCode, attributeReferral } from '@/lib/affiliate'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { resolveServerLocale } from '@/i18n/server-locale'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -21,7 +22,17 @@ export async function GET(request: Request) {
         const lastSignIn = new Date(user.last_sign_in_at ?? user.created_at).getTime()
         isNewUser = Math.abs(lastSignIn - createdAt) < 60_000
         if (isNewUser) {
-          sendWelcomeEmail(user.email).catch(console.error)
+          const {data: profile} = await supabase
+            .from('profiles')
+            .select('preferred_locale')
+            .eq('id', user.id)
+            .maybeSingle()
+          const locale = resolveServerLocale(request, {pathname: safePath, profile})
+          await supabase
+            .from('profiles')
+            .update({preferred_locale: locale})
+            .eq('id', user.id)
+          sendWelcomeEmail(user.email, locale).catch(console.error)
 
           // Attribution d'affiliation pour les nouveaux inscrits via OAuth
           const cookieStore = await cookies()

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { FileText, Layers, AlignLeft } from 'lucide-react'
 import type { ContentItem } from '@/types'
 import { ImageUploadInput } from '@/components/image-upload-input'
+import { useTranslations } from 'next-intl'
 
 interface ContentPickerProps {
   selected: ContentItem | null
@@ -18,6 +19,7 @@ export default function ContentPicker({ selected, onSelect }: ContentPickerProps
   const [customText, setCustomText] = useState('')
   const [customTitle, setCustomTitle] = useState('')
   const [loading, setLoading] = useState(true)
+  const t = useTranslations('components.contentPicker')
 
   useEffect(() => {
     async function load() {
@@ -53,9 +55,9 @@ export default function ContentPicker({ selected, onSelect }: ContentPickerProps
   }
 
   const tabs = [
-    { key: 'fiches' as const, label: 'Mes fiches', Icon: FileText },
-    { key: 'decks' as const, label: 'Mes flashcards', Icon: Layers },
-    { key: 'text' as const, label: 'Texte libre', Icon: AlignLeft },
+    { key: 'fiches' as const, label: t('tabs.fiches'), Icon: FileText },
+    { key: 'decks' as const, label: t('tabs.decks'), Icon: Layers },
+    { key: 'text' as const, label: t('tabs.text'), Icon: AlignLeft },
   ]
 
   const items = tab === 'fiches' ? fiches : tab === 'decks' ? decks : []
@@ -92,7 +94,7 @@ export default function ContentPicker({ selected, onSelect }: ContentPickerProps
             </div>
           ) : items.length === 0 ? (
             <p className="text-center py-8 text-sm" style={{ color: 'var(--text-3)' }}>
-              Aucun contenu trouvé. Crée d&apos;abord une fiche ou un deck.
+              {t('empty')}
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
@@ -128,7 +130,7 @@ export default function ContentPicker({ selected, onSelect }: ContentPickerProps
         <div className="space-y-3">
           <input
             type="text"
-            placeholder="Titre du sujet"
+            placeholder={t('titlePlaceholder')}
             value={customTitle}
             onChange={(e) => setCustomTitle(e.target.value)}
             className="w-full px-4 py-3 rounded-xl text-sm outline-none"
@@ -144,7 +146,7 @@ export default function ContentPicker({ selected, onSelect }: ContentPickerProps
             }
           />
           <textarea
-            placeholder="Collez ici votre cours, vos notes..."
+            placeholder={t('textPlaceholder')}
             value={customText}
             onChange={(e) => setCustomText(e.target.value)}
             rows={6}
@@ -161,7 +163,7 @@ export default function ContentPicker({ selected, onSelect }: ContentPickerProps
             className="w-full py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
             style={{ background: '#6366f1', color: '#fff' }}
           >
-            Utiliser ce texte
+            {t('useText')}
           </button>
         </div>
       )}
