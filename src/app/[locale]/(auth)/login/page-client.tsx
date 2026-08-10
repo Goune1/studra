@@ -123,6 +123,14 @@ function LoginForm() {
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
                 placeholder={t('passwordPlaceholder')}
               />
+              <div className="mt-2 text-right">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-gray-400 hover:text-violet-300 transition-colors"
+                >
+                  {t('forgotPassword')}
+                </Link>
+              </div>
             </div>
             <button
               type="submit"

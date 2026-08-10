@@ -8,13 +8,14 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://studra.fr'
 
 type TransactionalEmailTemplate = {
   subject: string
-  body: (dashboardUrl: string) => string
+  body: (actionUrl: string) => string
 }
 
 type TransactionalEmailTemplateSet = {
   welcome: TransactionalEmailTemplate
   welcomePro: TransactionalEmailTemplate
   subscriptionCancelled: TransactionalEmailTemplate
+  passwordReset: TransactionalEmailTemplate
 }
 
 // Other locales intentionally fall back to French until their copy is validated.
@@ -71,6 +72,24 @@ const transactionalEmailTemplates: Partial<Record<AppLocale, TransactionalEmailT
         ${emailButton(dashboardUrl, 'Gérer mon compte')}
         <p style="margin:24px 0 0;font-size:13px;color:#9ca3af;">
           Si c'était une erreur ou si tu as des questions, réponds à cet email.
+        </p>
+      `,
+    },
+    passwordReset: {
+      subject: 'Réinitialise ton mot de passe Studra',
+      body: (resetUrl) => `
+        <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Réinitialise ton mot de passe</h1>
+        <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">
+          Tu as demandé à réinitialiser le mot de passe de ton compte Studra.
+          Clique sur le bouton ci-dessous pour en choisir un nouveau.
+        </p>
+        ${emailButton(resetUrl, 'Choisir un nouveau mot de passe →')}
+        <p style="margin:24px 0 0;font-size:13px;color:#6b7280;line-height:1.6;">
+          Ce lien expire dans 1 heure et ne peut être utilisé qu'une seule fois.
+        </p>
+        <p style="margin:12px 0 0;font-size:13px;color:#9ca3af;line-height:1.6;">
+          Si tu n'es pas à l'origine de cette demande, ignore simplement cet email :
+          ton mot de passe actuel reste valable.
         </p>
       `,
     },
@@ -142,16 +161,17 @@ async function sendTransactionalEmail(
   to: string,
   locale: AppLocale,
   templateName: keyof TransactionalEmailTemplateSet,
+  actionUrl?: string,
 ) {
   const {contentLocale, templates} = getTemplateSet(locale)
   const template = templates[templateName]
-  const dashboardUrl = localizedDashboardUrl(locale)
+  const url = actionUrl ?? localizedDashboardUrl(locale)
 
   return resend.emails.send({
     from: FROM,
     to,
     subject: template.subject,
-    html: baseLayout(template.body(dashboardUrl), contentLocale),
+    html: baseLayout(template.body(url), contentLocale),
   })
 }
 
@@ -165,4 +185,12 @@ export async function sendWelcomeProEmail(to: string, locale: AppLocale = defaul
 
 export async function sendSubscriptionCancelledEmail(to: string, locale: AppLocale = defaultLocale) {
   return sendTransactionalEmail(to, locale, 'subscriptionCancelled')
+}
+
+export async function sendPasswordResetEmail(
+  to: string,
+  resetUrl: string,
+  locale: AppLocale = defaultLocale,
+) {
+  return sendTransactionalEmail(to, locale, 'passwordReset', resetUrl)
 }

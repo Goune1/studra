@@ -412,7 +412,8 @@
       "submitting": "Connexion...",
       "submit": "Se connecter",
       "noAccount": "Pas encore de compte ?",
-      "register": "S'inscrire"
+      "register": "S'inscrire",
+      "forgotPassword": "Mot de passe oublié ?"
     },
     "register": {
       "metadata": {
@@ -431,6 +432,39 @@
       "login": "Se connecter",
       "createError": "Erreur lors de la création du compte",
       "success": "Compte créé !"
+    },
+    "forgotPassword": {
+      "metadata": {
+        "title": "Mot de passe oublié",
+        "description": "Réinitialisez le mot de passe de votre compte Studra en recevant un lien sécurisé par email."
+      },
+      "title": "Mot de passe oublié",
+      "subtitle": "On t'envoie un lien pour en choisir un nouveau",
+      "sentSubtitle": "Vérifie ta boîte mail",
+      "sentBody": "Si un compte Studra existe avec cette adresse, tu vas recevoir un email contenant un lien de réinitialisation. Il expire dans 1 heure. Pense à regarder tes spams.",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi...",
+      "error": "Une erreur est survenue. Réessaie dans un instant.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "metadata": {
+        "title": "Nouveau mot de passe",
+        "description": "Choisissez un nouveau mot de passe pour votre compte Studra."
+      },
+      "title": "Nouveau mot de passe",
+      "subtitle": "Choisis un mot de passe pour ton compte",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Minimum 8 caractères",
+      "confirmPassword": "Confirme le mot de passe",
+      "confirmPasswordPlaceholder": "••••••••",
+      "submit": "Mettre à jour",
+      "submitting": "Mise à jour...",
+      "success": "Mot de passe mis à jour !",
+      "mismatch": "Les deux mots de passe ne correspondent pas.",
+      "error": "Ce lien est invalide ou a expiré. Demande-en un nouveau.",
+      "missingToken": "Ce lien de réinitialisation est incomplet ou invalide. Demande un nouveau lien.",
+      "requestNewLink": "Demander un nouveau lien"
     }
   },
   "dashboard": {
