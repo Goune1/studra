@@ -18,6 +18,43 @@ test('an explicit locale in the URL wins over automatic preferences', () => {
   }), 'it')
 })
 
+// Régression : après un passage en /en (lien partagé, bouton retour, onglet
+// resté ouvert), l'ancienne langue ressuscitait. Le middleware persistait la
+// locale déduite de l'URL par-dessus la préférence choisie dans les
+// paramètres, donc la navigation suivante repartait en /en.
+test('le prefixe d URL ne doit pas ecraser la preference persistee', () => {
+  const middleware = read('src/lib/supabase/middleware.ts')
+
+  // La préférence enregistrée se calcule sans le pathname.
+  assert.match(
+    middleware,
+    /const preferredLocale = resolveLocalePreference\(\{\s*\n\s*profileLocale,\s*\n\s*cookieLocale,\s*\n\s*acceptLanguage,\s*\n\s*\}\)/,
+    'preferredLocale doit ignorer pathnameLocale',
+  )
+
+  // Le cookie persiste la préférence, jamais la locale déduite de l'URL.
+  assert.match(middleware, /persistLocaleCookie\(request, supabaseResponse, preferredLocale\)/)
+  assert.doesNotMatch(middleware, /persistLocaleCookie\(request, supabaseResponse, locale\)/)
+
+  // Le profil n'est écrit que lorsqu'il n'a pas encore de préférence.
+  assert.match(middleware, /if \(user && !profileLocale\) \{/)
+  assert.doesNotMatch(middleware, /pathnameLocale && pathnameLocale !== profileLocale/)
+  assert.match(middleware, /\.update\(\{preferred_locale: preferredLocale\}\)/)
+})
+
+test('la locale de rendu suit toujours le prefixe explicite de l URL', () => {
+  const middleware = read('src/lib/supabase/middleware.ts')
+
+  // Un lien /en/... partagé doit s'afficher en anglais pour n'importe qui.
+  assert.match(
+    middleware,
+    /const locale = resolveLocalePreference\(\{\s*\n\s*pathnameLocale,/,
+    'la locale de rendu doit tenir compte de pathnameLocale',
+  )
+  // Et c'est bien cette locale-là qui sert aux redirections de la requête.
+  assert.match(middleware, /url\.pathname = getLocalizedPathname\(path, locale\)/)
+})
+
 test('an authenticated profile preference wins over cookie and browser language', () => {
   assert.equal(resolveLocalePreference({
     profileLocale: 'de',

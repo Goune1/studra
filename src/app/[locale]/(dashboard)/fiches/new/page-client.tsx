@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function NewFichePage({ showPaywall, price }: Props) {
-  const t = useTranslations('fiches.new' as never) as (key: string, values?: Record<string, string | number>) => string
+  const t = useTranslations('fiches.newPage')
   const [loading, setLoading] = useState(false)
   const [also, setAlso] = useState<Set<AlsoKey>>(new Set())
   const [results, setResults] = useState<GeneratedResource[] | null>(null)

@@ -98,6 +98,8 @@ export async function updateSession(
       : null
   }
 
+  // Locale used to render THIS request: an explicit prefix in the URL wins, so
+  // a shared /en/... link renders in English whatever the visitor's preference.
   const locale = resolveLocalePreference({
     pathnameLocale,
     profileLocale,
@@ -105,14 +107,24 @@ export async function updateSession(
     acceptLanguage,
   })
 
-  if (user && (!profileLocale || (pathnameLocale && pathnameLocale !== profileLocale))) {
+  // Stored preference: deliberately ignores the URL prefix. Browsing to an
+  // /en/... URL (back button, shared link, stale tab) must not silently
+  // rewrite a preference the user set in the settings, otherwise the old
+  // locale keeps resurrecting after they switched back.
+  const preferredLocale = resolveLocalePreference({
+    profileLocale,
+    cookieLocale,
+    acceptLanguage,
+  })
+
+  if (user && !profileLocale) {
     await supabase
       .from('profiles')
-      .update({preferred_locale: locale})
+      .update({preferred_locale: preferredLocale})
       .eq('id', user.id)
   }
 
-  persistLocaleCookie(request, supabaseResponse, locale)
+  persistLocaleCookie(request, supabaseResponse, preferredLocale)
 
   const redirect = (path: string) => {
     const url = request.nextUrl.clone()

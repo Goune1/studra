@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { generateStudyPlanSchedule, type StudyPlanContentItem } from '@/lib/openai'
 import { buildSchedule } from '@/lib/scheduler'
 import { adjustMasteryWithFSRS } from '@/lib/study-plan'
 import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
+import {
+  consumeGenerationCredit,
+  refundGenerationCredit,
+  QUOTA_EXCEEDED_ERROR,
+} from '@/lib/generation-quota'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
-  const supabaseAdmin = getSupabaseAdmin()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
@@ -20,28 +23,6 @@ export async function POST(request: Request) {
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
   if (!profile) return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 })
-
-  // Quota check
-  const now = new Date()
-  const resetAt = new Date(profile.generations_reset_at)
-  const monthDiff =
-    (now.getFullYear() - resetAt.getFullYear()) * 12 + (now.getMonth() - resetAt.getMonth())
-
-  let currentGenerations = profile.generations_used_this_month
-  if (monthDiff >= 1) {
-    currentGenerations = 0
-    await supabaseAdmin.from('profiles').update({
-      generations_used_this_month: 0,
-      generations_reset_at: now.toISOString(),
-    }).eq('id', user.id)
-  }
-
-  if (profile.plan === 'free' && currentGenerations >= 5) {
-    return NextResponse.json(
-      { error: 'Limite mensuelle atteinte. Passez en Pro pour des générations illimitées.' },
-      { status: 403 },
-    )
-  }
 
   const body = await request.json()
   const { title, exam_date, available_minutes_per_day, contents } = body as {
@@ -59,11 +40,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'La date d\'examen doit être dans le futur' }, { status: 400 })
   }
 
-  // Pondération FSRS : ajuste la maîtrise auto-évaluée en fonction de la stabilité réelle.
-  const adjusted = await adjustMasteryWithFSRS(supabase, contents)
+  // Reserve the credit once the payload is known to be valid, so that a
+  // rejected request never consumes a generation.
+  const credit = await consumeGenerationCredit(user.id)
+  if (!credit.allowed) {
+    return NextResponse.json(
+      { error: QUOTA_EXCEEDED_ERROR, code: 'quota_exceeded' },
+      { status: 403 },
+    )
+  }
 
-  // LLM : priorisation et ordonnancement
-  const llmOutput = await generateStudyPlanSchedule(adjusted, exam_date, available_minutes_per_day)
+  let adjusted: Awaited<ReturnType<typeof adjustMasteryWithFSRS>>
+  let llmOutput: Awaited<ReturnType<typeof generateStudyPlanSchedule>>
+  try {
+    // Pondération FSRS : ajuste la maîtrise auto-évaluée en fonction de la stabilité réelle.
+    adjusted = await adjustMasteryWithFSRS(supabase, contents)
+
+    // LLM : priorisation et ordonnancement
+    llmOutput = await generateStudyPlanSchedule(adjusted, exam_date, available_minutes_per_day)
+  } catch (error) {
+    await refundGenerationCredit(user.id)
+    throw error
+  }
 
   // Création du plan
   const masteryLevels = Object.fromEntries(adjusted.map((c) => [c.id, c.mastery]))
@@ -81,6 +79,7 @@ export async function POST(request: Request) {
     .single()
 
   if (planError || !plan) {
+    await refundGenerationCredit(user.id)
     return NextResponse.json({ error: 'Erreur lors de la création du planning' }, { status: 500 })
   }
 
@@ -97,13 +96,10 @@ export async function POST(request: Request) {
     const { error: insertError } = await supabase.from('study_plan_tasks').insert(tasks)
     if (insertError) {
       await supabase.from('study_plans').delete().eq('id', plan.id)
+      await refundGenerationCredit(user.id)
       return NextResponse.json({ error: 'Erreur lors de la planification des sessions' }, { status: 500 })
     }
   }
-
-  await supabaseAdmin.from('profiles').update({
-    generations_used_this_month: currentGenerations + 1,
-  }).eq('id', user.id)
 
   return NextResponse.json({
     planId: plan.id,
