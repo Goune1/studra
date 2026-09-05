@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { useFormatter, useTranslations } from 'next-intl'
 import { Copy, Check, Users, MousePointer, TrendingUp, Wallet } from 'lucide-react'
 import { updatePaymentMethod } from '@/app/[locale]/(dashboard)/affiliate/actions'
 import type { Affiliate, AffiliateCommission, AffiliatePayout, AffiliateStats } from '@/types'
@@ -14,6 +13,15 @@ const STATUS_LABELS: Record<string, { key: string; color: string }> = {
   paid:      { key: 'paid', color: 'text-gray-400' },
   cancelled: { key: 'cancelled', color: 'text-red-400' },
   refunded:  { key: 'refunded', color: 'text-orange-400' },
+}
+
+const STATUS_TEXT: Record<string, string> = {
+  pending: 'En attente',
+  approved: 'Validées',
+  payable: 'Payables',
+  paid: 'Payées',
+  cancelled: 'Annulées',
+  refunded: 'Remboursées',
 }
 
 function fmt(v: number) {
@@ -29,14 +37,13 @@ interface Props {
 }
 
 export function AffiliateDashboard({ affiliate, stats, commissions, payouts, appUrl, minimumPayoutThreshold }: Props) {
-  const t = useTranslations('dashboard.affiliate')
-  const format = useFormatter()
+  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
   const [copied, setCopied] = useState(false)
   const [editPayment, setEditPayment] = useState(false)
   const [method, setMethod] = useState<'paypal' | 'bank_transfer'>(affiliate.payment_method ?? 'paypal')
   const [isPending, startTransition] = useTransition()
 
-  const link = `${appUrl}/?ref=${affiliate.referral_code}`
+  const link = `${appUrl}/api/affiliate/track?ref=${affiliate.referral_code}`
 
   function copyLink() {
     navigator.clipboard.writeText(link).then(() => {
@@ -51,10 +58,10 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
     startTransition(async () => {
       const result = await updatePaymentMethod(formData)
       if (result.ok) {
-        toast.success(t('updated'))
+        toast.success("Moyen de paiement mis à jour.")
         setEditPayment(false)
       } else {
-        toast.error(result.error ?? t('paymentError'))
+        toast.error(result.error ?? "Erreur.")
       }
     })
   }
@@ -69,17 +76,17 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">{t('title')}</h1>
+        <h1 className="text-2xl font-bold">{"Programme d'affiliation"}</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-4)' }}>
           {affiliate.status === 'suspended'
-            ? t('suspended')
-            : t('hello', {name: affiliate.first_name})}
+            ? "⚠️ Votre compte est suspendu. Contactez le support."
+            : `Bonjour ${affiliate.first_name} ! Voici votre tableau de bord.`}
         </p>
       </div>
 
       {/* Lien de parrainage */}
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <p className="text-xs font-mono text-gray-500 mb-2 uppercase tracking-wider">{t('referralLink')}</p>
+        <p className="text-xs font-mono text-gray-500 mb-2 uppercase tracking-wider">{"Votre lien de parrainage"}</p>
         <div className="flex items-center gap-3">
           <code className="flex-1 text-sm text-violet-300 bg-violet-500/10 border border-violet-500/20 rounded-xl px-4 py-3 font-mono truncate">
             {link}
@@ -89,10 +96,10 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
             className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors shrink-0"
           >
             {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
-            {copied ? t('copied') : t('copy')}
+            {copied ? "Copié !" : "Copier"}
           </button>
         </div>
-        <p className="text-xs text-gray-600 mt-2">{t('code')} <span className="font-mono text-gray-400">{affiliate.referral_code}</span></p>
+        <p className="text-xs text-gray-600 mt-2">{"Code :"} <span className="font-mono text-gray-400">{affiliate.referral_code}</span></p>
       </div>
 
       {/* KPIs */}
@@ -159,7 +166,7 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
                     <td className="px-5 py-3 text-xs">{fmt(c.amount_revenue)}</td>
                     <td className="px-5 py-3 text-sm font-semibold">{fmt(c.amount_commission)}</td>
                     <td className="px-5 py-3">
-                      <span className={`text-xs font-mono ${st.color}`}>{t(st.key as never)}</span>
+                      <span className={`text-xs font-mono ${st.color}`}>{STATUS_TEXT[st.key] ?? st.key}</span>
                     </td>
                   </tr>
                 )
@@ -227,7 +234,7 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
                 <p className="text-xs text-gray-500">Titulaire : {affiliate.account_holder_name}</p>
               </div>
             ) : (
-              <p className="text-gray-500">{t('notProvided')}</p>
+              <p className="text-gray-500">{"Non renseigné"}</p>
             )}
           </div>
         ) : (
@@ -244,7 +251,7 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
                       : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
                   }`}
                 >
-                  {m === 'paypal' ? t('paypal') : t('bankTransfer')}
+                  {m === 'paypal' ? "💳 PayPal" : "🏦 Virement bancaire"}
                 </button>
               ))}
             </div>

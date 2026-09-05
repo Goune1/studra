@@ -1,6 +1,3 @@
-import type {Locale} from 'next-intl'
-import {setRequestLocale} from 'next-intl/server'
-import {getTranslations} from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { createHash } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
@@ -10,10 +7,7 @@ import { AffiliateDashboard } from '@/components/affiliate/AffiliateDashboard'
 import { AffiliateGate } from './affiliate-gate'
 import type { Affiliate, AffiliateCommission, AffiliatePayout } from '@/types'
 
-export default async function AffiliatePage({params}: {params: Promise<{locale: string}>}) {
-  const {locale} = await params
-  setRequestLocale(locale as Locale)
-  const t = await getTranslations('dashboard.affiliate')
+export default async function AffiliatePage() {
   const cookieStore = await cookies()
   const access = cookieStore.get('affiliate_beta_access')
   const expected = process.env.BAC_BETA_PASSWORD
@@ -25,26 +19,37 @@ export default async function AffiliatePage({params}: {params: Promise<{locale: 
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data: settings, error: settingsError } = await supabase
+    .from('affiliate_settings')
+    .select('minimum_payout_threshold, affiliate_terms_version')
+    .eq('id', 1)
+    .single()
+  if (settingsError || !settings) throw new Error('Configuration affiliation indisponible')
 
   const { data: affiliate } = await supabase
     .from('affiliates')
     .select('*')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   if (!affiliate) {
     return (
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">{t('title')}</h1>
+        <h1 className="text-2xl font-bold mb-2">{"Programme d'affiliation"}</h1>
         <p className="text-sm mb-8" style={{ color: 'var(--text-4)' }}>
-          {t('description')}
+          {"Parrainez de nouveaux utilisateurs et recevez une commission sur leurs paiements éligibles."}
         </p>
-        <AffiliateRegistrationForm userEmail={user!.email ?? ''} />
+        <AffiliateRegistrationForm
+          userEmail={user.email ?? ''}
+          termsVersion={settings.affiliate_terms_version}
+        />
       </div>
     )
   }
 
-  const [stats, commissionsRes, payoutsRes, settingsRes] = await Promise.all([
+  const [stats, commissionsRes, payoutsRes] = await Promise.all([
     getAffiliateStats(affiliate.id),
     supabase
       .from('affiliate_commissions')
@@ -57,11 +62,10 @@ export default async function AffiliatePage({params}: {params: Promise<{locale: 
       .select('*')
       .eq('affiliate_id', affiliate.id)
       .order('created_at', { ascending: false }),
-    supabase.from('affiliate_settings').select('minimum_payout_threshold').eq('id', 1).single(),
   ])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://studra.fr'
-  const threshold = settingsRes.data?.minimum_payout_threshold ?? 10
+  const threshold = Number(settings.minimum_payout_threshold)
 
   return (
     <AffiliateDashboard

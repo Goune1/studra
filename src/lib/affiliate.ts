@@ -5,187 +5,170 @@ function getAdminClient() {
   return createSupabaseAdmin(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
+    { auth: { autoRefreshToken: false, persistSession: false } },
   )
 }
 
-/** Normalise un texte pour en faire un code court sans accent ni caractère spécial */
-export function normalizeForCode(str: string): string {
-  return str
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '')
-    .slice(0, 8)
+function requireSuccess(error: { message: string } | null, operation: string): void {
+  if (error) throw new Error(`${operation}: ${error.message}`)
 }
 
-/** Génère un referral code unique : jusqu'à 8 chars de nom + 4 chiffres */
-export async function generateUniqueReferralCode(firstName: string): Promise<string> {
-  const supabase = getAdminClient()
-  const base = normalizeForCode(firstName) || 'user'
-
-  for (let attempt = 0; attempt < 20; attempt++) {
-    const digits = Math.floor(1000 + Math.random() * 9000).toString()
-    const code = `${base}${digits}`
-    const { data } = await supabase
-      .from('affiliates')
-      .select('id')
-      .eq('referral_code', code)
-      .maybeSingle()
-    if (!data) return code
-  }
-
-  // Fallback: UUID-based code
-  return `${base}${Date.now().toString(36).slice(-4)}`
-}
-
-/** Enregistre un clic de parrainage (idempotent — pas de déduplication stricte, mais IP-rate limité) */
 export async function recordAffiliateClick(
   affiliateId: string,
-  visitorId: string | null,
-  ipHash: string | null,
-  userAgent: string | null
+  dedupeKey: string,
 ): Promise<void> {
-  const supabase = getAdminClient()
-  await supabase.from('affiliate_clicks').insert({
+  const { error } = await getAdminClient().from('affiliate_clicks').upsert({
     affiliate_id: affiliateId,
-    visitor_id: visitorId,
-    ip_hash: ipHash,
-    user_agent: userAgent,
-  })
+    visitor_id: null,
+    ip_hash: null,
+    user_agent: null,
+    dedupe_key: dedupeKey,
+  }, { onConflict: 'dedupe_key', ignoreDuplicates: true })
+  requireSuccess(error, 'recordAffiliateClick')
 }
 
-/** Crée la relation permanente utilisateur → affilié.
- *  No-op si l'utilisateur est déjà attributé ou s'il essaie de s'auto-affilier. */
 export async function attributeReferral(
-  affiliateId: string,
-  referredUserId: string
+  referralCode: string,
+  referredUserId: string,
+  qualified: boolean,
 ): Promise<boolean> {
-  const supabase = getAdminClient()
-
-  // Récupère l'affilié pour vérifier qu'il ne s'auto-affilie pas
-  const { data: affiliate } = await supabase
-    .from('affiliates')
-    .select('id, user_id, status')
-    .eq('id', affiliateId)
-    .single()
-
-  if (!affiliate || affiliate.status !== 'active') return false
-  if (affiliate.user_id === referredUserId) return false
-
-  // Vérifie si l'utilisateur est déjà attribué
-  const { data: existing } = await supabase
-    .from('affiliate_referrals')
-    .select('id')
-    .eq('referred_user_id', referredUserId)
-    .maybeSingle()
-
-  if (existing) return false
-
-  const { error } = await supabase.from('affiliate_referrals').insert({
-    affiliate_id: affiliateId,
-    referred_user_id: referredUserId,
+  const { data, error } = await getAdminClient().rpc('affiliate_attribute_referral', {
+    p_referral_code: referralCode,
+    p_referred_user_id: referredUserId,
+    p_qualified: qualified,
   })
-
-  return !error
+  requireSuccess(error, 'affiliate_attribute_referral')
+  return data === true
 }
 
-/** Trouve l'affilié associé à un referral code */
+export async function qualifyReferral(referredUserId: string): Promise<boolean> {
+  const { data, error } = await getAdminClient().rpc('affiliate_qualify_referral', {
+    p_referred_user_id: referredUserId,
+  })
+  requireSuccess(error, 'affiliate_qualify_referral')
+  return data === true
+}
+
 export async function getAffiliateByCode(
-  code: string
+  code: string,
 ): Promise<{ id: string; user_id: string; status: string } | null> {
-  const supabase = getAdminClient()
-  const { data } = await supabase
+  const { data, error } = await getAdminClient()
     .from('affiliates')
     .select('id, user_id, status')
     .eq('referral_code', code)
     .eq('status', 'active')
     .maybeSingle()
+  requireSuccess(error, 'getAffiliateByCode')
   return data
 }
 
-/** Crée une commission suite à un paiement Stripe (idempotent sur stripe_invoice_id) */
 export async function createCommissionForInvoice(params: {
-  affiliateId: string
   referredUserId: string
   stripeInvoiceId: string
-  stripeSubscriptionId: string | null
-  amountRevenue: number
-  commissionRate: number
-}): Promise<boolean> {
-  const supabase = getAdminClient()
-  const amountCommission = Math.round(
-    (params.amountRevenue * params.commissionRate) / 100 * 100
-  ) / 100
-
-  const { error } = await supabase.from('affiliate_commissions').insert({
-    affiliate_id: params.affiliateId,
-    referred_user_id: params.referredUserId,
-    stripe_invoice_id: params.stripeInvoiceId,
-    stripe_subscription_id: params.stripeSubscriptionId,
-    amount_revenue: params.amountRevenue,
-    amount_commission: amountCommission,
-    status: 'pending',
+  stripeSubscriptionId: string
+  stripeCustomerId: string
+  stripePaymentIntentId: string | null
+  amountRevenueMinor: number
+  currency: string
+  paidAt: Date
+}): Promise<string | null> {
+  const { data, error } = await getAdminClient().rpc('affiliate_record_commission_and_reconcile', {
+    p_referred_user_id: params.referredUserId,
+    p_stripe_invoice_id: params.stripeInvoiceId,
+    p_stripe_subscription_id: params.stripeSubscriptionId,
+    p_stripe_customer_id: params.stripeCustomerId,
+    p_stripe_payment_intent_id: params.stripePaymentIntentId,
+    p_amount_revenue_minor: params.amountRevenueMinor,
+    p_currency: params.currency.toLowerCase(),
+    p_paid_at: params.paidAt.toISOString(),
   })
+  requireSuccess(error, 'affiliate_record_commission_and_reconcile')
+  return typeof data === 'string' ? data : null
+}
 
-  // Erreur 23505 = violation de contrainte unique (invoice déjà traitée)
-  if (error && !error.code?.includes('23505')) {
-    console.error('createCommissionForInvoice error:', error)
-    return false
+export async function recordNegativeAdjustment(params: {
+  stripePaymentIntentId: string
+  sourceId: string
+  entryType: 'refund' | 'dispute'
+  amountRevenueMinor: number
+  transactionAmountMinor: number
+  stripeRefundId?: string
+  stripeDisputeId?: string
+  reason?: string
+}): Promise<string | null> {
+  if (!Number.isSafeInteger(params.amountRevenueMinor) || params.amountRevenueMinor <= 0) {
+    throw new TypeError('amountRevenueMinor must be a positive safe integer')
   }
-  return true
+  if (!Number.isSafeInteger(params.transactionAmountMinor) || params.transactionAmountMinor <= 0) {
+    throw new TypeError('transactionAmountMinor must be a positive safe integer')
+  }
+  const { data, error } = await getAdminClient().rpc('affiliate_record_or_queue_adjustment', {
+    p_stripe_payment_intent_id: params.stripePaymentIntentId,
+    p_adjustment_source_id: params.sourceId,
+    p_entry_type: params.entryType,
+    p_refund_amount_minor: params.amountRevenueMinor,
+    p_transaction_amount_minor: params.transactionAmountMinor,
+    p_stripe_refund_id: params.stripeRefundId ?? null,
+    p_stripe_dispute_id: params.stripeDisputeId ?? null,
+    p_reason: params.reason ?? null,
+  })
+  requireSuccess(error, 'affiliate_record_or_queue_adjustment')
+  return typeof data === 'string' ? data : null
 }
 
-/** Annule la commission liée à un remboursement Stripe */
-export async function refundCommission(stripeInvoiceId: string): Promise<void> {
-  const supabase = getAdminClient()
-  await supabase
-    .from('affiliate_commissions')
-    .update({ status: 'refunded', updated_at: new Date().toISOString() })
-    .eq('stripe_invoice_id', stripeInvoiceId)
-    .in('status', ['pending', 'approved', 'payable'])
+export async function reverseDisputeAdjustment(disputeId: string): Promise<string | null> {
+  const { data, error } = await getAdminClient().rpc('affiliate_reverse_dispute', {
+    p_stripe_dispute_id: disputeId,
+  })
+  requireSuccess(error, 'affiliate_reverse_dispute')
+  return typeof data === 'string' ? data : null
 }
 
-/** Calcule les stats d'un affilié */
+export async function releaseMatureCommissions(): Promise<number> {
+  const { data, error } = await getAdminClient().rpc('affiliate_mature_commissions', {
+    p_now: new Date().toISOString(),
+  })
+  requireSuccess(error, 'affiliate_mature_commissions')
+  return Number(data ?? 0)
+}
+
 export async function getAffiliateStats(affiliateId: string): Promise<AffiliateStats> {
   const supabase = getAdminClient()
+  await releaseMatureCommissions()
 
   const [clicksRes, referralsRes, commissionsRes] = await Promise.all([
-    supabase
-      .from('affiliate_clicks')
-      .select('id', { count: 'exact', head: true })
-      .eq('affiliate_id', affiliateId),
+    supabase.from('affiliate_clicks').select('id', { count: 'exact', head: true }).eq('affiliate_id', affiliateId),
     supabase
       .from('affiliate_referrals')
-      .select('referred_user_id, profiles!referred_user_id(plan)')
+      .select('referred_user_id, status, profiles!referred_user_id(plan)')
       .eq('affiliate_id', affiliateId),
     supabase
       .from('affiliate_commissions')
-      .select('amount_revenue, amount_commission, status')
+      .select('amount_revenue_minor, amount_commission_minor, status')
       .eq('affiliate_id', affiliateId),
   ])
 
+  requireSuccess(clicksRes.error, 'affiliate stats clicks')
+  requireSuccess(referralsRes.error, 'affiliate stats referrals')
+  requireSuccess(commissionsRes.error, 'affiliate stats commissions')
+
   const commissions = commissionsRes.data ?? []
-  const referrals = referralsRes.data ?? []
-
-  const activeSubscribers = referrals.filter(r => {
-    const p = r.profiles
-    if (!p) return false
-    const plan = Array.isArray(p) ? (p[0] as { plan?: string })?.plan : (p as { plan?: string })?.plan
-    return plan === 'pro'
+  const referrals = (referralsRes.data ?? []).filter((referral) => referral.status === 'qualified')
+  const activeSubscribers = referrals.filter((referral) => {
+    const relation = referral.profiles
+    const profile = Array.isArray(relation) ? relation[0] : relation
+    return (profile as { plan?: string } | null)?.plan === 'pro'
   }).length
-
-  const sum = (statuses: string[]) =>
-    commissions
-      .filter(c => statuses.includes(c.status))
-      .reduce((acc, c) => acc + Number(c.amount_commission), 0)
+  const sum = (statuses: string[]) => commissions
+    .filter((commission) => statuses.includes(commission.status))
+    .reduce((total, commission) => total + Number(commission.amount_commission_minor), 0) / 100
 
   return {
     total_clicks: clicksRes.count ?? 0,
     total_referrals: referrals.length,
     active_subscribers: activeSubscribers,
-    total_revenue: commissions.reduce((acc, c) => acc + Number(c.amount_revenue), 0),
-    total_commission: commissions.reduce((acc, c) => acc + Number(c.amount_commission), 0),
+    total_revenue: commissions.reduce((total, commission) => total + Number(commission.amount_revenue_minor), 0) / 100,
+    total_commission: commissions.reduce((total, commission) => total + Number(commission.amount_commission_minor), 0) / 100,
     commission_pending: sum(['pending']),
     commission_approved: sum(['approved']),
     commission_payable: sum(['payable']),

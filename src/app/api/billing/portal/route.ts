@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createPortalSession } from '@/lib/stripe'
-import { resolveServerLocale } from '@/i18n/server-locale'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -13,7 +12,7 @@ export async function POST(request: Request) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('stripe_customer_id, preferred_locale')
+    .select('stripe_customer_id')
     .eq('id', user.id)
     .single()
 
@@ -21,10 +20,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Aucun abonnement actif' }, { status: 400 })
   }
 
-  const locale = resolveServerLocale(request, {profile})
-
   try {
-    const url = await createPortalSession(profile.stripe_customer_id, locale)
+    const url = await createPortalSession(profile.stripe_customer_id)
     return NextResponse.json({ url })
   } catch (err) {
     console.error('Stripe portal error:', err)

@@ -1,31 +1,40 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createCheckoutSession } from '@/lib/stripe'
-import { cookies } from 'next/headers'
-import { resolveServerLocale } from '@/i18n/server-locale'
+import { createCheckoutSession, hasCurrentSubscription } from '@/lib/stripe'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!user?.email) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
-  const {data: profile} = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('preferred_locale')
+    .select('stripe_customer_id, stripe_subscription_id')
     .eq('id', user.id)
-    .maybeSingle()
-  const locale = resolveServerLocale(request, {profile})
+    .single()
+  if (profileError || !profile) {
+    return NextResponse.json({ error: 'Profil introuvable' }, { status: 500 })
+  }
 
   try {
-    const cookieStore = await cookies()
-    const referralCode = cookieStore.get('studra_ref')?.value
-    const url = await createCheckoutSession(user.id, user.email!, locale, referralCode)
+    if (profile.stripe_subscription_id && await hasCurrentSubscription(profile.stripe_subscription_id)) {
+      return NextResponse.json(
+        { error: 'Un abonnement est déjà actif pour ce compte.' },
+        { status: 409 },
+      )
+    }
+
+    const url = await createCheckoutSession(
+      user.id,
+      user.email,
+      profile.stripe_customer_id,
+    )
     return NextResponse.json({ url })
-  } catch (err) {
-    console.error('Stripe checkout error:', err)
+  } catch (error) {
+    console.error('Stripe checkout error:', error)
     return NextResponse.json({ error: 'Erreur lors du checkout' }, { status: 500 })
   }
 }

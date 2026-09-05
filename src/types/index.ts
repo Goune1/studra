@@ -375,7 +375,9 @@ export interface ContentItem {
 export type AffiliateStatus = 'active' | 'suspended'
 export type PaymentMethod = 'paypal' | 'bank_transfer'
 export type CommissionStatus = 'pending' | 'approved' | 'payable' | 'paid' | 'cancelled' | 'refunded'
-export type PayoutStatus = 'pending' | 'paid' | 'failed'
+export type CommissionEntryType = 'commission' | 'refund' | 'dispute' | 'manual_adjustment'
+export type ReferralStatus = 'pending' | 'qualified' | 'rejected'
+export type PayoutStatus = 'processing' | 'paid' | 'failed' | 'reversed'
 
 export interface Affiliate {
   id: string
@@ -391,6 +393,8 @@ export interface Affiliate {
   iban: string | null
   bic: string | null
   account_holder_name: string | null
+  terms_version: string
+  terms_accepted_at: string
   created_at: string
   updated_at: string
 }
@@ -401,6 +405,7 @@ export interface AffiliateClick {
   visitor_id: string | null
   ip_hash: string | null
   user_agent: string | null
+  dedupe_key: string | null
   created_at: string
 }
 
@@ -408,6 +413,10 @@ export interface AffiliateReferral {
   id: string
   affiliate_id: string
   referred_user_id: string
+  status: ReferralStatus
+  qualified_at: string | null
+  attribution_expires_at: string | null
+  referral_code_snapshot: string | null
   created_at: string
 }
 
@@ -415,10 +424,23 @@ export interface AffiliateCommission {
   id: string
   affiliate_id: string
   referred_user_id: string
-  stripe_invoice_id: string
+  stripe_invoice_id: string | null
   stripe_subscription_id: string | null
+  stripe_customer_id: string | null
+  stripe_payment_intent_id: string | null
+  stripe_refund_id: string | null
+  stripe_dispute_id: string | null
   amount_revenue: number
   amount_commission: number
+  amount_revenue_minor: number
+  amount_commission_minor: number
+  currency: string
+  rate_bps: number
+  entry_type: CommissionEntryType
+  source_id: string
+  parent_commission_id: string | null
+  available_at: string
+  reason: string | null
   status: CommissionStatus
   payout_id: string | null
   created_at: string
@@ -429,17 +451,27 @@ export interface AffiliatePayout {
   id: string
   affiliate_id: string
   amount: number
+  amount_minor: number
+  currency: string
   payment_method: string
   payment_reference: string | null
   status: PayoutStatus
   paid_at: string | null
+  idempotency_key: string
+  initiated_by: string | null
+  confirmed_by: string | null
+  failure_reason: string | null
   created_at: string
+  updated_at: string
 }
 
 export interface AffiliateSettings {
   id: 1
   minimum_payout_threshold: number
+  minimum_payout_minor: number
   default_commission_rate: number
+  commission_hold_days: number
+  affiliate_terms_version: string
   updated_at: string
 }
 

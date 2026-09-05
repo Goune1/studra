@@ -1,5 +1,4 @@
 import Stripe from 'stripe'
-import {getLocalizedPathname, type AppLocale} from '@/i18n/pathname'
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -7,9 +6,9 @@ function getStripe() {
   })
 }
 
-function billingUrl(locale: AppLocale, status?: 'success' | 'canceled'): string {
+function billingUrl(status?: 'success' | 'canceled'): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://studra.fr'
-  const url = new URL(getLocalizedPathname('/billing', locale), appUrl)
+  const url = new URL('/billing', appUrl)
   if (status) url.searchParams.set(status, 'true')
   return url.toString()
 }
@@ -17,39 +16,49 @@ function billingUrl(locale: AppLocale, status?: 'success' | 'canceled'): string 
 export async function createCheckoutSession(
   userId: string,
   email: string,
-  locale: AppLocale,
-  referralCode?: string,
+  customerId: string | null,
 ): Promise<string> {
   const stripe = getStripe()
+  const priceId = process.env.STRIPE_PRICE_ID!
+  const idempotencyKey = `checkout:${userId}:${priceId}:${new Date().toISOString().slice(0, 13)}`
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
-    locale,
+    locale: 'fr',
     payment_method_types: ['card'],
-    customer_email: email,
+    ...(customerId ? {customer: customerId} : {customer_email: email}),
     line_items: [
       {
-        price: process.env.STRIPE_PRICE_ID!,
+        price: priceId,
         quantity: 1,
       },
     ],
     subscription_data: {
       metadata: {
         user_id: userId,
-        locale,
-        ...(referralCode ? {referral_code: referralCode} : {}),
+        locale: 'fr',
       },
     },
     metadata: {
       user_id: userId,
-      locale,
-      ...(referralCode ? {referral_code: referralCode} : {}),
+      locale: 'fr',
     },
     client_reference_id: userId,
-    success_url: billingUrl(locale, 'success'),
-    cancel_url: billingUrl(locale, 'canceled'),
-  })
+    success_url: billingUrl( 'success'),
+    cancel_url: billingUrl( 'canceled'),
+  }, {idempotencyKey})
 
-  return session.url!
+  if (!session.url) throw new Error('Stripe checkout session has no URL')
+  return session.url
+}
+
+export async function hasCurrentSubscription(subscriptionId: string): Promise<boolean> {
+  try {
+    const subscription = await getStripe().subscriptions.retrieve(subscriptionId)
+    return !['canceled', 'incomplete_expired'].includes(subscription.status)
+  } catch (error) {
+    if (error instanceof Stripe.errors.StripeError && error.code === 'resource_missing') return false
+    throw error
+  }
 }
 
 export async function getProPriceDisplay(): Promise<string> {
@@ -67,13 +76,12 @@ export async function getProPriceDisplay(): Promise<string> {
 
 export async function createPortalSession(
   customerId: string,
-  locale: AppLocale,
 ): Promise<string> {
   const stripe = getStripe()
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    locale,
-    return_url: billingUrl(locale),
+    locale: 'fr',
+    return_url: billingUrl(),
   })
 
   return session.url

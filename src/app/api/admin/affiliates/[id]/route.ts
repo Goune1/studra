@@ -78,32 +78,27 @@ export async function PATCH(
     return NextResponse.json({ error: 'Corps invalide' }, { status: 400 })
   }
 
-  const allowed = ['status', 'commission_rate']
-  const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
-
-  for (const key of allowed) {
-    if (key in body) {
-      if (key === 'status' && !['active', 'suspended'].includes(body[key] as string)) {
-        return NextResponse.json({ error: 'Statut invalide' }, { status: 400 })
-      }
-      if (key === 'commission_rate') {
-        const rate = Number(body[key])
-        if (isNaN(rate) || rate < 0 || rate > 100) {
-          return NextResponse.json({ error: 'Taux invalide (0-100)' }, { status: 400 })
-        }
-        updates[key] = rate
-        continue
-      }
-      updates[key] = body[key]
+  const status = 'status' in body ? body.status : null
+  if (status !== null && status !== 'active' && status !== 'suspended') {
+    return NextResponse.json({ error: 'Statut invalide' }, { status: 400 })
+  }
+  let commissionRate: number | null = null
+  if ('commission_rate' in body) {
+    commissionRate = Number(body.commission_rate)
+    if (!Number.isFinite(commissionRate) || commissionRate < 0 || commissionRate > 100) {
+      return NextResponse.json({ error: 'Taux invalide (0-100)' }, { status: 400 })
     }
   }
+  if (status === null && commissionRate === null) {
+    return NextResponse.json({ error: 'Aucune modification' }, { status: 400 })
+  }
 
-  const { error } = await supabase
-    .from('affiliates')
-    .update(updates)
-    .eq('id', id)
-
+  const { error } = await supabase.rpc('affiliate_admin_update', {
+    p_affiliate_id: id,
+    p_status: status,
+    p_commission_rate: commissionRate,
+    p_actor_user_id: admin.id,
+  })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
   return NextResponse.json({ ok: true })
 }

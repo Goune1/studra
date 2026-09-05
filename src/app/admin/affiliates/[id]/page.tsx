@@ -21,7 +21,7 @@ type Affiliate = {
   iban: string | null; bic: string | null; account_holder_name: string | null
   created_at: string
 }
-type Commission = { id: string; amount_revenue: number; amount_commission: number; status: string; stripe_invoice_id: string; created_at: string }
+type Commission = { id: string; amount_revenue: number; amount_commission: number; status: string; stripe_invoice_id: string | null; source_id: string; entry_type: string; created_at: string }
 type Payout = { id: string; amount: number; payment_method: string; payment_reference: string | null; status: string; paid_at: string | null; created_at: string }
 type Referral = { id: string; referred_user_id: string; created_at: string; profiles: { email: string; full_name: string | null; plan: string } | null }
 
@@ -46,8 +46,7 @@ export default function AdminAffiliatePage() {
   } | null>(null)
   const [loading, setLoading] = useState(true)
   const [commissionRate, setCommissionRate] = useState('')
-  const [payoutAmount, setPayoutAmount] = useState('')
-  const [payoutMethod, setPayoutMethod] = useState('paypal')
+  const [payoutMethod, setPayoutMethod] = useState('')
   const [payoutRef, setPayoutRef] = useState('')
 
   useEffect(() => {
@@ -56,6 +55,7 @@ export default function AdminAffiliatePage() {
       .then(d => {
         setData(d)
         setCommissionRate(String(d.affiliate?.commission_rate ?? 20))
+        setPayoutMethod(d.affiliate?.payment_method ?? '')
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -86,6 +86,7 @@ export default function AdminAffiliatePage() {
   const { affiliate, commissions, payouts, referrals } = data
 
   const payableAmount = commissions.filter(c => c.status === 'payable').reduce((s, c) => s + Number(c.amount_commission), 0)
+  const processingPayout = payouts.find(p => p.status === 'processing')
 
   function updateStatus(status: 'active' | 'suspended') {
     startTransition(async () => {
@@ -124,27 +125,52 @@ export default function AdminAffiliatePage() {
     })
   }
 
-  function recordPayout() {
-    const amount = Number(payoutAmount)
-    if (isNaN(amount) || amount <= 0) { toast.error('Montant invalide.'); return }
-
+  function preparePayout() {
     startTransition(async () => {
       const res = await fetch(`/api/admin/affiliates/${affiliate.id}/payout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, payment_method: payoutMethod, payment_reference: payoutRef || null }),
+        body: JSON.stringify({
+          action: 'prepare',
+          payment_method: payoutMethod,
+          idempotency_key: crypto.randomUUID(),
+        }),
       })
-      if (res.ok) {
-        toast.success('Paiement enregistré.')
-        router.refresh()
-        // Reload data
-        fetch(`/api/admin/affiliates/${affiliate.id}`).then(r => r.json()).then(setData)
-        setPayoutAmount('')
-        setPayoutRef('')
-      } else {
-        const d = await res.json()
-        toast.error(d.error ?? 'Erreur.')
+      const response = await res.json()
+      if (!res.ok) {
+        toast.error(response.error ?? 'Erreur.')
+        return
       }
+      toast.success('Lot préparé. Effectuez maintenant le transfert externe.')
+      router.refresh()
+      fetch(`/api/admin/affiliates/${affiliate.id}`).then(r => r.json()).then(setData)
+    })
+  }
+
+  function finishPayout(action: 'confirm' | 'fail', payoutId: string) {
+    if (action === 'confirm' && !payoutRef.trim()) {
+      toast.error('La référence du transfert est obligatoire.')
+      return
+    }
+    startTransition(async () => {
+      const res = await fetch(`/api/admin/affiliates/${affiliate.id}/payout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action,
+          payout_id: payoutId,
+          payment_reference: payoutRef.trim(),
+          reason: action === 'fail' ? 'Transfert externe échoué' : undefined,
+        }),
+      })
+      const response = await res.json()
+      if (!res.ok) {
+        toast.error(response.error ?? 'Erreur.')
+        return
+      }
+      toast.success(action === 'confirm' ? 'Paiement confirmé.' : 'Lot libéré après échec.')
+      setPayoutRef('')
+      fetch(`/api/admin/affiliates/${affiliate.id}`).then(r => r.json()).then(setData)
     })
   }
 
@@ -224,48 +250,56 @@ export default function AdminAffiliatePage() {
             </div>
           </div>
 
-          {/* Enregistrer un paiement */}
+          {/* Paiement manuel en deux étapes : réservation atomique puis confirmation du transfert externe. */}
           <div className="bg-[#111] border border-[#1E1E1E] rounded-xl p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-mono text-[10px] text-gray-600 uppercase tracking-wider">Enregistrer un paiement manuel</h2>
-              {payableAmount > 0 && (
-                <span className="font-mono text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded">
-                  Payable : {fmt(payableAmount)}
-                </span>
-              )}
+              <div>
+                <h2 className="font-mono text-[10px] text-gray-600 uppercase tracking-wider">Paiement manuel contrôlé</h2>
+                <p className="text-xs text-gray-500 mt-1">Le montant est calculé par la base. Aucun paiement n’est marqué payé avant saisie de la référence externe.</p>
+              </div>
+              <span className="font-mono text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded">
+                Payable : {fmt(payableAmount)}
+              </span>
             </div>
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-3">
-              <input
-                type="number"
-                value={payoutAmount}
-                onChange={e => setPayoutAmount(e.target.value)}
-                placeholder="Montant (€)"
-                className="px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] text-sm text-white focus:outline-none focus:border-violet-500/50"
-              />
-              <select
-                value={payoutMethod}
-                onChange={e => setPayoutMethod(e.target.value)}
-                className="px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] text-sm text-white focus:outline-none focus:border-violet-500/50"
-              >
-                <option value="paypal">PayPal</option>
-                <option value="bank_transfer">Virement bancaire</option>
-                <option value="other">Autre</option>
-              </select>
-              <input
-                type="text"
-                value={payoutRef}
-                onChange={e => setPayoutRef(e.target.value)}
-                placeholder="Référence (optionnel)"
-                className="px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] text-sm text-white focus:outline-none focus:border-violet-500/50"
-              />
-              <button
-                onClick={recordPayout}
-                disabled={isPending || !payoutAmount}
-                className="py-2 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-50 text-xs font-semibold transition-colors"
-              >
-                Valider le paiement
-              </button>
-            </div>
+
+            {processingPayout ? (
+              <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto_auto] gap-3">
+                <input
+                  type="text"
+                  value={payoutRef}
+                  onChange={e => setPayoutRef(e.target.value)}
+                  placeholder="Référence du transfert externe (obligatoire)"
+                  className="px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] text-sm text-white focus:outline-none focus:border-violet-500/50"
+                />
+                <button
+                  onClick={() => finishPayout('confirm', processingPayout.id)}
+                  disabled={isPending || !payoutRef.trim()}
+                  className="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 disabled:opacity-50 text-xs font-semibold transition-colors"
+                >
+                  Confirmer le transfert
+                </button>
+                <button
+                  onClick={() => finishPayout('fail', processingPayout.id)}
+                  disabled={isPending}
+                  className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 disabled:opacity-50 text-xs font-semibold transition-colors"
+                >
+                  Signaler l’échec
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-3">
+                <div className="px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] text-sm text-gray-300">
+                  Méthode vérifiée : {payoutMethod === 'paypal' ? 'PayPal' : payoutMethod === 'bank_transfer' ? 'Virement bancaire' : 'Non renseignée'}
+                </div>
+                <button
+                  onClick={preparePayout}
+                  disabled={isPending || payableAmount <= 0 || !['paypal', 'bank_transfer'].includes(payoutMethod)}
+                  className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-xs font-semibold transition-colors"
+                >
+                  Préparer le lot exact
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Utilisateurs référés */}
@@ -324,7 +358,9 @@ export default function AdminAffiliatePage() {
                       <td className="px-5 py-3 font-mono text-[10px] text-gray-500">{fmtDate(c.created_at)}</td>
                       <td className="px-5 py-3 text-xs">{fmt(Number(c.amount_revenue))}</td>
                       <td className="px-5 py-3 text-xs font-semibold">{fmt(Number(c.amount_commission))}</td>
-                      <td className="px-5 py-3 font-mono text-[10px] text-gray-600">{c.stripe_invoice_id.slice(0, 20)}…</td>
+                      <td className="px-5 py-3 font-mono text-[10px] text-gray-600">
+                        {(c.stripe_invoice_id ?? c.source_id).slice(0, 24)}
+                      </td>
                       <td className="px-5 py-3"><span className={`text-[10px] font-mono ${st.color}`}>{st.label}</span></td>
                     </tr>
                   )
