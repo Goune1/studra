@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
-import { useRouter } from '@/i18n/navigation'
+import {useRouter} from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const DANGER = '#B4503C'
@@ -21,8 +20,6 @@ type DeleteAccountButtonProps = {
 
 export function DeleteAccountButton({ userEmail, deleteAccount }: DeleteAccountButtonProps) {
   const [open, setOpen] = useState(false)
-  const t = useTranslations('dashboard.settings.deleteAccount')
-
   return (
     <>
       <button
@@ -31,7 +28,7 @@ export function DeleteAccountButton({ userEmail, deleteAccount }: DeleteAccountB
         className="rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5"
         style={{ background: 'transparent', border: '1px solid var(--ink-200)', color: DANGER }}
       >
-        {t('cta')}
+        {"Supprimer mon compte"}
       </button>
 
       {open && (
@@ -54,7 +51,6 @@ function ConfirmDeleteAccountDialog({
   deleteAccount: (confirmationEmail: string) => Promise<DeleteAccountResult>
   onClose: () => void
 }) {
-  const t = useTranslations('dashboard.settings.deleteAccount')
   const router = useRouter()
   const supabase = createClient()
   const [confirmationEmail, setConfirmationEmail] = useState('')
@@ -71,7 +67,7 @@ function ConfirmDeleteAccountDialog({
     const result = await deleteAccount(confirmationEmail)
 
     if (!result.ok) {
-      setError(result.error || t('genericError'))
+      setError(result.error || "Impossible de supprimer le compte. Réessaie ou contacte le support.")
       setDeleting(false)
       return
     }
@@ -79,7 +75,7 @@ function ConfirmDeleteAccountDialog({
     // The server action already destroyed the server-side session; clear
     // the client-side auth state too before navigating away.
     await supabase.auth.signOut()
-    toast.success(t('deleted'))
+    toast.success("Ton compte a été supprimé.")
     router.push('/')
     router.refresh()
   }
@@ -102,15 +98,15 @@ function ConfirmDeleteAccountDialog({
             <AlertTriangle size={16} style={{ color: DANGER }} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{t('confirmTitle')}</h2>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{"Supprimer définitivement ton compte ?"}</h2>
             <p className="mt-1 text-xs" style={{ color: 'var(--ink-500)' }}>
-              {t('warning')}
+              {"Cette action est irréversible. Toutes tes données seront supprimées et ton abonnement, s'il est actif, sera immédiatement résilié."}
             </p>
           </div>
         </div>
 
         <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>
-          {t('typeEmailLabel', { email: userEmail })}
+          {`Tape ${userEmail} pour confirmer`}
         </label>
         <input
           type="email"
@@ -136,7 +132,7 @@ function ConfirmDeleteAccountDialog({
             className="flex-1 rounded-lg px-4 py-2.5 text-xs font-medium transition-colors disabled:opacity-50"
             style={{ background: 'var(--surface-2)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
           >
-            {t('cancel')}
+            {"Annuler"}
           </button>
           <button
             type="button"
@@ -146,7 +142,7 @@ function ConfirmDeleteAccountDialog({
             style={{ background: DANGER }}
           >
             {deleting && <Loader2 size={12} className="animate-spin" />}
-            {deleting ? t('deleting') : t('confirmCta')}
+            {deleting ? "Suppression…" : "Supprimer définitivement"}
           </button>
         </div>
       </div>

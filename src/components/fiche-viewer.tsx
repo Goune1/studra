@@ -4,8 +4,6 @@ import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
-
 interface FicheViewerProps {
   content: string
   ficheId?: string
@@ -17,8 +15,6 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
   const [saved, setSaved] = useState(content)
   const [saving, setSaving] = useState(false)
   const [previewTab, setPreviewTab] = useState<'edit' | 'preview'>('edit')
-  const t = useTranslations('fiches.viewer')
-
   async function handleSave() {
     if (!ficheId) return
     setSaving(true)
@@ -31,9 +27,9 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
       if (!res.ok) throw new Error()
       setSaved(draft)
       setEditing(false)
-      toast.success(t('saved'))
+      toast.success("Fiche sauvegardée !")
     } catch {
-      toast.error(t('saveError'))
+      toast.error("Erreur lors de la sauvegarde")
     } finally {
       setSaving(false)
     }
@@ -66,22 +62,22 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
               className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
               style={previewTab === 'edit' ? { background: 'var(--accent)', color: 'var(--accent-fg)' } : { color: 'var(--ink-500)' }}
             >
-              ✏️ {t('edit')}
+              ✏️ {"Éditer"}
             </button>
             <button
               onClick={() => setPreviewTab('preview')}
               className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
               style={previewTab === 'preview' ? { background: 'var(--accent)', color: 'var(--accent-fg)' } : { color: 'var(--ink-500)' }}
             >
-              👁️ {t('preview')}
+              👁️ {"Aperçu"}
             </button>
           </div>
           <div className="flex gap-2">
             <button onClick={handleCancel} className="btn btn-outline">
-              {t('cancel')}
+              {"Annuler"}
             </button>
             <button onClick={handleSave} disabled={saving} className="btn btn-primary">
-              {saving ? `⟳ ${t('saving')}` : `💾 ${t('save')}`}
+              {saving ? `⟳ ${"Sauvegarde..."}` : `💾 ${"Sauvegarder"}`}
             </button>
           </div>
         </div>
@@ -89,7 +85,7 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
         {/* Editor / Preview */}
         {previewTab === 'edit' ? (
           <div>
-            <p className="text-xs mb-2" style={{ color: 'var(--ink-500)' }}>{t('markdownHelp')}</p>
+            <p className="text-xs mb-2" style={{ color: 'var(--ink-500)' }}>{"Markdown supporté : **gras**, *italique*, ## Titre, - liste, etc."}</p>
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -116,7 +112,7 @@ export function FicheViewer({ content, ficheId }: FicheViewerProps) {
       {ficheId && (
         <div className="flex justify-end mb-4">
           <button onClick={() => setEditing(true)} className="btn btn-outline">
-            ✏️ {t('editFiche')}
+            ✏️ {"Modifier la fiche"}
           </button>
         </div>
       )}

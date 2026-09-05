@@ -1,8 +1,6 @@
 'use client'
 
-import { Link } from '@/i18n/navigation'
-import { useTranslations } from 'next-intl'
-
+import Link from 'next/link'
 export type AlsoKey = 'fiche' | 'flashcards' | 'schema' | 'exam' | 'timeline'
 
 export type ResultColor = 'violet' | 'blue' | 'emerald' | 'amber' | 'rose'
@@ -85,10 +83,9 @@ interface AlsoGenerateSectionProps {
 }
 
 export function AlsoGenerateSection({ options, selected, onChange }: AlsoGenerateSectionProps) {
-  const t = useTranslations('components.alsoGenerate')
   return (
     <div className="rounded-xl p-4" style={{ border: '1px solid var(--ink-200)', background: 'var(--surface-2)' }}>
-      <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink-700)' }}>{t('title')}</p>
+      <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink-700)' }}>{"Générer aussi depuis ce contenu"}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((key) => {
           const { label, icon } = CONTENT_TYPES[key]
@@ -115,7 +112,7 @@ export function AlsoGenerateSection({ options, selected, onChange }: AlsoGenerat
       </div>
       {selected.size > 0 && (
         <p className="text-xs mt-2" style={{ color: 'var(--ink-500)' }}>
-          {t('parallel')}
+          {"Tout sera généré en parallèle depuis le même contenu."}
         </p>
       )}
     </div>
@@ -139,16 +136,15 @@ interface GenerationResultsScreenProps {
 }
 
 export function GenerationResultsScreen({ resources, newPath, newLabel = 'Créer un autre contenu' }: GenerationResultsScreenProps) {
-  const t = useTranslations('components.alsoGenerate')
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8 text-center">
         <div className="text-5xl mb-4">🎉</div>
-        <h1 className="section-h">{t('generated')}</h1>
+        <h1 className="section-h">{"Contenu généré."}</h1>
         <p className="lede mt-3">
           {resources.length > 1
-            ? t('resourcesCreated', { count: resources.length })
-            : t('resourceCreated')}
+            ? `${resources.length} ressources créées depuis ta source.`
+            : "Ta ressource a été créée avec succès."}
         </p>
       </div>
 
@@ -172,7 +168,7 @@ export function GenerationResultsScreen({ resources, newPath, newLabel = 'Créer
 
       <div className="mt-6 text-center">
         <Link href={newPath} className="text-sm transition-colors" style={{ color: 'var(--ink-500)' }}>
-          ← {newLabel || t('newContent')}
+          ← {newLabel || "Créer un autre contenu"}
         </Link>
       </div>
     </div>

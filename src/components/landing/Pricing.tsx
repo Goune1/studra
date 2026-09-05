@@ -1,5 +1,4 @@
-import {useFormatter, useTranslations} from 'next-intl'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 
 type Plan = {
   name: string
@@ -14,8 +13,7 @@ type Plan = {
 }
 
 function PlanCard({plan}: {plan: Plan}) {
-  const t = useTranslations('landing.pricing')
-  const format = useFormatter()
+  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
   return (
     <div style={{
       position: "relative",
@@ -28,14 +26,14 @@ function PlanCard({plan}: {plan: Plan}) {
     }}>
       {plan.recommended && (
         <div className="mono" style={{ position: "absolute", top: 18, right: 24, fontSize: 10.5, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--accent)", fontWeight: 500 }}>
-          {t('recommended')}
+          {"Recommandé"}
         </div>
       )}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div className="mono" style={{ fontSize: 12, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--ink-500)", fontWeight: 500 }}>{plan.name}</div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
           <span style={{ fontSize: 52, fontWeight: 500, letterSpacing: "-.035em", lineHeight: 1, color: "var(--ink)", fontFeatureSettings: "'tnum'" }}>{format.number(plan.price, {style: 'currency', currency: 'EUR'})}</span>
-          <span style={{ color: "var(--ink-500)", fontSize: 16, fontWeight: 400 }}>{t('perMonth')}</span>
+          <span style={{ color: "var(--ink-500)", fontSize: 16, fontWeight: 400 }}>{"par mois"}</span>
         </div>
         <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--ink-700)", maxWidth: "36ch" }}>{plan.desc}</p>
       </div>
@@ -57,14 +55,13 @@ function PlanCard({plan}: {plan: Plan}) {
 }
 
 export default function Pricing() {
-  const t = useTranslations('landing.pricing')
   const free: Plan = {
-    name: t('free.name'), price: 0, desc: t('free.description'), cta: t('free.cta'), ctaStyle: 'btn-outline', href: '/register',
-    features: (['generations', 'tools', 'imports', 'spacing', 'socrate', 'planning'] as const).map((key) => t(`free.features.${key}`)),
+    name: "Free", price: 0, desc: "Pour découvrir Studra sans carte bancaire.", cta: "Commencer gratuitement", ctaStyle: 'btn-outline', href: '/register',
+    features: ["5 générations IA par mois, tous outils confondus", "Flashcards, fiches, examens et schémas", "Import texte et PDF", "Répétition espacée FSRS", "Mode Socrate", "Planning de révision"],
   }
   const pro: Plan = {
-    name: t('pro.name'), price: 4.99, desc: t('pro.description'), cta: t('pro.cta'), ctaStyle: 'btn-primary', href: '/register', query: {plan: 'pro'}, recommended: true,
-    features: (['free', 'generations', 'youtube', 'gaps', 'annales', 'planning', 'socrate'] as const).map((key) => t(`pro.features.${key}`)),
+    name: "Pro", price: 4.99, desc: "Pour réviser plusieurs matières sans limite de génération.", cta: "Passer à Pro", ctaStyle: 'btn-primary', href: '/register', query: {plan: 'pro'}, recommended: true,
+    features: ["Tout le plan Free", "Générations IA illimitées", "Import YouTube", "Analyse des lacunes", "Annales adaptatives", "Planning personnalisé", "Mode Socrate illimité"],
   }
 
   return (
@@ -73,11 +70,11 @@ export default function Pricing() {
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 56, maxWidth: 760 }}>
           <div className="eyebrow">
             <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>{t('eyebrow')}</span>
+            <span>{"Tarifs"}</span>
           </div>
           <h2 className="section-h">
-            {t('title')}<br />
-            <span className="dim">{t('titleAccent')}</span>
+            {"Gratuit pour commencer."}<br />
+            <span className="dim">{"Pas cher pour aller au bout."}</span>
           </h2>
         </div>
 
@@ -87,8 +84,8 @@ export default function Pricing() {
         </div>
 
         <div style={{ marginTop: 32, textAlign: "center", fontSize: 13.5, lineHeight: 1.6, color: "var(--ink-500)" }}>
-          {t('generationNote')}<br />
-          {t('usageNote')}
+          {"Une génération correspond à la création d'un support ou d'une analyse par IA."}<br />
+          {"Réviser des flashcards déjà créées ne consomme pas de génération. Annulable à tout moment, sans engagement."}
         </div>
       </div>
 

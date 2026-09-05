@@ -3,8 +3,6 @@
 import { useState, useMemo } from 'react'
 import { WeaknessCard } from './WeaknessCard'
 import type { MockCard } from '@/lib/lacunes/mock'
-import { useTranslations } from 'next-intl'
-
 type SortKey = 'failRate' | 'lastSeen' | 'alpha'
 
 const CRITICAL_THRESHOLD = 50
@@ -14,7 +12,6 @@ interface WeaknessCardListProps {
 }
 
 export function WeaknessCardList({ cards }: WeaknessCardListProps) {
-  const t = useTranslations('dashboard.lacunes')
   const [sort, setSort] = useState<SortKey>('failRate')
 
   const sorted = useMemo(() => {
@@ -35,7 +32,7 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>
-            {t('cardsToReview')}
+            {"Cartes à retravailler"}
           </h2>
           <span
             className="mono text-xs px-2 py-0.5 rounded-full font-semibold"
@@ -60,7 +57,7 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
                 color: sort === key ? 'var(--accent)' : 'var(--ink-400)',
               }}
             >
-              {t(key === 'failRate' ? 'score' : key === 'lastSeen' ? 'review' : 'weaknesses')}{sort === key && key === 'failRate' ? ' ↓' : ''}
+              {key === 'failRate' ? 'Taux de réussite' : key === 'lastSeen' ? 'À retravailler' : 'Points faibles'}{sort === key && key === 'failRate' ? ' ↓' : ''}
             </button>
           ))}
         </div>
@@ -71,7 +68,7 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-2">
             <span className="mono text-[9px] font-bold uppercase tracking-widest" style={{ color: '#EF4444' }}>
-              {t('priority')}
+              {"Priorité"}
             </span>
             <div className="flex-1 h-px" style={{ background: '#EF444420' }} />
           </div>
@@ -86,7 +83,7 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <span className="mono text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--ink-400)' }}>
-              {t('weaknesses')}
+              {"Points faibles"}
             </span>
             <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
           </div>

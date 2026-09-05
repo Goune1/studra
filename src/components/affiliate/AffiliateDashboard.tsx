@@ -2,9 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { useFormatter, useTranslations } from 'next-intl'
 import { Copy, Check, Users, MousePointer, TrendingUp, Wallet } from 'lucide-react'
-import { updatePaymentMethod } from '@/app/[locale]/(dashboard)/affiliate/actions'
+import { updatePaymentMethod } from '@/app/(dashboard)/affiliate/actions'
 import type { Affiliate, AffiliateCommission, AffiliatePayout, AffiliateStats } from '@/types'
 
 const STATUS_LABELS: Record<string, { key: string; color: string }> = {
@@ -19,6 +18,31 @@ const STATUS_LABELS: Record<string, { key: string; color: string }> = {
 function fmt(v: number) {
   return v.toFixed(2).replace('.', ',') + ' €'
 }
+
+function copy(key: string, values?: {name?: string}) {
+  const labels: Record<string, string> = {
+    updated: 'Moyen de paiement mis à jour.',
+    paymentError: 'Erreur.',
+    title: "Programme d'affiliation",
+    suspended: '⚠️ Votre compte est suspendu. Contactez le support.',
+    referralLink: 'Votre lien de parrainage',
+    copied: 'Copié !',
+    copy: 'Copier',
+    code: 'Code :',
+    pending: 'En attente',
+    approved: 'Validées',
+    payable: 'Payables',
+    paid: 'Payées',
+    cancelled: 'Annulée',
+    refunded: 'Remboursée',
+    notProvided: 'Non renseigné',
+    paypal: '💳 PayPal',
+    bankTransfer: '🏦 Virement bancaire',
+  }
+  if (key === 'hello') return `Bonjour ${values?.name ?? ''} ! Voici votre tableau de bord.`
+  return labels[key] ?? key
+}
+
 interface Props {
   affiliate: Affiliate
   stats: AffiliateStats
@@ -29,8 +53,8 @@ interface Props {
 }
 
 export function AffiliateDashboard({ affiliate, stats, commissions, payouts, appUrl, minimumPayoutThreshold }: Props) {
-  const t = useTranslations('dashboard.affiliate')
-  const format = useFormatter()
+  const t = copy
+  const format = {dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value))}
   const [copied, setCopied] = useState(false)
   const [editPayment, setEditPayment] = useState(false)
   const [method, setMethod] = useState<'paypal' | 'bank_transfer'>(affiliate.payment_method ?? 'paypal')

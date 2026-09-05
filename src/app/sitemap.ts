@@ -1,9 +1,9 @@
 import type {MetadataRoute} from 'next'
 import {blogPosts} from '@/lib/blog-posts'
-import {
-  buildLocalizedSitemapEntries,
-  type SitemapDescriptor,
-} from '@/lib/seo-i18n'
+
+type SitemapDescriptor = Omit<MetadataRoute.Sitemap[number], 'url' | 'alternates'> & {
+  pathname: string
+}
 
 const staticDescriptors: SitemapDescriptor[] = [
   {
@@ -76,8 +76,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  return buildLocalizedSitemapEntries([
-    ...staticDescriptors,
-    ...blogDescriptors,
-  ])
+  return [...staticDescriptors, ...blogDescriptors].map(({pathname, ...entry}) => ({url: new URL(pathname, 'https://studra.fr').toString(), ...entry}))
 }

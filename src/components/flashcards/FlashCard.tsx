@@ -3,8 +3,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Lightbulb, GitMerge, Globe, BookOpen, ListOrdered, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-
 const COLOR = '#1F4D3F'
 
 type ExplainStyle = 'analogy' | 'example' | 'simple' | 'stepbystep'
@@ -23,12 +21,11 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
   const [showExplain, setShowExplain] = useState(false)
   const [explaining, setExplaining] = useState(false)
   const [explanation, setExplanation] = useState<string | null>(null)
-  const t = useTranslations('flashcards.study')
   const explainStyles = [
-    { key: 'analogy' as const, label: t('styles.analogy'), Icon: GitMerge },
-    { key: 'example' as const, label: t('styles.example'), Icon: Globe },
-    { key: 'simple' as const, label: t('styles.simple'), Icon: BookOpen },
-    { key: 'stepbystep' as const, label: t('styles.stepbystep'), Icon: ListOrdered },
+    { key: 'analogy' as const, label: "Analogie", Icon: GitMerge },
+    { key: 'example' as const, label: "Exemple concret", Icon: Globe },
+    { key: 'simple' as const, label: "Explication simple", Icon: BookOpen },
+    { key: 'stepbystep' as const, label: "Étape par étape", Icon: ListOrdered },
   ]
 
   function handleFlip() {
@@ -48,10 +45,10 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
         body: JSON.stringify({ question, answer, style }),
       })
       const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? t('error')); return }
+      if (!res.ok) { toast.error(json.error ?? "Erreur"); return }
       setExplanation(json.explanation)
     } catch {
-      toast.error(t('generationError'))
+      toast.error("Erreur lors de la génération")
     } finally {
       setExplaining(false)
     }
@@ -80,12 +77,12 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
           <div className="card-front rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
             style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
             <span className="mono text-[9px] font-medium uppercase tracking-widest"
-              style={{ color: 'var(--ink-400)' }}>{t('question')}</span>
+              style={{ color: 'var(--ink-400)' }}>{"Question"}</span>
             <p className="text-xl text-center leading-snug" style={{ color: 'var(--ink)' }}>
               {question}
             </p>
             <span className="text-[10px] mt-2" style={{ color: 'var(--ink-400)' }}>
-              {t('spaceToFlip')}
+              {"[Espace] pour retourner"}
             </span>
           </div>
 
@@ -93,7 +90,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
           <div className="card-back rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
             style={{ background: 'var(--bg-elev)', border: `1px solid ${COLOR}40`, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
             <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: COLOR }}>
-              {t('answer')}
+              {"Réponse"}
             </span>
             {explanation ? (
               <div className="text-center space-y-2">
@@ -102,7 +99,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
                 <button onClick={(e) => { e.stopPropagation(); setExplanation(null) }}
                   className="flex items-center gap-1 text-[10px] mx-auto transition-opacity hover:opacity-70"
                   style={{ color: COLOR }}>
-                  <X size={10} />{t('originalAnswer')}
+                  <X size={10} />{"Voir la réponse originale"}
                 </button>
               </div>
             ) : (
@@ -118,7 +115,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
           {showExplain ? (
             <div className="rounded-xl p-3 border" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
                 <p className="text-[9px] font-semibold uppercase tracking-widest text-center mb-2.5"
-                style={{ color: 'var(--text-4)' }}>{t('explanationStyle')}</p>
+                style={{ color: 'var(--text-4)' }}>{"Style d'explication"}</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {explainStyles.map(({ key, label, Icon }) => (
                   <button key={key} onClick={() => handleExplain(key)} disabled={explaining}
@@ -132,7 +129,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
               <button onClick={() => setShowExplain(false)}
                 className="mt-2 w-full text-[10px] text-center transition-colors hover:opacity-60"
                 style={{ color: 'var(--text-4)' }}>
-                {t('cancel')}
+                {"Annuler"}
               </button>
             </div>
           ) : (
@@ -143,12 +140,12 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
               {explaining ? (
                 <>
                   <div className="w-3 h-3 rounded-full border border-t-transparent animate-spin" style={{ borderColor: COLOR }} />
-                  {t('generating')}
+                  {"Génération…"}
                 </>
               ) : (
                 <>
                   <Lightbulb size={12} style={{ color: COLOR }} />
-                  {t('explainDifferently')}
+                  {"Expliquer autrement"}
                 </>
               )}
             </button>
@@ -160,7 +157,7 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
         <button onClick={handleFlip}
           className="px-6 py-2.5 rounded-xl text-xs transition-all hover:-translate-y-0.5"
           style={{ background: 'var(--surface)', color: 'var(--text-3)', border: '1px solid var(--border)' }}>
-          {t('flip')}
+          {"Retourner la carte"}
         </button>
       )}
     </div>

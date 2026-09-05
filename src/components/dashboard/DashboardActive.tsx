@@ -1,5 +1,4 @@
-import { Link } from '@/i18n/navigation'
-import { useFormatter, useTranslations } from 'next-intl'
+import Link from 'next/link'
 import type { DashboardData, RecentItem, ToolType } from '@/lib/dashboard/queries'
 
 // Minimum de reviews sur 30j pour afficher un % de rétention significatif
@@ -85,8 +84,7 @@ const CREATE_TOOLS = [
 ]
 
 export function DashboardActive({ data, dateLabel }: { data: DashboardData; dateLabel: string }) {
-  const t = useTranslations('dashboard')
-  const format = useFormatter()
+  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
   const { user, dueCards, dueDecks, reviewEstimateMin, todayTasks, week, upcomingExams, recentItems } = data
 
   // Determine MAINTENANT content
@@ -149,7 +147,7 @@ export function DashboardActive({ data, dateLabel }: { data: DashboardData; date
 
       {/* MAINTENANT */}
       <div style={{ ...card, borderLeft: '3px solid var(--accent)', padding: '26px 30px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={monoSm}>{t('now')}</div>
+        <div style={monoSm}>{"MAINTENANT"}</div>
         <h1 style={{ fontSize: 'clamp(20px, 3.2vw, 27px)', fontWeight: 600, letterSpacing: '-.02em', lineHeight: 1.15, color: 'var(--ink)', margin: 0 }}>
           {nowTitle}
         </h1>

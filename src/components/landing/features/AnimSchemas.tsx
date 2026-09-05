@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {useTranslations} from 'next-intl'
 const EDGES = [
   { from: "a", to: "b" }, { from: "a", to: "c" },
   { from: "b", to: "d" }, { from: "c", to: "e" },
@@ -10,12 +9,11 @@ const EDGES = [
 const SEQUENCE = [["a"], ["b", "c"], ["d", "e"]];
 
 export default function AnimSchemas() {
-  const t = useTranslations('landing.animations.schemas')
   const nodes = [
-    {id: 'a', x: 90, y: 30, label: t('revolution')},
-    {id: 'b', x: 20, y: 90, label: t('causes')},
-    {id: 'c', x: 160, y: 90, label: t('actors')},
-    {id: 'd', x: 50, y: 160, label: t('crisis')},
+    {id: 'a', x: 90, y: 30, label: "Révolution"},
+    {id: 'b', x: 20, y: 90, label: "Causes"},
+    {id: 'c', x: 160, y: 90, label: "Acteurs"},
+    {id: 'd', x: 50, y: 160, label: "Crise"},
     {id: 'e', x: 130, y: 160, label: '1789'},
   ]
   const [step, setStep] = useState(0);

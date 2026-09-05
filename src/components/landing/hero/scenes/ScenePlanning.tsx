@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Check } from "@phosphor-icons/react";
-import {useTranslations} from 'next-intl'
 const SESSIONS = [
   [{ top: 10, h: 14, c: "green", done: true }, { top: 34, h: 10, c: "blue" }, { top: 62, h: 18, c: "orange" }],
   [{ top: 8, h: 10, c: "blue" }, { top: 36, h: 16, c: "green", done: true }],
@@ -22,8 +21,7 @@ const COLOR_MAP: Record<string, string> = {
 interface Props { active: boolean }
 
 export default function ScenePlanning({ active }: Props) {
-  const t = useTranslations('landing.animations')
-  const days = (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const).map((key) => t(`planning.${key}`))
+  const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
   const [reveal, setReveal] = useState<string[]>([]);
 
   useEffect(() => {
@@ -42,10 +40,10 @@ export default function ScenePlanning({ active }: Props) {
     <>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
         <div>
-          <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 4 }}>{t('hero.planningTitle')}</div>
-          <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>{t('hero.plannedSessions')}</div>
+          <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 4 }}>{"Planning · semaine 15"}</div>
+          <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>{"Sessions prévues"}</div>
         </div>
-        <div className="mono" style={{ fontSize: 10, color: "var(--ink-400)" }}>{t('hero.plannedTime')}</div>
+        <div className="mono" style={{ fontSize: 10, color: "var(--ink-400)" }}>{"4h 20 / 7h"}</div>
       </div>
 
       <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>

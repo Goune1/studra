@@ -1,5 +1,3 @@
-import {useTranslations} from 'next-intl'
-
 type StepData = {n: string; title: string; body: string}
 
 function Step({ step }: { step: StepData }) {
@@ -17,12 +15,11 @@ function Step({ step }: { step: StepData }) {
 }
 
 export default function HowItWorks() {
-  const t = useTranslations('landing.howItWorks')
-  const steps = (['choose', 'import', 'study'] as const).map((key) => ({
-    n: t(`steps.${key}.number`),
-    title: t(`steps.${key}.title`),
-    body: t(`steps.${key}.body`),
-  }))
+  const steps: StepData[] = [
+    { n: "01", title: "Choisis ton outil.", body: "Flashcards, fiche, schéma, frise, examen blanc, dialogue socratique. Tout sort du même cours." },
+    { n: "02", title: "Colle ton cours.", body: "Texte, PDF, image ou lien YouTube. Studra lit, structure, comprend." },
+    { n: "03", title: "Révise sans réfléchir.", body: "L'algorithme te dit quoi réviser et quand. Tu ouvres l'app, tu fais ce qui apparaît." },
+  ]
 
   return (
     <section className="sec" id="methode-bref">
@@ -30,11 +27,11 @@ export default function HowItWorks() {
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 80, maxWidth: 720 }}>
           <div className="eyebrow">
             <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>{t('eyebrow')}</span>
+            <span>{"Comment ça marche"}</span>
           </div>
           <h2 className="section-h">
-            {t('title')}<br />
-            <span className="dim">{t('titleAccent')}</span>
+            {"Trois étapes."}<br />
+            <span className="dim">{"Pas plus."}</span>
           </h2>
         </div>
 

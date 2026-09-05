@@ -3,11 +3,17 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Sparkles } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { trackPaywallViewed, trackPaywallCtaClicked } from '@/lib/analytics'
 import type { GenerationTool } from './types'
 
 const COLOR = '#1F4D3F'
+const PRO_FEATURES = [
+  'Générations IA illimitées',
+  'Mode Socrate (maïeutique)',
+  "Planning d'examen personnalisé",
+  'Analyse des lacunes avancée',
+  'Toutes les futures fonctionnalités',
+]
 
 interface PaywallModalProps {
   tool: GenerationTool
@@ -16,8 +22,6 @@ interface PaywallModalProps {
 }
 
 export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
-  const t = useTranslations('dashboard.paywall.modal')
-  const tUpgrade = useTranslations('dashboard.upgrade')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -31,13 +35,13 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
       const res = await fetch('/api/billing/checkout', { method: 'POST' })
       const data = await res.json()
       if (!res.ok) {
-        toast.error(data.error ?? t('checkoutError'))
+        toast.error(data.error ?? "Erreur lors du checkout")
         setLoading(false)
         return
       }
       window.location.href = data.url
     } catch {
-      toast.error(t('error'))
+      toast.error("Une erreur est survenue")
       setLoading(false)
     }
   }
@@ -60,13 +64,13 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
             <Sparkles size={18} style={{ color: COLOR }} />
           </div>
           <div>
-            <h2 className="text-base font-semibold" style={{ color: 'var(--ink)' }}>{t('title')}</h2>
-            <p className="mt-1 text-sm" style={{ color: 'var(--ink-500)' }}>{t('subtitle')}</p>
+            <h2 className="text-base font-semibold" style={{ color: 'var(--ink)' }}>{"Tes 5 générations gratuites sont utilisées"}</h2>
+            <p className="mt-1 text-sm" style={{ color: 'var(--ink-500)' }}>{"Passe Pro pour continuer à générer sans limite."}</p>
           </div>
         </div>
 
         <ul className="flex flex-col gap-2.5 mb-5">
-          {(tUpgrade.raw('proFeatures') as string[]).map((f) => (
+          {PRO_FEATURES.map((f) => (
             <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: 'var(--ink-700)' }}>
               <span
                 className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] flex-shrink-0"
@@ -87,7 +91,7 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
         )}
 
         <p className="mb-5 text-xs" style={{ color: 'var(--ink-400)' }}>
-          {t('deleteNote')}
+          {"Supprimer tes contenus ne restaure pas tes générations."}
         </p>
 
         <div className="flex gap-2">
@@ -98,7 +102,7 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
             className="flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-colors disabled:opacity-50"
             style={{ background: 'var(--surface-2)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
           >
-            {t('cancel')}
+            {"Plus tard"}
           </button>
           <button
             type="button"
@@ -107,7 +111,7 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
             className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             style={{ background: COLOR }}
           >
-            {loading ? t('redirecting') : t('cta')}
+            {loading ? "Redirection…" : "Passer Pro"}
           </button>
         </div>
       </div>
