@@ -4,16 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { List, X } from "@phosphor-icons/react";
 import Image from "next/image";
-import {useTranslations} from 'next-intl'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 
 export default function Nav() {
-  const t = useTranslations('landing.nav')
   const links = [
-    {label: t('features'), href: '#features'},
-    {label: t('method'), href: '#methode'},
-    {label: t('pricing'), href: '#tarifs'},
-    {label: t('faq'), href: '#faq'},
+    {label: "Fonctionnalités", href: '#features'},
+    {label: "Méthode", href: '#methode'},
+    {label: "Tarifs", href: '#tarifs'},
+    {label: "FAQ", href: '#faq'},
   ]
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -114,17 +112,17 @@ export default function Nav() {
           {/* CTAs + burger */}
           <div style={{ display: "flex", gap: 4, justifyContent: "flex-end", alignItems: "center" }}>
             {loggedIn ? (
-              <Link href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{t('openApp')}</Link>
+              <Link href="/dashboard" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{"Accéder à l'app"}</Link>
             ) : (
               <>
-                <Link href="/login" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>{t('login')}</Link>
-                <Link href="/register" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{t('tryFree')}</Link>
+                <Link href="/login" className="btn btn-ghost nav-cta-desktop" style={{ padding: "10px 14px", fontSize: 14 }}>{"Se connecter"}</Link>
+                <Link href="/register" className="btn btn-primary nav-cta-desktop" style={{ padding: "10px 16px", fontSize: 14 }}>{"Essayer gratuitement"}</Link>
               </>
             )}
             <button
               ref={menuButtonRef}
               className="nav-burger"
-              aria-label={t('openMenu')}
+              aria-label={"Ouvrir le menu"}
               aria-expanded={open}
               aria-controls="mobile-navigation"
               onClick={() => setOpen(true)}
@@ -144,7 +142,7 @@ export default function Nav() {
             id="mobile-navigation"
             role="dialog"
             aria-modal="true"
-            aria-label={t('mainNavigation')}
+            aria-label={"Navigation principale"}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -161,7 +159,7 @@ export default function Nav() {
                 <Image src="/studra-logo.png" alt="Studra" width={40} height={40} />
                 <span>Studra</span>
               </Link>
-              <button ref={closeButtonRef} aria-label={t('closeMenu')} onClick={() => setOpen(false)} style={{ appearance: "none", border: 0, background: "transparent", padding: 8, color: "var(--ink)", cursor: "pointer", borderRadius: 8 }}>
+              <button ref={closeButtonRef} aria-label={"Fermer le menu"} onClick={() => setOpen(false)} style={{ appearance: "none", border: 0, background: "transparent", padding: 8, color: "var(--ink)", cursor: "pointer", borderRadius: 8 }}>
                 <X size={24} />
               </button>
             </div>
@@ -184,11 +182,11 @@ export default function Nav() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 0 24px" }}>
               {loggedIn ? (
-                <Link href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('openApp')}</Link>
+                <Link href="/dashboard" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{"Accéder à l'app"}</Link>
               ) : (
                 <>
-                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('login')}</Link>
-                  <Link href="/register" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{t('tryFree')}</Link>
+                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{"Se connecter"}</Link>
+                  <Link href="/register" className="btn btn-primary" style={{ width: "100%", padding: 16, justifyContent: "center" }}>{"Essayer gratuitement"}</Link>
                 </>
               )}
             </div>

@@ -1,36 +1,16 @@
-import createMiddleware from 'next-intl/middleware'
-import type {NextRequest} from 'next/server'
-import {
-  getPathnameLocale,
-  getPathnameWithoutLocale,
-  shouldHandleI18n,
-} from '@/i18n/pathname'
-import {routing} from '@/i18n/routing'
-import {
-  mergeSessionCookies,
-  updateSession,
-} from '@/lib/supabase/middleware'
-
-const handleI18nRouting = createMiddleware(routing)
+import {NextResponse, type NextRequest} from 'next/server'
+import {stripLegacyLocalePrefix} from '@/lib/route-access'
+import {updateSession} from '@/lib/supabase/middleware'
 
 export async function proxy(request: NextRequest) {
-  const pathnameLocale = getPathnameLocale(request.nextUrl.pathname)
-  const {pathname} = getPathnameWithoutLocale(request.nextUrl.pathname)
-  const {response: sessionResponse} = await updateSession(request, {
-    pathnameLocale,
-    pathname,
-  })
-
-  if (sessionResponse.headers.has('location')) {
-    return sessionResponse
+  const frenchPathname = stripLegacyLocalePrefix(request.nextUrl.pathname)
+  if (frenchPathname) {
+    const url = request.nextUrl.clone()
+    url.pathname = frenchPathname
+    return NextResponse.redirect(url, 308)
   }
 
-  if (!shouldHandleI18n(request.nextUrl.pathname)) {
-    return sessionResponse
-  }
-
-  const i18nResponse = handleI18nRouting(request)
-  return mergeSessionCookies(sessionResponse, i18nResponse)
+  return (await updateSession(request)).response
 }
 
 export const config = {

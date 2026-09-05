@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
 import type { SchemaEdge, SchemaNode, SchemaViewport } from '@/types'
 import { Edge } from './Edge'
 import { Node } from './Node'
@@ -71,7 +70,6 @@ export function Canvas({
   onCanvasDoubleClick,
   onExitConnectionMode,
 }: CanvasProps) {
-  const t = useTranslations('components.schema')
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 })
   const [draggingIds, setDraggingIds] = useState<string[] | null>(null)
@@ -461,7 +459,7 @@ export function Canvas({
                 highlighted={v.highlighted}
                 onLabelDoubleClick={(id) => {
                   const current = edges.find((e) => e.id === id)?.label ?? ''
-                  const next = window.prompt(t('relationLabel'), current)
+                  const next = window.prompt("Libellé de la relation", current)
                   if (next != null) onRenameEdge(id, next.trim() || null)
                 }}
               />
@@ -527,7 +525,7 @@ export function Canvas({
             pointerEvents: 'none',
           }}
         >
-          {t('selectTarget')} · {t('escapeCancel')}
+          {"Sélectionnez un nœud cible"} · {"Échap pour annuler"}
         </div>
       ) : null}
 

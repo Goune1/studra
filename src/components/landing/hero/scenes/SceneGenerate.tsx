@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {useTranslations} from 'next-intl'
-
 const CARD_KEYS = ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'] as const
+const CARDS = ["Quels sont les états généraux ?", "Date de la prise de la Bastille ?", "Qui était le ministre des finances en 1789 ?", "Qu'est-ce que le tiers état ?", "Pourquoi convoquer les états généraux ?", "Qu'apporte la nuit du 4 août 1789 ?"]
 
 interface Props { active: boolean }
 
 export default function SceneGenerate({ active }: Props) {
-  const t = useTranslations('landing.animations.hero')
-  const cards = CARD_KEYS.map((key) => t(key))
+  const cards = CARDS
   const [revealed, setRevealed] = useState(CARD_KEYS.map(() => false));
 
   useEffect(() => {
@@ -27,8 +25,8 @@ export default function SceneGenerate({ active }: Props) {
   return (
     <>
       <div style={{ marginBottom: 10, flexShrink: 0 }}>
-        <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 3 }}>{t('generateTitle')}</div>
-        <div className="gen-scene-title" style={{ fontSize: 15, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>{t('generatedCards', {count: 22})}</div>
+        <div className="mono" style={{ fontSize: 10, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink-400)", marginBottom: 3 }}>{"Génération"}</div>
+        <div className="gen-scene-title" style={{ fontSize: 15, fontWeight: 500, letterSpacing: "-.02em", color: "var(--ink)" }}>22 cartes — Révolution française</div>
       </div>
 
       {/*
@@ -57,7 +55,7 @@ export default function SceneGenerate({ active }: Props) {
               <>
                 <div className="mono" style={{ fontSize: 9, color: "var(--ink-400)", letterSpacing: ".1em" }}>{String(i + 1).padStart(2, "0")}</div>
                 <div style={{ fontSize: 11, lineHeight: 1.35, color: "var(--ink)", fontWeight: 450, flex: 1 }}>{q}</div>
-                <div className="mono" style={{ fontSize: 8.5, color: "var(--accent)", background: "var(--accent-soft)", padding: "2px 6px", borderRadius: 999, alignSelf: "flex-start", textTransform: "uppercase", letterSpacing: ".1em" }}>{t('history')}</div>
+                <div className="mono" style={{ fontSize: 8.5, color: "var(--accent)", background: "var(--accent-soft)", padding: "2px 6px", borderRadius: 999, alignSelf: "flex-start", textTransform: "uppercase", letterSpacing: ".1em" }}>{"Histoire"}</div>
               </>
             )}
           </div>

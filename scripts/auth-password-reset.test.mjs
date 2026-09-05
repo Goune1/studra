@@ -7,14 +7,11 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 const forgot = read('src/app/api/auth/forgot-password/route.ts')
 const reset = read('src/app/api/auth/reset-password/route.ts')
 const resend = read('src/lib/resend.ts')
-const loginClient = read('src/app/[locale]/(auth)/login/page-client.tsx')
+const loginClient = read('src/app/(auth)/login/page-client.tsx')
 
 test('forgot-password ne révèle jamais l’existence d’un compte', () => {
-  // Aucun status 404 / message "compte introuvable" : tous les chemins nominaux
-  // retournent la même réponse générique.
   assert.doesNotMatch(forgot, /introuvable|n'existe pas|not found/i)
   assert.match(forgot, /GENERIC_OK/)
-  // Le seul status d'erreur autorisé est le rate limit et le mail invalide reste silencieux.
   const statuses = [...forgot.matchAll(/status:\s*(\d{3})/g)].map((m) => m[1])
   assert.deepEqual([...new Set(statuses)], ['429'])
 })
@@ -29,10 +26,11 @@ test('forgot-password génère un lien recovery côté service role', () => {
   assert.match(forgot, /hashed_token/)
 })
 
-test('le lien de reset est localisé et porte le token_hash', () => {
-  assert.match(forgot, /getLocalizedPathname\('\/reset-password',\s*locale\)/)
+test('le lien de reset français porte le token_hash', () => {
+  assert.match(forgot, /new URL\('\/reset-password', APP_URL\)/)
   assert.match(forgot, /searchParams\.set\('token_hash'/)
   assert.match(forgot, /searchParams\.set\('type',\s*'recovery'\)/)
+  assert.doesNotMatch(forgot, /getLocalizedPathname|locale/)
 })
 
 test('le token n’est jamais renvoyé au client', () => {
@@ -62,11 +60,12 @@ test('le template email de reset existe et utilise l’URL d’action', () => {
   assert.match(resend, /export async function sendPasswordResetEmail/)
 })
 
-test('les emails existants continuent de pointer vers le dashboard', () => {
-  assert.match(resend, /const url = actionUrl \?\? localizedDashboardUrl\(locale\)/)
+test('les emails existants continuent de pointer vers le dashboard français', () => {
+  assert.match(resend, /const url = actionUrl \?\? dashboardUrl\(\)/)
+  assert.match(resend, /new URL\('\/dashboard', APP_URL\)/)
 })
 
-test('la page de connexion expose le lien mot de passe oublié', () => {
+test('la page de connexion française expose le lien mot de passe oublié', () => {
   assert.match(loginClient, /href="\/forgot-password"/)
-  assert.match(loginClient, /t\('forgotPassword'\)/)
+  assert.match(loginClient, /Mot de passe oublié \?/)
 })

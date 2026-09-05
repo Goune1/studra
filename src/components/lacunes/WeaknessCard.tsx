@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link } from '@/i18n/navigation'
-import { useFormatter, useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { ChevronDown, BookOpen, MessagesSquare } from 'lucide-react'
 import type { MockCard } from '@/lib/lacunes/mock'
 
@@ -20,8 +19,7 @@ interface WeaknessCardProps {
 }
 
 export function WeaknessCard({ card, index }: WeaknessCardProps) {
-  const t = useTranslations('dashboard.lacunes')
-  const format = useFormatter()
+  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
   const [open, setOpen] = useState(false)
   const color = failColor(card.failRate)
   const correct = card.attempts.filter(Boolean).length
@@ -57,7 +55,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
               className="mono text-xs hidden sm:block tabular-nums"
               style={{ color: 'var(--ink-400)' }}
             >
-              {wrong}/{card.attempts.length} {t('review')}
+              {wrong}/{card.attempts.length} {"À retravailler"}
             </span>
             <ChevronDown
               size={16}
@@ -90,7 +88,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
           {/* Attempt timeline */}
           <div>
             <p className="mono text-[10px] uppercase tracking-widest mb-2" style={{ color: 'var(--ink-400)' }}>
-              {t('sessions')}
+              {"Sessions analysées"}
             </p>
             <div className="flex items-center gap-2">
               {card.attempts.map((ok, i) => (
@@ -121,7 +119,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
               style={{ background: COLOR + '12', border: `1px solid ${COLOR}30`, color: COLOR }}
             >
               <BookOpen size={12} />
-              {t('review')}
+              {"À retravailler"}
             </Link>
             <Link
               href="/socrate/new"
@@ -129,13 +127,13 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
               style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink-700)' }}
             >
               <MessagesSquare size={12} />
-              {t('socrate')}
+              {"Mode Socrate"}
             </Link>
           </div>
 
           {/* Last seen */}
           <p className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-            {t('lastSeen', {date: format.dateTime(new Date(card.lastSeen), {day: 'numeric', month: 'short', year: 'numeric'})})}
+            {`Vu pour la dernière fois : ${format.dateTime(new Date(card.lastSeen), {day: 'numeric', month: 'short', year: 'numeric'})}`}
           </p>
         </div>
       </div>

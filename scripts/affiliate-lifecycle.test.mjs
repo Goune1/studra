@@ -40,7 +40,7 @@ test('l’attribution email reste pending avant vérification puis devient quali
 })
 
 test('les affiliés ne peuvent modifier que leurs coordonnées via des RPC étroites', () => {
-  const actions = source('src/app/[locale]/(dashboard)/affiliate/actions.ts')
+  const actions = source('src/app/(dashboard)/affiliate/actions.ts')
   assert.match(actions, /rpc\('register_affiliate'/)
   assert.match(actions, /rpc\('update_affiliate_payment_method'/)
   assert.doesNotMatch(actions, /from\('affiliates'\)\.insert/)

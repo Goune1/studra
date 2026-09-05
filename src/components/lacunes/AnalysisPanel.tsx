@@ -9,7 +9,6 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { ScoreRing } from './ScoreRing'
-import { useTranslations } from 'next-intl'
 import type { LacunesAnalysis } from '@/lib/lacunes/mock'
 import type { MockStats } from '@/lib/lacunes/mock'
 
@@ -29,7 +28,6 @@ interface AnalysisPanelProps {
 }
 
 export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProps) {
-  const t = useTranslations('dashboard.lacunes')
   const weakCount = stats.weakPoints
   const masteredCount = totalCards - weakCount
 
@@ -49,11 +47,11 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
             className="mono text-[10px] font-semibold uppercase tracking-widest"
             style={{ color: COLOR }}
           >
-            {t('analysis')}
+            {"Analyse"}
           </span>
         </div>
         <h2 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>
-          {t('diagnosis')}
+          {"Diagnostic"}
         </h2>
       </div>
 
@@ -102,7 +100,7 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
           className="mono text-[10px] font-semibold uppercase tracking-widest mb-3"
           style={{ color: 'var(--ink-400)' }}
         >
-          {t('recommendation')}
+          {"Conseils ciblés"}
         </p>
 
         {analysis.conseils.map((conseil, i) => {

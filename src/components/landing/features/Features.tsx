@@ -3,8 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
-import {useTranslations} from 'next-intl'
-import {Link} from '@/i18n/navigation'
+import Link from 'next/link'
 import AnimFlashcards from "./AnimFlashcards";
 import AnimSocrate from "./AnimSocrate";
 import AnimFiches from "./AnimFiches";
@@ -24,20 +23,19 @@ function CardHeader({ label, title, body }: { label: string; title: string; body
 }
 
 const CARDS = [
-  { key: 'flashcards', span: 2, Anim: AnimFlashcards },
-  { key: 'socrate', span: 1, Anim: AnimSocrate },
-  { key: 'fiches', span: 1, Anim: AnimFiches },
-  { key: 'schemas', span: 1, Anim: AnimSchemas },
-  { key: 'exams', span: 1, Anim: AnimExam },
-  { key: 'planning', span: 2, Anim: AnimPlanning },
-  { key: 'recall', span: 1, Anim: AnimRappel },
+  { key: 'flashcards', label: 'Mémorisation', title: 'Flashcards', body: "Espace les révisions au bon moment. Ce que tu commences à oublier revient en premier.", span: 2, Anim: AnimFlashcards },
+  { key: 'socrate', label: 'Dialogue', title: 'Mode Socrate', body: "Une IA qui pose les bonnes questions, jusqu'à ce que tu expliques vraiment.", span: 1, Anim: AnimSocrate },
+  { key: 'fiches', label: 'Structure', title: 'Fiches', body: "Un résumé propre, hiérarchisé, exportable. Pas un mur de surlignage.", span: 1, Anim: AnimFiches },
+  { key: 'schemas', label: 'Visuel', title: 'Schémas', body: "Concepts, liens, dépendances. Lisible d'un coup d'œil.", span: 1, Anim: AnimSchemas },
+  { key: 'exams', label: 'Évaluation', title: 'Examens blancs', body: "Sujets adaptés, correction détaillée, note sur 20.", span: 1, Anim: AnimExam },
+  { key: 'planning', label: 'Organisation', title: 'Planning', body: "L'algorithme décide quand. Toi, tu ouvres l'app et tu fais ce qui apparaît.", span: 2, Anim: AnimPlanning },
+  { key: 'recall', label: 'Rappel actif', title: 'Rappel libre', body: "Écris tout ce que tu sais. Studra compare avec le cours et te montre les trous.", span: 1, Anim: AnimRappel },
 ] as const;
 
 function BentoCard({ card, index }: { card: (typeof CARDS)[number]; index: number }) {
-  const t = useTranslations('landing.features')
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  const {key, span, Anim} = card;
+  const {label, title, body, span, Anim} = card;
 
   return (
     <motion.div
@@ -58,14 +56,13 @@ function BentoCard({ card, index }: { card: (typeof CARDS)[number]; index: numbe
       }}
       className={span === 2 ? "bento-span2-responsive" : ""}
     >
-      <CardHeader label={t(`cards.${key}.label`)} title={t(`cards.${key}.title`)} body={t(`cards.${key}.body`)} />
+      <CardHeader label={label} title={title} body={body} />
       <Anim />
     </motion.div>
   );
 }
 
 export default function Features() {
-  const t = useTranslations('landing.features')
   const headRef = useRef(null);
   const headInView = useInView(headRef, { once: true, margin: "-80px" });
 
@@ -81,11 +78,11 @@ export default function Features() {
         >
           <div className="eyebrow">
             <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>{t('eyebrow')}</span>
+            <span>{"Fonctionnalités"}</span>
           </div>
           <h2 className="section-h">
-            {t('title')}<br />
-            <span className="dim">{t('titleAccent')}</span>
+            {"Un cours."}<br />
+            <span className="dim">{"Sept manières de le réviser."}</span>
           </h2>
         </motion.div>
 
@@ -95,7 +92,7 @@ export default function Features() {
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
           <Link href="/blog" className="btn btn-outline">
-            {t('guides')} <ArrowRight size={14} />
+            {"Lire les guides de révision"} <ArrowRight size={14} />
           </Link>
         </div>
       </div>

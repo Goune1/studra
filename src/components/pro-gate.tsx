@@ -1,6 +1,5 @@
 import { Lock, Check } from 'lucide-react'
-import { Link } from '@/i18n/navigation'
-import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import type { Profile } from '@/types'
 
 interface ProGateProps {
@@ -9,13 +8,12 @@ interface ProGateProps {
 }
 
 export function ProGate({ profile, children }: ProGateProps) {
-  const t = useTranslations('common.proGate')
   if (profile.plan === 'pro') return <>{children}</>
 
   const features = [
-    t('features.generations'),
-    t('features.socrate'),
-    t('features.gaps'),
+    "Générations illimitées",
+    "Mode Socrate — apprentissage par dialogue",
+    "Analyse des lacunes — coaching IA personnalisé",
   ]
 
   return (
@@ -28,13 +26,13 @@ export function ProGate({ profile, children }: ProGateProps) {
           <Lock size={22} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden="true" />
         </div>
 
-        <h2 className="section-h">{t('title')}</h2>
+        <h2 className="section-h">{"Fonctionnalité Pro"}</h2>
 
         <p
           className="mx-auto mt-4 max-w-md text-[17px] leading-relaxed"
           style={{ color: 'var(--ink-700)' }}
         >
-          {t('description')}
+          {"Cette section est réservée aux membres Pro. Débloquez toutes les fonctionnalités avancées."}
         </p>
 
         <ul className="mx-auto mt-8 flex max-w-sm flex-col gap-3 text-left">
@@ -56,7 +54,7 @@ export function ProGate({ profile, children }: ProGateProps) {
         </ul>
 
         <Link href="/upgrade" className="btn btn-primary btn-lg mt-8 w-full sm:w-auto">
-          {t('cta')}
+          {"Passer en Pro — 4,99€/mois"}
         </Link>
       </div>
     </div>

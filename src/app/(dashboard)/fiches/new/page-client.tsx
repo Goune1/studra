@@ -1,0 +1,84 @@
+'use client'
+
+import { useState } from 'react'
+import { ContentInputForm } from '@/components/content-input-form'
+import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
+import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
+import { toast } from 'sonner'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+import { trackFichesGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
+import { PaywallBanner } from '@/components/paywall/PaywallBanner'
+import { PaywallModal } from '@/components/paywall/PaywallModal'
+
+const ALSO_OPTIONS: AlsoKey[] = ['flashcards', 'schema', 'exam', 'timeline']
+
+interface Props {
+  showPaywall: boolean
+  price: string | null
+}
+
+export default function NewFichePage({ showPaywall, price }: Props) {
+  const [loading, setLoading] = useState(false)
+  const [also, setAlso] = useState<Set<AlsoKey>>(new Set())
+  const [results, setResults] = useState<GeneratedResource[] | null>(null)
+  const [paywallOpen, setPaywallOpen] = useState(false)
+
+  function toggleAlso(key: AlsoKey) {
+    setAlso((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  async function handleGenerate(data: { title: string; subject: string; content: string; language: string }) {
+    if (showPaywall) {
+      setPaywallOpen(true)
+      return
+    }
+    setLoading(true)
+    trackFichesGenerate(data.subject || data.title, data.title)
+    const startedAt = Date.now()
+    try {
+      const { primary, also: alsoRes } = await generateWithAlso('fiche', [...also], data, toast.error)
+      if (!primary.ok) {
+        trackAIGenerationError('fiches', 'generation_failed')
+        toast.error("Erreur lors de la génération de la fiche")
+        return
+      }
+      trackAIGenerationSuccess('fiches', Date.now() - startedAt)
+      toast.success("Fiche générée avec succès !")
+      setResults(buildResources('fiche', primary.id!, alsoRes))
+    } catch {
+      trackAIGenerationError('fiches', 'exception')
+      toast.error("Une erreur est survenue")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (results) return <GenerationResultsScreen resources={results} newPath="/fiches/new" newLabel={"Créer une autre fiche"} />
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      {showPaywall && <PaywallBanner tool="fiches" />}
+      <div className="mb-8">
+        <Eyebrow className="mb-2">{"Fiches"}</Eyebrow>
+        <h1 className="section-h">{"Nouvelle fiche"}</h1>
+        <p className="lede mt-3">{"Colle ton cours, l'IA génère ta fiche de révision."}</p>
+      </div>
+      <div className="app-card p-8">
+        <ContentInputForm
+          onSubmit={handleGenerate}
+          submitLabel={also.size > 0 ? `✨ Générer la fiche + ${also.size} ${also.size === 1 ? 'autre' : 'autres'}` : '✨ Générer la fiche'}
+          titlePlaceholder={"Ex : Chapitre 3 - La photosynthèse"}
+          contentPlaceholder={"Colle ici le contenu de ton cours, tes notes, ou tout texte à résumer..."}
+          loading={loading}
+          extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
+        />
+      </div>
+      {paywallOpen && <PaywallModal tool="fiches" price={price} onClose={() => setPaywallOpen(false)} />}
+    </div>
+  )
+}
