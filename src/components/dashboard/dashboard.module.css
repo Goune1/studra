@@ -1,0 +1,608 @@
+.dashboard {
+  --dashboard-font: var(--font-dashboard), ui-sans-serif, system-ui, sans-serif;
+  width: min(100%, 960px);
+  margin: 0 auto;
+  color: var(--ink);
+  font-family: var(--dashboard-font);
+}
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ink-200);
+}
+
+.date {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  text-transform: lowercase;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-500);
+  font-size: 12px;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  border-radius: 7px;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.primaryAction {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.primaryAction:hover {
+  background: #173d32;
+}
+
+.primaryAction:active,
+.secondaryAction:active {
+  transform: translateY(1px);
+}
+
+.secondaryAction {
+  border: 1px solid var(--ink-200);
+  color: var(--ink-700);
+}
+
+.secondaryAction:hover {
+  border-color: var(--ink-400);
+  color: var(--ink);
+}
+
+.kicker,
+.sectionTitle {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.emptyTitle {
+  margin: 10px 0 0;
+  color: var(--ink);
+  font-size: clamp(30px, 4.6vw, 48px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.emptySubtitle {
+  margin: 15px 0 0;
+  color: var(--ink-500);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.emptyIntro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.65fr);
+  gap: 64px;
+  padding: 52px 0 44px;
+}
+
+.emptyAside {
+  align-self: end;
+  padding-left: 22px;
+  border-left: 1px solid var(--ink-200);
+}
+
+.emptyAside p {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.importer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 40px;
+  padding: 30px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink-200);
+}
+
+.importerTitle {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.importerText {
+  max-width: 560px;
+  margin: 8px 0 22px;
+  color: var(--ink-500);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.importOptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 22px;
+}
+
+.importOption {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 46px;
+  border-top: 1px solid var(--ink-200);
+  color: var(--ink-700);
+  font-size: 13.5px;
+  text-decoration: none;
+  transition: color 150ms ease, padding-left 180ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.importOption:hover {
+  padding-left: 5px;
+  color: var(--accent);
+}
+
+.importOption svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.importAction {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.example {
+  color: var(--ink-500);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.example a {
+  color: var(--ink-700);
+  text-underline-offset: 3px;
+}
+
+.deadline {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--ink-200);
+}
+
+.deadline p {
+  margin: 0;
+  color: var(--ink-700);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dashboardIntro {
+  padding: 40px 0 26px;
+}
+
+.dashboardTitle {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(30px, 4.6vw, 46px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.dashboardSummary {
+  margin: 12px 0 0;
+  color: var(--ink-500);
+  font-size: 15px;
+}
+
+.workGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(245px, 0.75fr);
+  gap: 14px;
+}
+
+.nextCard,
+.examCard,
+.queueCard,
+.supportCard {
+  background: var(--bg-elev);
+  border: 1px solid var(--ink-200);
+  border-radius: 12px;
+}
+
+.nextCard {
+  overflow: hidden;
+  box-shadow: 0 18px 40px -34px rgba(24, 24, 27, 0.5);
+}
+
+.cardTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 42px;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--ink-200);
+  color: var(--ink-500);
+  font-size: 12px;
+}
+
+.cardTopline span:first-child {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.nextCardBody {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  padding: 27px 22px 29px;
+}
+
+.activityMark {
+  display: inline-flex;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+.nextCopy h2,
+.examCard h2,
+.queueHeading h2 {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.nextCopy h2 {
+  font-size: clamp(21px, 3vw, 28px);
+  line-height: 1.15;
+}
+
+.nextCopy p {
+  margin: 8px 0 0;
+  color: var(--ink-500);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.nextCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 68px;
+  padding: 11px 14px 11px 22px;
+  border-top: 1px solid var(--ink-200);
+  background: #fcfcfb;
+}
+
+.nextCardFooter > span {
+  color: var(--ink-500);
+  font-size: 12px;
+}
+
+.examCard {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  padding: 21px;
+}
+
+.examCardIcon {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-bottom: 30px;
+  color: var(--accent);
+}
+
+.cardLabel {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.examCard h2 {
+  margin-top: 7px;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.examCountdown {
+  margin: auto 0 11px;
+  color: var(--ink);
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.examFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 9px;
+  color: var(--ink-500);
+  font-size: 11px;
+}
+
+.examFooter a,
+.inlineLink {
+  color: var(--ink-700);
+  text-underline-offset: 3px;
+}
+
+.examEmpty {
+  margin: 14px 0 22px;
+  color: var(--ink-500);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  font-size: 13px;
+}
+
+.queueCard {
+  margin-top: 14px;
+  overflow: hidden;
+}
+
+.queueHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+}
+
+.queueHeading h2 {
+  margin-top: 5px;
+  font-size: 18px;
+}
+
+.queueHeading > span {
+  color: var(--ink-500);
+  font-size: 12px;
+}
+
+.queueRows {
+  border-top: 1px solid var(--ink-200);
+}
+
+.queueRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  min-height: 62px;
+  padding: 9px 22px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.queueRow + .queueRow {
+  border-top: 1px solid var(--ink-200);
+}
+
+.queueRow:hover {
+  background: #fafaf8;
+}
+
+.queueRow strong,
+.queueRow small {
+  display: block;
+}
+
+.queueRow strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.queueRow small {
+  margin-top: 3px;
+  color: var(--ink-500);
+  font-size: 12px;
+}
+
+.queueMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-500);
+  font-size: 12.5px;
+}
+
+.supportCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
+  margin-top: 14px;
+  overflow: hidden;
+}
+
+.rhythmBlock,
+.toolsBlock {
+  padding: 21px 22px;
+}
+
+.toolsBlock {
+  border-left: 1px solid var(--ink-200);
+}
+
+.rhythmSentence {
+  margin: 9px 0 0;
+  color: var(--ink-700);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.rhythmSentence strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.boxedTools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.boxedTool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--ink-200);
+  border-radius: 6px;
+  color: var(--ink-700);
+  font-size: 12px;
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.boxedTool:hover {
+  border-color: rgba(31, 77, 63, 0.45);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .dashboard {
+    width: 100%;
+  }
+
+  .masthead {
+    padding-bottom: 14px;
+  }
+
+  .dashboardIntro {
+    padding: 34px 0 22px;
+  }
+
+  .workGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .nextCardBody {
+    padding: 24px 18px 26px;
+  }
+
+  .cardTopline {
+    padding: 0 18px;
+  }
+
+  .nextCardFooter {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 14px 18px 18px;
+  }
+
+  .nextCardFooter .primaryAction {
+    width: 100%;
+  }
+
+  .examCardIcon {
+    margin-bottom: 18px;
+  }
+
+  .examCountdown {
+    margin-top: 28px;
+  }
+
+  .queueHeading {
+    padding: 18px;
+  }
+
+  .queueRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+    padding: 13px 18px;
+  }
+
+  .queueMeta {
+    padding-left: 0;
+  }
+
+  .supportCard {
+    grid-template-columns: 1fr;
+  }
+
+  .toolsBlock {
+    border-top: 1px solid var(--ink-200);
+    border-left: 0;
+  }
+
+  .emptyIntro {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 38px 0 34px;
+  }
+
+  .emptyAside {
+    padding: 0;
+    border-left: 0;
+  }
+
+  .importer {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .importOptions {
+    grid-template-columns: 1fr;
+  }
+
+  .deadline {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .deadline .secondaryAction {
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction,
+  .secondaryAction,
+  .importOption,
+  .queueRow,
+  .boxedTool {
+    transition: none;
+  }
+}
