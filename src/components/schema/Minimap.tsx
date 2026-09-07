@@ -1,7 +1,6 @@
 'use client'
 
 import { memo, useRef } from 'react'
-import { useTranslations } from 'next-intl'
 import type { SchemaNode, SchemaViewport } from '@/types'
 import { NODE_DEFAULT_H, NODE_DEFAULT_W, getNodeRect, unionRect } from './utils/geometry'
 
@@ -17,7 +16,6 @@ const MINIMAP_H = 120
 const PADDING = 160
 
 function MinimapImpl({ nodes, viewport, containerSize, onRecenter }: MinimapProps) {
-  const t = useTranslations('components.schema')
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   if (containerSize.w === 0 || containerSize.h === 0) {
@@ -57,7 +55,7 @@ function MinimapImpl({ nodes, viewport, containerSize, onRecenter }: MinimapProp
   }
 
   return (
-    <svg aria-label={t('showMinimap')}
+    <svg aria-label={"Afficher la minimap"}
       ref={svgRef}
       width={MINIMAP_W}
       height={MINIMAP_H}

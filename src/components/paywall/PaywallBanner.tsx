@@ -1,14 +1,11 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Link } from '@/i18n/navigation'
-import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { trackPaywallViewed, trackPaywallCtaClicked } from '@/lib/analytics'
 import type { GenerationTool } from './types'
 
 export function PaywallBanner({ tool }: { tool: GenerationTool }) {
-  const t = useTranslations('dashboard.paywall.banner')
-
   useEffect(() => {
     trackPaywallViewed(tool, 'banner')
   }, [tool])
@@ -19,7 +16,7 @@ export function PaywallBanner({ tool }: { tool: GenerationTool }) {
       style={{ background: 'var(--accent-soft)', border: '1px solid rgba(31,77,63,0.25)' }}
     >
       <p className="text-sm" style={{ color: 'var(--accent)' }}>
-        {t('text')}
+        {"Tes 5 générations gratuites du mois sont épuisées."}
       </p>
       <Link
         href="/upgrade"
@@ -27,7 +24,7 @@ export function PaywallBanner({ tool }: { tool: GenerationTool }) {
         className="text-sm font-semibold whitespace-nowrap transition-colors"
         style={{ color: 'var(--accent)' }}
       >
-        {t('cta')} →
+        {"Voir l'offre Pro"} →
       </Link>
     </div>
   )

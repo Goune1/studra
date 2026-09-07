@@ -1,5 +1,4 @@
 import {Resend} from 'resend'
-import {defaultLocale, getLocalizedPathname, type AppLocale} from '@/i18n/pathname'
 
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -18,10 +17,7 @@ type TransactionalEmailTemplateSet = {
   passwordReset: TransactionalEmailTemplate
 }
 
-// Other locales intentionally fall back to French until their copy is validated.
-// This keeps transactional templates separate from the next-intl UI catalog.
-const transactionalEmailTemplates: Partial<Record<AppLocale, TransactionalEmailTemplateSet>> = {
-  fr: {
+const transactionalEmailTemplates: TransactionalEmailTemplateSet = {
     welcome: {
       subject: 'Bienvenue sur Studra 👋',
       body: (dashboardUrl) => `
@@ -93,7 +89,6 @@ const transactionalEmailTemplates: Partial<Record<AppLocale, TransactionalEmailT
         </p>
       `,
     },
-  },
 }
 
 function emailButton(href: string, label: string): string {
@@ -108,89 +103,35 @@ function emailButton(href: string, label: string): string {
   </table>`
 }
 
-function getTemplateSet(locale: AppLocale): {
-  contentLocale: AppLocale
-  templates: TransactionalEmailTemplateSet
-} {
-  const templates = transactionalEmailTemplates[locale] ?? transactionalEmailTemplates.fr!
-  return {
-    contentLocale: transactionalEmailTemplates[locale] ? locale : defaultLocale,
-    templates,
-  }
+function dashboardUrl(): string {
+  return new URL('/dashboard', APP_URL).toString()
 }
 
-function localizedDashboardUrl(locale: AppLocale): string {
-  return new URL(getLocalizedPathname('/dashboard', locale), APP_URL).toString()
+function baseLayout(content: string): string {
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Studra</title></head><body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;"><tr><td align="center"><table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;"><tr><td style="background:#1a1a2e;padding:28px 40px;"><span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">Studra</span></td></tr><tr><td style="padding:40px;">${content}</td></tr><tr><td style="background:#f4f4f5;padding:20px 40px;text-align:center;"><p style="margin:0;font-size:12px;color:#6b7280;">© ${new Date().getFullYear()} Studra · <a href="${APP_URL}" style="color:#6b7280;">studra.fr</a></p></td></tr></table></td></tr></table></body></html>`
 }
 
-function baseLayout(content: string, locale: AppLocale): string {
-  return `<!DOCTYPE html>
-<html lang="${locale}">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studra</title>
-</head>
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;">
-    <tr>
-      <td align="center">
-        <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
-          <tr>
-            <td style="background:#1a1a2e;padding:28px 40px;">
-              <span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">Studra</span>
-            </td>
-          </tr>
-          <tr><td style="padding:40px;">${content}</td></tr>
-          <tr>
-            <td style="background:#f4f4f5;padding:20px 40px;text-align:center;">
-              <p style="margin:0;font-size:12px;color:#6b7280;">
-                © ${new Date().getFullYear()} Studra · <a href="${APP_URL}" style="color:#6b7280;">studra.fr</a>
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`
+async function sendTransactionalEmail(to: string, templateName: keyof TransactionalEmailTemplateSet, actionUrl?: string) {
+  const template = transactionalEmailTemplates[templateName]
+  const url = actionUrl ?? dashboardUrl()
+  return resend.emails.send({from: FROM, to, subject: template.subject, html: baseLayout(template.body(url))})
 }
 
-async function sendTransactionalEmail(
-  to: string,
-  locale: AppLocale,
-  templateName: keyof TransactionalEmailTemplateSet,
-  actionUrl?: string,
-) {
-  const {contentLocale, templates} = getTemplateSet(locale)
-  const template = templates[templateName]
-  const url = actionUrl ?? localizedDashboardUrl(locale)
-
-  return resend.emails.send({
-    from: FROM,
-    to,
-    subject: template.subject,
-    html: baseLayout(template.body(url), contentLocale),
-  })
+export async function sendWelcomeEmail(to: string) {
+  return sendTransactionalEmail(to, 'welcome')
 }
 
-export async function sendWelcomeEmail(to: string, locale: AppLocale = defaultLocale) {
-  return sendTransactionalEmail(to, locale, 'welcome')
+export async function sendWelcomeProEmail(to: string) {
+  return sendTransactionalEmail(to, 'welcomePro')
 }
 
-export async function sendWelcomeProEmail(to: string, locale: AppLocale = defaultLocale) {
-  return sendTransactionalEmail(to, locale, 'welcomePro')
-}
-
-export async function sendSubscriptionCancelledEmail(to: string, locale: AppLocale = defaultLocale) {
-  return sendTransactionalEmail(to, locale, 'subscriptionCancelled')
+export async function sendSubscriptionCancelledEmail(to: string) {
+  return sendTransactionalEmail(to, 'subscriptionCancelled')
 }
 
 export async function sendPasswordResetEmail(
   to: string,
-  resetUrl: string,
-  locale: AppLocale = defaultLocale,
+  resetUrl: string
 ) {
-  return sendTransactionalEmail(to, locale, 'passwordReset', resetUrl)
+  return sendTransactionalEmail(to, 'passwordReset', resetUrl)
 }

@@ -7,7 +7,7 @@ import {
   refundGenerationCredit,
   QUOTA_EXCEEDED_ERROR,
 } from '@/lib/generation-quota'
-import { resolveContentLanguage, resolveServerLocale } from '@/i18n/server-locale'
+
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -31,8 +31,7 @@ export async function POST(request: Request) {
   // Check generation limit
   const body = await request.json()
   const { title, subject, content, language, isPublic = false } = body as { title: string; subject: string; content: string; language?: string; isPublic?: boolean }
-  const locale = resolveServerLocale(request, {profile})
-  const generationLanguage = resolveContentLanguage(language, locale)
+  const generationLanguage = typeof language === 'string' && language.trim() ? language : 'fr'
 
   if (!title || typeof title !== 'string' || title.length > 200) {
     return NextResponse.json({ error: 'Titre invalide' }, { status: 400 })

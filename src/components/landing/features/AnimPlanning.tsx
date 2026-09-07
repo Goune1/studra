@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {useTranslations} from 'next-intl'
 const PATTERN = [
   [1, 0, 1, 0, 1, 1, 0],
   [0, 1, 0, 1, 0, 1, 1],
@@ -16,8 +15,7 @@ const COLOR_MAP: Record<string, string> = {
 };
 
 export default function AnimPlanning() {
-  const t = useTranslations('landing.animations.planning')
-  const days = (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const).map((key) => t(key))
+  const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
   const cells = useMemo(() => {
     const out: { r: number; c: number; color: string }[] = [];
     PATTERN.forEach((row, r) => row.forEach((v, c) => { if (v) out.push({ r, c, color: COLORS[(r + c) % COLORS.length] }); }));

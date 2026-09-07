@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
-
 const FEATURES = [
   'Générations IA illimitées',
   'Mode Socrate (maïeutique)',
@@ -16,7 +14,6 @@ export function UpgradeBanner({ generationsUsed, generationsQuota }: {
   generationsUsed: number
   generationsQuota: number
 }) {
-  const t = useTranslations('dashboard.upgrade')
   const [loading, setLoading] = useState(false)
   const left = Math.max(0, generationsQuota - generationsUsed)
   const overQuota = left === 0
@@ -27,12 +24,12 @@ export function UpgradeBanner({ generationsUsed, generationsQuota }: {
       const res = await fetch('/api/billing/checkout', { method: 'POST' })
       const data = await res.json()
       if (!res.ok) {
-        toast.error(data.error ?? t('checkoutError'))
+        toast.error(data.error ?? "Erreur lors du checkout")
         return
       }
       window.location.href = data.url
     } catch {
-      toast.error(t('error'))
+      toast.error("Une erreur est survenue")
     } finally {
       setLoading(false)
     }

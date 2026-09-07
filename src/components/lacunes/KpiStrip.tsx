@@ -2,8 +2,6 @@
 
 import { BarChart2, AlertTriangle, Target } from 'lucide-react'
 import type { MockStats } from '@/lib/lacunes/mock'
-import { useTranslations } from 'next-intl'
-
 function scoreColor(rate: number): string {
   if (rate >= 75) return '#22C55E'
   if (rate >= 50) return '#F59E0B'
@@ -19,25 +17,24 @@ interface Pill {
 }
 
 export function KpiStrip({ stats }: { stats: MockStats }) {
-  const t = useTranslations('dashboard.lacunes')
   const pills: Pill[] = [
     {
       icon: <BarChart2 size={15} style={{ color: '#94A3B8' }} />,
-      label: t('sessions'),
+      label: "Sessions analysées",
       value: String(stats.sessions),
       color: '#94A3B8',
       delay: 0,
     },
     {
       icon: <AlertTriangle size={15} style={{ color: '#EF4444' }} />,
-      label: t('weaknesses'),
+      label: "Points faibles",
       value: String(stats.weakPoints),
       color: '#EF4444',
       delay: 80,
     },
     {
       icon: <Target size={15} style={{ color: scoreColor(stats.successRate) }} />,
-      label: t('score'),
+      label: "Taux de réussite",
       value: `${stats.successRate}\u00A0%`,
       color: scoreColor(stats.successRate),
       delay: 160,

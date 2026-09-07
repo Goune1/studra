@@ -2,12 +2,8 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
-
 export function CheckoutButton() {
   const [loading, setLoading] = useState(false)
-  const t = useTranslations('dashboard.billing')
-
   async function handleCheckout() {
     setLoading(true)
     try {
@@ -15,13 +11,13 @@ export function CheckoutButton() {
       const data = await res.json()
 
       if (!res.ok) {
-        toast.error(data.error ?? t('checkoutError'))
+        toast.error(data.error ?? "Erreur lors du checkout")
         return
       }
 
       window.location.href = data.url
     } catch {
-      toast.error(t('genericError'))
+      toast.error("Une erreur est survenue")
     } finally {
       setLoading(false)
     }
@@ -36,7 +32,7 @@ export function CheckoutButton() {
       onMouseEnter={e => !loading && ((e.currentTarget as HTMLButtonElement).style.background = '#2a6854')}
       onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = '#1F4D3F')}
     >
-      {loading ? t('redirecting') : t('upgradeButton')}
+      {loading ? "Redirection..." : "✨ Passer en Pro — 4,99€/mois"}
     </button>
   )
 }
