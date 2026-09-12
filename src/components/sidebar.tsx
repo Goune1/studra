@@ -20,7 +20,6 @@ import {
   PenLine,
   Scroll,
   CalendarDays,
-  GraduationCap,
   Sparkles,
   Settings,
   LogOut,
@@ -125,7 +124,6 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
     { href: '/recall', label: "Rappel libre", Icon: PenLine },
     { href: '/annales', label: "Annales", Icon: Scroll },
     { href: '/lacunes', label: "Lacunes", Icon: Target },
-    { href: '/bac', label: "Notes Pronote", Icon: GraduationCap },
   ]
 
   return (

@@ -27,7 +27,7 @@ export async function updateMarketingConsent(marketingConsent: boolean) {
 
 /**
  * Deletes the current user's account and all data owned by it (decks,
- * flashcards, fiches, exams, plans, Pronote credentials, etc. all cascade
+ * flashcards, fiches, exams, plans, etc. all cascade
  * via `on delete cascade` foreign keys to `profiles`/`auth.users`).
  *
  * Requires the caller to re-type their account email as a lightweight
