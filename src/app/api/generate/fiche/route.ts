@@ -22,12 +22,6 @@ export async function POST(request: Request) {
     return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
   }
 
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-
-  if (!profile) {
-    return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 })
-  }
-
   const body = await request.json()
   const { title, subject, content, language, isPublic = false } = body as { title: string; subject: string; content: string; language?: string; isPublic?: boolean }
   const generationLanguage = typeof language === 'string' && language.trim() ? language : 'fr'

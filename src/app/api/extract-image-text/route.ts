@@ -44,6 +44,9 @@ export async function POST(req: NextRequest) {
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-5-nano',
+      reasoning_effort: 'minimal',
+      verbosity: 'low',
+      service_tier: 'priority',
       messages: [
         {
           role: 'system',
@@ -60,7 +63,8 @@ export async function POST(req: NextRequest) {
           ],
         },
       ],
-      max_tokens: 2048,
+      // Englobe les tokens de raisonnement : large pour ne pas tronquer une page dense.
+      max_completion_tokens: 8000,
     })
 
     const text = (response.choices[0]?.message?.content ?? '').trim()

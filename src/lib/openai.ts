@@ -8,6 +8,22 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+/**
+ * Réglages partagés par tous les appels gpt-5-nano.
+ *
+ * - `reasoning_effort: 'minimal'` est le plancher pour gpt-5-nano ('none' est
+ *   réservé à gpt-5.1+). Sans ce paramètre le modèle raisonne en `medium` par
+ *   défaut, ce qui domine la latence sur des tâches de reformatage.
+ * - `service_tier: 'priority'` réduit la latence contre un surcoût : repasser
+ *   cette seule ligne sur 'auto' suffit à revenir au tarif standard.
+ */
+const FAST = {
+  model: 'gpt-5-nano',
+  reasoning_effort: 'minimal',
+  verbosity: 'low',
+  service_tier: 'priority',
+} as const
+
 const LANGUAGE_NAMES: Record<string, string> = {
   fr: 'French', en: 'English', es: 'Spanish', de: 'German',
   it: 'Italian', pt: 'Portuguese', ar: 'Arabic', zh: 'Chinese', ja: 'Japanese',
@@ -21,7 +37,8 @@ function langInstruction(language: string): string {
 
 export async function generateFlashcards(content: string, language = 'fr'): Promise<Array<{ question: string; answer: string }>> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 8000,
     messages: [
       {
         role: 'system',
@@ -53,7 +70,9 @@ Réponds UNIQUEMENT en JSON valide avec ce format :
 
 export async function generateFiche(content: string, language = 'fr'): Promise<string> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    verbosity: 'high',
+    max_completion_tokens: 16000,
     messages: [
       {
         role: 'system',
@@ -79,7 +98,8 @@ La fiche doit être détaillée et exploitable directement pour réviser.${langI
 
 export async function generateSchema(content: string, language = 'fr'): Promise<SchemaData> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 6000,
     messages: [
       {
         role: 'system',
@@ -115,7 +135,8 @@ Réponds UNIQUEMENT en JSON valide avec ce format :
 
 export async function generateTimeline(content: string, language = 'fr'): Promise<TimelineData> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 8000,
     messages: [
       {
         role: 'system',
@@ -156,7 +177,8 @@ Réponds UNIQUEMENT en JSON valide avec ce format :
 
 export async function generateExam(content: string, language = 'fr'): Promise<ExamQuestion[]> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 8000,
     messages: [
       {
         role: 'system',
@@ -209,7 +231,8 @@ export async function evaluateOpenAnswer(
   userAnswer: string,
 ): Promise<{ score: number; feedback: string }> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 2000,
     messages: [
       {
         role: 'system',
@@ -250,7 +273,8 @@ export async function explainDifferently(
   }
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 1500,
     messages: [
       {
         role: 'system',
@@ -277,7 +301,8 @@ export async function analyzeLacunes(lacunes: LacuneCard[]): Promise<{
     .join('\n')
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 3000,
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -317,7 +342,8 @@ export async function socrateResponse(
   history: SocrateMessage[],
 ): Promise<string> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 2000,
     messages: [
       {
         role: 'system',
@@ -354,7 +380,8 @@ export async function socrateDiagnosis(
     .join('\n')
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 3000,
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -388,7 +415,8 @@ export async function evaluateFreeRecall(
   userText: string,
 ): Promise<FreeRecallEvaluation> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 3000,
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -427,7 +455,8 @@ Réponds UNIQUEMENT en JSON avec ce format :
 
 export async function analyzeExamStyle(examText: string): Promise<DetectedExamStyle> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 2000,
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -470,7 +499,8 @@ export async function generateFromTemplate(
 `.trim()
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    max_completion_tokens: 12000,
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -556,7 +586,9 @@ export async function generateStudyPlanSchedule(
     .join('\n')
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    ...FAST,
+    reasoning_effort: 'low',
+    max_completion_tokens: 12000,
     response_format: { type: 'json_object' },
     messages: [
       {
