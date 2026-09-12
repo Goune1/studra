@@ -66,12 +66,9 @@ function MinimapImpl({ nodes, viewport, containerSize, onRecenter }: MinimapProp
       }}
       style={{
         display: 'block',
-        borderRadius: 10,
-        background: 'rgba(11,11,15,0.72)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 8px 20px -12px rgba(0,0,0,0.5)',
+        borderRadius: 8,
+        background: 'var(--bg-elev)',
+        border: '1px solid var(--ink-200)',
         touchAction: 'none',
         cursor: 'crosshair',
       }}
@@ -84,7 +81,7 @@ function MinimapImpl({ nodes, viewport, containerSize, onRecenter }: MinimapProp
           width={Math.max(2, r.w * scale)}
           height={Math.max(2, r.h * scale)}
           rx={1.5}
-          fill={nodes[i].color === 'primary' ? '#8b7aff' : nodes[i].color === 'accent' ? '#f472b6' : 'rgba(255,255,255,0.35)'}
+          fill={nodes[i].color === 'primary' ? '#1F4D3F' : nodes[i].color === 'accent' ? 'rgba(31,77,63,0.65)' : '#A1A1AA'}
         />
       ))}
       <rect
@@ -92,8 +89,8 @@ function MinimapImpl({ nodes, viewport, containerSize, onRecenter }: MinimapProp
         y={viewportBounds.y * scale + offsetY}
         width={viewportBounds.w * scale}
         height={viewportBounds.h * scale}
-        fill="rgba(139,122,255,0.10)"
-        stroke="rgba(139,122,255,0.85)"
+        fill="rgba(31,77,63,0.08)"
+        stroke="#1F4D3F"
         strokeWidth={1}
         rx={3}
       />

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Nav from '@/components/landing/nav/Nav'
 import { Footer } from '@/components/landing/Footer'
 
-const LAST_UPDATED = '10 avril 2026'
+const LAST_UPDATED = '11 août 2026'
 const CONTACT_EMAIL = 'contact@studra.fr'
 const APP_NAME = 'Studra'
 const APP_URL = 'https://studra.fr'
@@ -12,7 +12,9 @@ const baseMetadata: Metadata = {
   title: "Conditions Générales d'Utilisation",
   description: "Consultez les Conditions Générales d'Utilisation de Studra, la plateforme de révision intelligente propulsée par l'IA.",
   robots: { index: true, follow: true },
-  alternates: { canonical: 'https://studra.fr/cgu' },
+  alternates: {
+    canonical: 'https://studra.fr/cgu',
+  },
 }
 
 export const metadata = baseMetadata
@@ -85,11 +87,26 @@ Offre Gratuite : accès aux fonctionnalités de base avec un quota de 5 généra
 
 Offre Pro : accès illimité aux générations et à l'ensemble des fonctionnalités, sur abonnement mensuel ou annuel. Le prix est celui affiché sur la page Tarifs au moment de la souscription.
 
-Les paiements sont traités par Stripe, prestataire tiers sécurisé. ${APP_NAME} ne conserve aucune donnée bancaire. L'abonnement Pro se renouvelle automatiquement à chaque échéance, sauf résiliation préalable.
+Les paiements d'abonnement sont traités par Stripe, prestataire tiers sécurisé. ${APP_NAME} ne conserve aucun numéro de carte bancaire. L'abonnement Pro se renouvelle automatiquement à chaque échéance, sauf résiliation préalable.
 
 L'utilisateur peut résilier son abonnement Pro à tout moment depuis la page Paramètres de son compte. La résiliation prend effet à la fin de la période de facturation en cours ; aucun remboursement prorata temporis n'est effectué.
 
 Conformément à l'article L. 221-18 du Code de la consommation, l'utilisateur bénéficie d'un droit de rétractation de 14 jours à compter de la souscription, sauf s'il a expressément demandé à bénéficier du Service avant l'expiration de ce délai.`,
+  },
+  {
+    id: 'affiliation',
+    title: "6 bis. Programme d'affiliation",
+    content: `L'accès au programme d'affiliation suppose une inscription distincte et l'acceptation de ses conditions en vigueur.
+
+L'attribution est effectuée au premier affilié valide identifié pendant une période de 30 jours. L'auto-parrainage, les comptes artificiels, le spam, les pratiques trompeuses et toute manipulation de l'attribution sont interdits.
+
+Sauf taux individuel indiqué dans le tableau de bord, la commission est de 20 % du montant effectivement encaissé, dans la devise de la transaction. Les taxes, remises, avoirs, remboursements, litiges et rétrofacturations ne génèrent pas de commission ou donnent lieu à une déduction. Une modification future du taux ne modifie pas les commissions déjà enregistrées.
+
+Les commissions restent en validation pendant 30 jours puis deviennent payables. Un versement manuel peut être effectué lorsque le solde net payable atteint 10 €. Un paiement n'est considéré comme effectué qu'après confirmation du transfert externe et enregistrement de sa référence.
+
+${APP_NAME} peut suspendre un affilié, rejeter une attribution frauduleuse ou différer un paiement pendant une vérification. Les écritures déjà payées ne sont pas supprimées : les corrections sont inscrites comme ajustements et peuvent être compensées sur les commissions futures.
+
+L'affilié est responsable de ses obligations déclaratives, sociales et fiscales. Le programme ne crée aucun lien de salariat, mandat ou exclusivité.`,
   },
   {
     id: 'donnees',
@@ -97,15 +114,17 @@ Conformément à l'article L. 221-18 du Code de la consommation, l'utilisateur b
     content: `${APP_NAME} collecte et traite les données personnelles suivantes dans le cadre du Service :
 • Adresse e-mail et nom (fournis lors de l'inscription) ;
 • Données d'utilisation (contenu généré, résultats de révision) ;
-• Données techniques (navigateur, système d'exploitation) via Vercel Analytics, sans cookies ni collecte d'adresse IP.
+• Pour les affiliés : coordonnées de paiement PayPal ou bancaires, version et date d'acceptation des conditions ;
+• Pour l'attribution : code affilié et empreinte technique pseudonymisée et temporaire destinée à dédupliquer les clics ;
+• Données techniques (navigateur, système d'exploitation) via Vercel Analytics.
 
 Ces données sont traitées sur le fondement de l'exécution du contrat (article 6.1.b du RGPD) et de l'intérêt légitime de ${APP_NAME} à améliorer son Service.
 
 Les données sont hébergées sur les serveurs de Supabase (infrastructure sécurisée, Union Européenne ou États-Unis avec garanties adéquates). Elles sont conservées pendant la durée de vie du compte, puis supprimées dans un délai de 30 jours après la clôture.
 
-L'utilisateur dispose des droits d'accès, de rectification, d'effacement, de portabilité et d'opposition prévus par le RGPD, exerc¸ables à l'adresse ${CONTACT_EMAIL}. En cas de réclamation non résolue, l'utilisateur peut saisir la CNIL (www.cnil.fr).
+L'utilisateur dispose des droits d'accès, de rectification, d'effacement, de portabilité et d'opposition prévus par le RGPD, exerçables à l'adresse ${CONTACT_EMAIL}. En cas de réclamation non résolue, l'utilisateur peut saisir la CNIL (www.cnil.fr).
 
-${APP_NAME} n'utilise pas de cookies publicitaires ou de tracking tiers. Les seuls cookies déposés sont les cookies de session Supabase, strictement nécessaires au fonctionnement du Service et exemptés de consentement.`,
+${APP_NAME} n'utilise pas de cookies publicitaires tiers. Outre les cookies de session Supabase, un cookie d'attribution signé, sécurisé et valable 30 jours peut être déposé lorsqu'un visiteur utilise un lien affilié.`,
   },
   {
     id: 'propriete',

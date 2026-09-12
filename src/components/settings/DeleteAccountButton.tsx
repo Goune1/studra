@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertTriangle, Loader2 } from 'lucide-react'
+import { CircleNotch, Warning } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import {useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const DANGER = '#B4503C'
@@ -25,7 +25,7 @@ export function DeleteAccountButton({ userEmail, deleteAccount }: DeleteAccountB
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5"
+        className="rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
         style={{ background: 'transparent', border: '1px solid var(--ink-200)', color: DANGER }}
       >
         {"Supprimer mon compte"}
@@ -82,20 +82,20 @@ function ConfirmDeleteAccountDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={deleting ? undefined : onClose}
     >
       <div
-        className="w-full max-w-sm rounded-2xl border p-6 shadow-2xl"
+        className="w-full max-w-sm rounded-[11px] border p-6"
         style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-start gap-3">
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
             style={{ background: DANGER + '15' }}
           >
-            <AlertTriangle size={16} style={{ color: DANGER }} />
+            <Warning size={16} style={{ color: DANGER }} />
           </div>
           <div>
             <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{"Supprimer définitivement ton compte ?"}</h2>
@@ -115,7 +115,7 @@ function ConfirmDeleteAccountDialog({
           disabled={deleting}
           autoComplete="off"
           className="w-full rounded-lg px-3 py-2 text-sm mb-4"
-          style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink)' }}
+          style={{ background: '#fcfcfb', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
         />
 
         {error && (
@@ -130,7 +130,7 @@ function ConfirmDeleteAccountDialog({
             onClick={onClose}
             disabled={deleting}
             className="flex-1 rounded-lg px-4 py-2.5 text-xs font-medium transition-colors disabled:opacity-50"
-            style={{ background: 'var(--surface-2)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
           >
             {"Annuler"}
           </button>
@@ -141,7 +141,7 @@ function ConfirmDeleteAccountDialog({
             className="flex-1 rounded-lg px-4 py-2.5 text-xs font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ background: DANGER }}
           >
-            {deleting && <Loader2 size={12} className="animate-spin" />}
+            {deleting && <CircleNotch size={12} className="animate-spin" />}
             {deleting ? "Suppression…" : "Supprimer définitivement"}
           </button>
         </div>

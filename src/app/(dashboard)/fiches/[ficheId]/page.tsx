@@ -1,23 +1,26 @@
+import Link from 'next/link'
+import { ArrowLeft, Cards } from '@phosphor-icons/react/dist/ssr'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { FicheViewer } from '@/components/fiche-viewer'
-import { FileText, Clock, Type, Calendar, Layers } from 'lucide-react'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
-
-const COLOR = '#1F4D3F'
+import styles from '../../flashcards/flashcards.module.css'
+import ficheStyles from '../fiches.module.css'
 
 function wordCount(content: string) {
   return content.trim().split(/\s+/).filter(Boolean).length
 }
 
 function extractHeadings(content: string): string[] {
-  return content.split('\n').filter((l) => l.startsWith('## ')).map((l) => l.replace(/^#+\s+/, '').trim())
+  return content.split('\n').filter((line) => line.startsWith('## ')).map((line) => line.replace(/^#+\s+/, '').trim())
+}
+
+function headingId(heading: string) {
+  return heading.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
 export default async function FichePage({ params }: { params: Promise<{ ficheId: string }> }) {
-  const {ficheId} = await params
-  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
+  const { ficheId } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -25,108 +28,85 @@ export default async function FichePage({ params }: { params: Promise<{ ficheId:
   if (!fiche) notFound()
   if (fiche.user_id !== user!.id && !fiche.is_public) notFound()
 
-  const wc = wordCount(fiche.generated_content)
-  const rt = Math.max(1, Math.round(wc / 200))
+  const words = wordCount(fiche.generated_content)
+  const readingTime = Math.max(1, Math.round(words / 200))
   const headings = extractHeadings(fiche.generated_content)
+  const createdAt = new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  }).format(new Date(fiche.created_at))
 
   return (
-    <div className="max-w-350">
-      <Link href="/fiches" className="inline-flex items-center gap-1.5 text-xs transition-colors mb-6" style={{ color: 'var(--ink-500)' }}>
-        <FileText size={12} />← {"Mes fiches"}
-      </Link>
+    <div className={styles.deckPage}>
+      <Link href="/fiches" className={styles.backLink}><ArrowLeft size={14} /> Mes fiches</Link>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,65fr)_minmax(0,35fr)] gap-8">
-        {/* Left: content */}
-        <div className="min-w-0">
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-3">
-              {fiche.subject && (
-                <span className="text-[10px] px-2.5 py-1 rounded-full font-semibold"
-                  style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25` }}>
-                  {fiche.subject}
-                </span>
-              )}
-              <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                {format.dateTime(new Date(fiche.created_at), { day: 'numeric', month: 'long', year: 'numeric' })}
-              </span>
-            </div>
-            <h1 className="section-h leading-tight">
-              {fiche.title}
-            </h1>
+      <section className={styles.deckHeaderCard}>
+        <div className={styles.deckHeaderMain}>
+          <div className={styles.deckIdentity}>
+            <p>{fiche.subject || 'Sans matière'} · {createdAt}</p>
+            <h1>{fiche.title}</h1>
+            <span>~{words.toLocaleString('fr-FR')} mots · {readingTime} min de lecture</span>
           </div>
-
-          <div className="rounded-2xl border p-6 md:p-8"
-            style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
-            <FicheViewer content={fiche.generated_content} ficheId={ficheId} />
-          </div>
-        </div>
-
-        {/* Right: sidebar */}
-        <div className="min-w-0">
-          <div className="xl:sticky xl:top-8 space-y-4">
-            {headings.length > 0 && (
-              <div className="rounded-2xl border p-5" style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
-                <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--ink-400)' }}>{"Sommaire"}</p>
-                <nav className="space-y-0.5">
-                  {headings.map((h, i) => (
-                    <a key={i} href={`#${h.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="flex items-center gap-2 text-sm transition-colors py-1.5 rounded-lg px-2 hover:bg-black/[0.03]"
-                      style={{ color: 'var(--ink-700)' }}>
-                      <span className="mono text-[10px] tabular-nums w-5 shrink-0" style={{ color: COLOR }}>
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span className="line-clamp-1 text-xs">{h}</span>
-                    </a>
-                  ))}
-                </nav>
-              </div>
-            )}
-
-            <div className="rounded-2xl border p-5" style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
-              <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--ink-400)' }}>{"Statistiques"}</p>
-              <div className="space-y-3">
-                {[
-                  { Icon: Type, label: "Mots", value: `~${wc}` },
-                  { Icon: Clock, label: "Lecture", value: `${rt} min` },
-                  { Icon: Calendar, label: "Créée le", value: format.dateTime(new Date(fiche.created_at), { day: 'numeric', month: 'long', year: 'numeric' }) },
-                ].map(({ Icon, label, value }) => (
-                  <div key={label} className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: COLOR + '12' }}>
-                      <Icon size={13} style={{ color: COLOR }} />
-                    </div>
-                    <div className="flex-1 flex items-center justify-between gap-2">
-                      <span className="text-xs" style={{ color: 'var(--ink-500)' }}>{label}</span>
-                      <span className="mono text-xs font-medium tabular-nums" style={{ color: 'var(--ink-700)' }}>{value}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Link href={`/flashcards/new?fiche=${ficheId}`}
-              className="flex items-center gap-3 p-4 rounded-2xl border transition-all duration-150 hover:-translate-y-0.5 group"
-              style={{ background: 'var(--surface-2)', borderColor: 'var(--ink-200)' }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'var(--accent-soft)' }}>
-                <Layers size={15} style={{ color: 'var(--accent)' }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold transition-colors" style={{ color: 'var(--ink)' }}>{"Créer des flashcards"}</p>
-                <p className="text-[10px] mt-0.5" style={{ color: 'var(--ink-500)' }}>{"Depuis cette fiche"} →</p>
-              </div>
-            </Link>
-
+          <div className={styles.deckActions}>
             {fiche.user_id === user!.id && (
               <DeleteEntityButton
                 table="fiches"
                 id={fiche.id}
                 entityLabel="cette fiche"
                 variant="button"
-                color={COLOR}
+                color="#1F4D3F"
                 redirectTo="/fiches"
               />
             )}
+            <Link href={`/flashcards/new?fiche=${ficheId}`} className={styles.primaryButton}>
+              <Cards size={16} aria-hidden="true" />
+              Créer des flashcards
+            </Link>
           </div>
         </div>
+        <div className={styles.deckHeaderNote}>
+          <span>Fiche modifiable</span>
+          <span>Relis, corrige et complète le contenu directement dans Studra.</span>
+        </div>
+      </section>
+
+      <div className={ficheStyles.ficheLayout}>
+        <section className={ficheStyles.ficheContent}>
+          <header className={ficheStyles.ficheContentHeader}>
+            <div>
+              <p>Contenu de la fiche</p>
+              <h2>Ta synthèse</h2>
+            </div>
+            <span>{headings.length} section{headings.length > 1 ? 's' : ''}</span>
+          </header>
+          <div className={ficheStyles.ficheViewerBody}>
+            <FicheViewer content={fiche.generated_content} ficheId={fiche.user_id === user!.id ? ficheId : undefined} />
+          </div>
+        </section>
+
+        <aside className={ficheStyles.ficheSidebar}>
+          {headings.length > 0 && (
+            <section className={ficheStyles.sidebarPanel}>
+              <p className={ficheStyles.panelLabel}>Sommaire</p>
+              <nav className={ficheStyles.tocList}>
+                {headings.map((heading, index) => (
+                  <a key={`${heading}-${index}`} href={`#${headingId(heading)}`} className={ficheStyles.tocLink}>
+                    <span>{String(index + 1).padStart(2, '0')}</span>
+                    <span>{heading}</span>
+                  </a>
+                ))}
+              </nav>
+            </section>
+          )}
+
+          <section className={ficheStyles.sidebarPanel}>
+            <p className={ficheStyles.panelLabel}>Statistiques</p>
+            <div className={ficheStyles.statsList}>
+              <div className={ficheStyles.statRow}><span>Mots</span><strong>~{words.toLocaleString('fr-FR')}</strong></div>
+              <div className={ficheStyles.statRow}><span>Lecture</span><strong>{readingTime} min</strong></div>
+              <div className={ficheStyles.statRow}><span>Créée le</span><strong>{createdAt}</strong></div>
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   )

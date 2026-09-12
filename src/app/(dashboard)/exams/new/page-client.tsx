@@ -1,14 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { ArrowLeft, Check, ClipboardText, ListChecks } from '@phosphor-icons/react'
 import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackExamGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 import { PaywallBanner } from '@/components/paywall/PaywallBanner'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
+import styles from '../../flashcards/flashcards.module.css'
 
 const ALSO_OPTIONS: AlsoKey[] = ['fiche', 'flashcards', 'schema', 'timeline']
 
@@ -24,8 +26,8 @@ export default function NewExamPage({ showPaywall, price }: Props) {
   const [paywallOpen, setPaywallOpen] = useState(false)
 
   function toggleAlso(key: AlsoKey) {
-    setAlso((prev) => {
-      const next = new Set(prev)
+    setAlso((current) => {
+      const next = new Set(current)
       if (next.has(key)) next.delete(key)
       else next.add(key)
       return next
@@ -37,67 +39,93 @@ export default function NewExamPage({ showPaywall, price }: Props) {
       setPaywallOpen(true)
       return
     }
+
     setLoading(true)
     trackExamGenerate(data.subject || data.title, 'moyen')
     const startedAt = Date.now()
     try {
-      const { primary, also: alsoRes } = await generateWithAlso('exam', [...also], data, toast.error)
+      const { primary, also: alsoResults } = await generateWithAlso('exam', [...also], data, toast.error)
       if (!primary.ok) {
         trackAIGenerationError('exam', 'generation_failed')
-        toast.error("Erreur lors de la génération de l’examen")
+        toast.error('Impossible de générer l’examen')
         return
       }
       trackAIGenerationSuccess('exam', Date.now() - startedAt)
-      toast.success("Contenu généré avec succès !")
-      setResults(buildResources('exam', primary.id!, alsoRes))
+      toast.success('Examen généré avec succès')
+      setResults(buildResources('exam', primary.id!, alsoResults))
     } catch {
       trackAIGenerationError('exam', 'exception')
-      toast.error("Une erreur est survenue")
+      toast.error('Une erreur est survenue pendant la génération')
     } finally {
       setLoading(false)
     }
   }
 
-  if (results) return <GenerationResultsScreen resources={results} newPath="/exams/new" newLabel={"Créer un autre examen"} />
-
-  if (loading) {
+  if (results) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-6">
-        <div className="relative">
-          <div className="w-20 h-20 rounded-full border-4 animate-spin" style={{ borderColor: 'var(--accent-soft)', borderTopColor: 'var(--accent)' }} />
-          <div className="absolute inset-0 flex items-center justify-center text-2xl">📝</div>
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--ink)' }}>{"Génération en cours…"}</h2>
-          <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{"L’IA rédige tes questions et prépare les corrections"}</p>
-        </div>
-        <div className="flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="w-2 h-2 rounded-full animate-bounce" style={{ background: 'var(--accent)', animationDelay: `${i * 0.15}s` }} />
-          ))}
-        </div>
-      </div>
+      <GenerationResultsScreen
+        resources={results}
+        newPath="/exams/new"
+        newLabel="Créer un autre examen"
+        quiet
+        className={styles.resultsScreen}
+      />
     )
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className={styles.createPage}>
+      <Link href="/exams" className={styles.backLink}><ArrowLeft size={14} /> Mes examens</Link>
+
+      <header className={styles.pageHeader}>
+        <div>
+          <p className={styles.pageContext}>Nouvel examen</p>
+          <h1>Pars de ton cours.</h1>
+          <p className={styles.pageSummary}>Choisis une source et laisse Studra préparer les questions, les réponses et la correction.</p>
+        </div>
+      </header>
+
       {showPaywall && <PaywallBanner tool="exam" />}
-      <div className="mb-8">
-        <Eyebrow className="mb-2">{"Examens"}</Eyebrow>
-        <h1 className="section-h">{"Nouvel examen"}</h1>
-        <p className="lede mt-3">{"L’IA génère 7 QCM + 3 questions ouvertes avec correction automatique"}</p>
+
+      <div className={styles.creationGrid}>
+        <section className={styles.formPanel} aria-label="Créer un examen blanc">
+          <ContentInputForm
+            onSubmit={handleGenerate}
+            submitLabel={also.size > 0 ? `Générer l’examen et ${also.size} autre${also.size > 1 ? 's' : ''} support${also.size > 1 ? 's' : ''}` : 'Générer l’examen'}
+            titlePlaceholder="Ex. Examen - La photosynthèse"
+            contentPlaceholder="Colle ici le cours sur lequel tu veux être évalué…"
+            loading={loading}
+            className={styles.creationForm}
+            extras={
+              <AlsoGenerateSection
+                options={ALSO_OPTIONS}
+                selected={also}
+                onChange={toggleAlso}
+                quiet
+                className={styles.alsoPanel}
+              />
+            }
+          />
+        </section>
+
+        <aside className={styles.creationAside}>
+          <p className={styles.asideLabel}>Ce que tu obtiens</p>
+          <div className={styles.asideItem}>
+            <ListChecks size={18} aria-hidden="true" />
+            <div><strong>Un format complet</strong><span>Sept QCM et trois questions ouvertes.</span></div>
+          </div>
+          <div className={styles.asideItem}>
+            <Check size={18} aria-hidden="true" />
+            <div><strong>Une correction détaillée</strong><span>Réponses attendues, score et explications.</span></div>
+          </div>
+          <div className={styles.asideItem}>
+            <ClipboardText size={18} aria-hidden="true" />
+            <div><strong>Plusieurs sources</strong><span>Texte, PDF, photo ou vidéo sous-titrée.</span></div>
+          </div>
+          <p className={styles.asideNote}>Réponds à toutes les questions avant d’envoyer l’examen pour correction.</p>
+        </aside>
       </div>
-      <div className="app-card p-8">
-        <ContentInputForm
-          onSubmit={handleGenerate}
-          submitLabel={also.size > 0 ? `📝 Générer l’examen + ${also.size} autre${also.size === 1 ? "" : "s"}` : "📝 Générer l’examen"}
-          titlePlaceholder={"Ex: Examen - Chapitre 3 Photosynthèse"}
-          contentPlaceholder={"Collez ici le contenu de votre cours à évaluer…"}
-          loading={loading}
-          extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
-        />
-      </div>
+
       {paywallOpen && <PaywallModal tool="exam" price={price} onClose={() => setPaywallOpen(false)} />}
     </div>
   )

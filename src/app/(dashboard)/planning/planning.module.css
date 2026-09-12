@@ -1,0 +1,300 @@
+.planDetails {
+  min-height: 42px;
+  margin: 8px 0 0;
+  color: var(--ink-500);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.planProgress {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.planProgressTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ink-500);
+  font-size: 11px;
+}
+
+.progressTrack {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--ink-200);
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transform-origin: left;
+}
+
+.planningForm {
+  display: grid;
+  gap: 14px;
+}
+
+.formSection {
+  padding: 22px;
+  border: 1px solid var(--ink-200);
+  border-radius: 11px;
+  background: var(--bg-elev);
+}
+
+.formSection h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.formSectionIntro {
+  margin: 6px 0 17px;
+  color: var(--ink-500);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field > span {
+  color: var(--ink-700);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.field input {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid var(--ink-200);
+  border-radius: 7px;
+  outline: 0;
+  padding: 0 12px;
+  background: #fcfcfb;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  transition: border-color 150ms ease;
+}
+
+.field input:focus {
+  border-color: rgba(31, 77, 63, 0.55);
+}
+
+.timeOptions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.timeOption,
+.masteryButton {
+  min-height: 38px;
+  border: 1px solid var(--ink-200);
+  border-radius: 7px;
+  background: #fcfcfb;
+  color: var(--ink-500);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.timeOption[data-active="true"] {
+  border-color: rgba(31, 77, 63, 0.45);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.timeOption:active,
+.masteryButton:active {
+  transform: translateY(1px);
+}
+
+.contentList {
+  display: grid;
+  max-height: 360px;
+  overflow-y: auto;
+  border-top: 1px solid var(--ink-200);
+}
+
+.contentItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 0;
+}
+
+.contentItem + .contentItem {
+  border-top: 1px solid var(--ink-200);
+}
+
+.contentItem input {
+  accent-color: var(--accent);
+}
+
+.contentToggle {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.contentToggle strong,
+.contentToggle span {
+  display: block;
+}
+
+.contentToggle strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contentToggle span {
+  margin-top: 3px;
+  color: var(--accent);
+  font-size: 10.5px;
+}
+
+.masteryOptions {
+  display: flex;
+  gap: 4px;
+}
+
+.masteryButton {
+  min-height: 27px;
+  width: 27px;
+  padding: 0;
+}
+
+.masteryButton[data-active="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.emptyContent,
+.loadingContent {
+  margin: 0;
+  padding: 24px 0 6px;
+  color: var(--ink-500);
+  font-size: 12px;
+  text-align: center;
+}
+
+.selectionSummary {
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid rgba(31, 77, 63, 0.22);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.submitButton {
+  display: inline-flex;
+  min-height: 47px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.quotaNote {
+  margin: -5px 0 0;
+  color: var(--ink-500);
+  font-size: 10.5px;
+  text-align: center;
+}
+
+.planningPage {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  padding-bottom: 40px;
+  color: var(--ink);
+}
+
+.planningPage :global(.rounded-2xl) {
+  border-radius: 11px !important;
+}
+
+.planningPage :global(.rounded-xl) {
+  border-radius: 8px !important;
+}
+
+.planningPage :global(.section-h) {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.planningPage :global(.btn) {
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+
+.planningPage :global(.animate-fade-up) {
+  animation: none;
+}
+
+@media (max-width: 720px) {
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formSection {
+    padding: 18px;
+  }
+
+  .contentItem {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .masteryOptions {
+    grid-column: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field input,
+  .timeOption,
+  .masteryButton {
+    transition: none;
+  }
+}

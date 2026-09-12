@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useImageCompressor } from '@/hooks/use-image-compressor'
-import { ImageIcon, CheckCircle, XCircle, Loader2, X } from 'lucide-react'
+import { CheckCircle, CircleNotch, Image as ImageIcon, X, XCircle } from '@phosphor-icons/react'
 export interface ImageUploadInputProps {
   onTextExtracted: (text: string) => void
   onError?: () => void
@@ -35,8 +35,8 @@ function isAccepted(file: File) {
 }
 
 const STATUS_ICON: Record<FileStatus, React.ReactNode> = {
-  compressing: <Loader2 size={12} className="animate-spin" style={{ color: 'var(--ink-400)' }} />,
-  extracting: <Loader2 size={12} className="animate-spin" style={{ color: 'var(--accent)' }} />,
+  compressing: <CircleNotch size={12} className="animate-spin" style={{ color: 'var(--ink-400)' }} />,
+  extracting: <CircleNotch size={12} className="animate-spin" style={{ color: 'var(--accent)' }} />,
   done: <CheckCircle size={12} style={{ color: 'var(--accent)' }} />,
   error: <XCircle size={12} style={{ color: '#B4503C' }} />,
 }
@@ -152,7 +152,7 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onClick={() => !disabled && !busy && inputRef.current?.click()}
-        className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed py-5 px-4 text-center transition-colors"
+        className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-5 px-4 text-center transition-colors"
         style={{
           borderColor: dragging ? 'var(--accent)' : 'var(--ink-200)',
           background: dragging ? 'var(--accent-soft)' : 'transparent',
@@ -170,7 +170,7 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
           onChange={(e) => e.target.files && handleFiles(e.target.files)}
         />
         {busy ? (
-          <Loader2 size={20} className="animate-spin" style={{ color: 'var(--accent)' }} />
+          <CircleNotch size={20} className="animate-spin" style={{ color: 'var(--accent)' }} />
         ) : (
           <ImageIcon size={20} style={{ color: 'var(--ink-400)' }} />
         )}
@@ -190,7 +190,7 @@ export function ImageUploadInput({ onTextExtracted, onError, disabled }: ImageUp
           {entries.map((entry) => (
             <div
               key={entry.id}
-              className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/10 flex-shrink-0"
+              className="relative w-16 h-16 rounded-lg overflow-hidden border border-[color:var(--ink-200)] flex-shrink-0"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

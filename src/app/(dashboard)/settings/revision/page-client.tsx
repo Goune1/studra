@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Brain, TrendingUp, Calendar, Layers, Settings2 } from 'lucide-react'
-import { Eyebrow } from '@/components/ui/Eyebrow'
-const COLOR = '#1F4D3F'
+import { ArrowLeft, Brain, CalendarBlank, ChartLineUp, SlidersHorizontal, Stack } from '@phosphor-icons/react'
+import styles from '../settings.module.css'
 
 interface FsrsStats {
   dueToday: number
@@ -27,18 +26,18 @@ export default function RevisionSettingsPage() {
   const [stats, setStats] = useState<FsrsStats | null>(null)
   const [settings, setSettings] = useState<FsrsSettings | null>(null)
   const [saving, setSaving] = useState(false)
-  const [draftRetention, setDraftRetention] = useState<number>(0.9)
-  const [draftInterval, setDraftInterval] = useState<number>(36500)
+  const [draftRetention, setDraftRetention] = useState(0.9)
+  const [draftInterval, setDraftInterval] = useState(36500)
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/fsrs/stats').then((r) => r.json()),
-      fetch('/api/fsrs/settings').then((r) => r.json()),
-    ]).then(([s, cfg]) => {
-      setStats(s)
-      setSettings(cfg)
-      setDraftRetention(cfg.desired_retention ?? 0.9)
-      setDraftInterval(cfg.maximum_interval ?? 36500)
+      fetch('/api/fsrs/stats').then((response) => response.json()),
+      fetch('/api/fsrs/settings').then((response) => response.json()),
+    ]).then(([nextStats, nextSettings]) => {
+      setStats(nextStats)
+      setSettings(nextSettings)
+      setDraftRetention(nextSettings.desired_retention ?? 0.9)
+      setDraftInterval(nextSettings.maximum_interval ?? 36500)
     })
   }, [])
 
@@ -49,250 +48,94 @@ export default function RevisionSettingsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ desired_retention: draftRetention, maximum_interval: draftInterval }),
     })
-    setSettings((s) => s ? { ...s, desired_retention: draftRetention, maximum_interval: draftInterval } : s)
+    setSettings((current) => current ? { ...current, desired_retention: draftRetention, maximum_interval: draftInterval } : current)
     setSaving(false)
   }
 
-  const maxForecast = stats ? Math.max(...stats.forecast.map((f) => f.count), 1) : 1
+  const maxForecast = stats ? Math.max(...stats.forecast.map((item) => item.count), 1) : 1
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-12">
-      {/* Header */}
-      <div className="flex items-center gap-3 animate-fade-up">
-        <Link
-          href="/settings"
-          className="p-2 rounded-lg transition-colors hover:bg-black/5"
-          style={{ color: 'var(--ink-500)' }}
-        >
-          <ArrowLeft size={16} />
-        </Link>
-        <div>
-          <Eyebrow className="mb-1">{"Paramètres"}</Eyebrow>
-          <h1 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
-            {"Répétition espacée (FSRS)"}
-          </h1>
-          <p className="mono text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
-              {"Free Spaced Repetition Scheduler · algorithme par défaut."}
-          </p>
+    <div className={styles.revisionPage}>
+      <header className={styles.pageHeader}>
+        <div className={styles.pageHeaderRow}>
+          <Link href="/settings" className={styles.backLink} aria-label="Retour aux paramètres">
+            <ArrowLeft size={17} weight="regular" />
+          </Link>
+          <div>
+            <p className={styles.eyebrow}>Paramètres</p>
+            <h1>Répétition espacée</h1>
+            <p className={styles.pageSummary}>FSRS planifie tes révisions pour soutenir ta rétention, sans les multiplier inutilement.</p>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 gap-3 animate-fade-up" style={{ animationDelay: '60ms' }}>
+      <div className={styles.metricsGrid}>
         {[
-          {
-            icon: Layers,
-            label: 'À réviser aujourd\'hui',
-            value: stats ? String(stats.dueToday) : '…',
-            color: stats?.dueToday ? '#F59E0B' : '#10B981',
-          },
-          {
-            icon: TrendingUp,
-            label: 'Rétention (30 j)',
-            value: stats?.retentionRate30d != null ? `${stats.retentionRate30d}%` : '—',
-            color: '#3B82F6',
-          },
-          {
-            icon: Brain,
-            label: 'Révisions totales',
-            value: stats ? String(stats.totalReviews) : '…',
-            color: COLOR,
-          },
-          {
-            icon: Settings2,
-            label: 'Cartes totales',
-            value: stats ? String(stats.totalCards) : '…',
-            color: 'var(--ink-500)',
-          },
-        ].map(({ icon: Icon, label, value, color }) => (
-          <div
-            key={label}
-            className="rounded-2xl p-5"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <Icon size={14} style={{ color }} />
-              <span className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
-                {label}
-              </span>
-            </div>
-            <p className="text-3xl font-bold tracking-tight" style={{ color }}>
-              {value}
-            </p>
+          { icon: Stack, label: 'À réviser', value: stats ? String(stats.dueToday) : '…' },
+          { icon: ChartLineUp, label: 'Rétention · 30 j', value: stats?.retentionRate30d != null ? `${stats.retentionRate30d}%` : '—' },
+          { icon: Brain, label: 'Révisions', value: stats ? String(stats.totalReviews) : '…' },
+          { icon: SlidersHorizontal, label: 'Cartes', value: stats ? String(stats.totalCards) : '…' },
+        ].map(({ icon: Icon, label, value }) => (
+          <div key={label} className={styles.metric}>
+            <span className={styles.metricLabel}><Icon size={14} weight="regular" />{label}</span>
+            <p className={styles.metricValue}>{value}</p>
           </div>
         ))}
       </div>
 
-      {/* Card state breakdown */}
-      {stats && (
-        <div
-          className="rounded-2xl p-5 space-y-3 animate-fade-up"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
-        >
-          <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
-            État des cartes
-          </p>
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              { label: 'Nouvelles',      value: stats.stateCount.new,        color: 'var(--ink-500)' },
-              { label: 'Apprentissage',  value: stats.stateCount.learning,   color: '#F59E0B' },
-              { label: 'Révision',       value: stats.stateCount.review,     color: '#10B981' },
-              { label: 'Rapprentissage', value: stats.stateCount.relearning, color: '#EF4444' },
-            ].map(({ label, value, color }) => (
-              <div
-                key={label}
-                className="rounded-xl p-3 text-center"
-                style={{ background: `${color}10`, border: `1px solid ${color}20` }}
-              >
-                <div className="text-xl font-bold tabular-nums" style={{ color }}>{value}</div>
-                <div className="mono text-[9px] mt-0.5 leading-tight" style={{ color: 'var(--ink-400)' }}>{label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className={styles.revisionLayout}>
+        {stats && (
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <div><h2>État des cartes</h2><p>La répartition actuelle de tes cartes.</p></div>
+            </div>
+            <div className={styles.stateGrid}>
+              {[
+                { label: 'Nouvelles', value: stats.stateCount.new },
+                { label: 'Apprentissage', value: stats.stateCount.learning },
+                { label: 'Révision', value: stats.stateCount.review },
+                { label: 'Rapprentissage', value: stats.stateCount.relearning },
+              ].map((item) => <div key={item.label} className={styles.stateItem}><strong className={styles.stateValue}>{item.value}</strong><span className={styles.stateLabel}>{item.label}</span></div>)}
+            </div>
+          </section>
+        )}
 
-      {/* 30-day forecast */}
-      {stats && stats.forecast.length > 0 && (
-        <div
-          className="rounded-2xl p-5 animate-fade-up"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '120ms' }}
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Calendar size={14} style={{ color: COLOR }} />
-            <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
-              {"Prévision révisions · 30 prochains jours"}
-            </p>
-          </div>
-          <div className="flex items-end gap-0.5 h-16">
-            {stats.forecast.map(({ date, count }) => {
-              const height = maxForecast > 0 ? Math.max((count / maxForecast) * 100, count > 0 ? 8 : 0) : 0
-              const isToday = date === new Date().toISOString().slice(0, 10)
-              return (
-                <div key={date} className="flex-1 flex flex-col items-center justify-end" title={`${date} : ${count} ${count === 1 ? 'carte' : 'cartes'}`}>
-                  <div
-                    className="w-full rounded-sm transition-all"
-                    style={{
-                      height: `${height}%`,
-                      minHeight: count > 0 ? 2 : 0,
-                      background: isToday ? '#F59E0B' : COLOR + '30',
-                      border: isToday ? '1px solid #F59E0B60' : 'none',
-                    }}
-                  />
-                </div>
-              )
-            })}
-          </div>
-          <div className="flex justify-between mt-1">
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{"Aujourd’hui"}</span>
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{"J+30"}</span>
-          </div>
-        </div>
-      )}
+        {stats && stats.forecast.length > 0 && (
+          <section className={styles.forecastPanel}>
+            <p className={styles.panelKicker}><CalendarBlank size={14} weight="regular" />Prévision · 30 jours</p>
+            <div className={styles.forecastBars}>
+              {stats.forecast.map(({ date, count }) => {
+                const height = maxForecast > 0 ? Math.max((count / maxForecast) * 100, count > 0 ? 8 : 0) : 0
+                const isToday = date === new Date().toISOString().slice(0, 10)
+                return <div key={date} className={styles.forecastDay} title={`${date} : ${count} ${count === 1 ? 'carte' : 'cartes'}`}><span className={`${styles.forecastBar} ${isToday ? styles.forecastBarToday : ''}`} style={{ height: `${height}%` }} /></div>
+              })}
+            </div>
+            <div className={styles.forecastScale}><span>Aujourd’hui</span><span>J+30</span></div>
+          </section>
+        )}
 
-      {/* Settings */}
-      <div
-        className="rounded-2xl p-5 space-y-5 animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '150ms' }}
-      >
-        <p className="mono text-[10px] uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
-          {"Paramètres"}
-        </p>
-
-        {/* Retention slider */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
-              {"Rétention cible"}
-            </label>
-            <span className="mono text-sm font-semibold" style={{ color: COLOR }}>
-              {Math.round(draftRetention * 100)}%
-            </span>
+        <section className={styles.settingPanel}>
+          <p className={styles.panelKicker}><SlidersHorizontal size={14} weight="regular" />Réglages</p>
+          <div className={styles.controlBlock}>
+            <div className={styles.controlHeader}><label htmlFor="retention">Rétention cible</label><span className={styles.controlValue}>{Math.round(draftRetention * 100)}%</span></div>
+            <input id="retention" type="range" min={70} max={98} step={1} value={Math.round(draftRetention * 100)} onChange={(event) => setDraftRetention(parseInt(event.target.value, 10) / 100)} className={styles.range} />
+            <div className={styles.rangeScale}><span>70% · moins de révisions</span><span>98% · plus de révisions</span></div>
+            <p className={styles.controlHelp}>Probabilité de rappel souhaitée lors de chaque révision. 90% est le réglage recommandé.</p>
           </div>
-          <input
-            type="range"
-            min={70} max={98} step={1}
-            value={Math.round(draftRetention * 100)}
-            onChange={(e) => setDraftRetention(parseInt(e.target.value) / 100)}
-            className="w-full"
-            style={{ accentColor: COLOR }}
-          />
-          <div className="flex justify-between mt-1">
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{"70% · moins de révisions"}</span>
-            <span className="mono text-[9px]" style={{ color: 'var(--ink-400)' }}>{"98% · plus de révisions"}</span>
+          <div className={styles.controlBlock}>
+            <div className={styles.controlHeader}><label htmlFor="maximum-interval">Intervalle maximum</label><span className={styles.controlValue}>{draftInterval >= 365 ? `${Math.round(draftInterval / 365)} ${Math.round(draftInterval / 365) === 1 ? 'an' : 'ans'}` : `${draftInterval} j`}</span></div>
+            <input id="maximum-interval" type="number" min={30} max={36500} value={draftInterval} onChange={(event) => setDraftInterval(Math.max(30, Math.min(36500, parseInt(event.target.value, 10) || 36500)))} className={styles.numberInput} />
+            <p className={styles.controlHelp}>Intervalle maximal entre deux révisions, en jours (défaut : 36 500 j, soit environ 100 ans).</p>
           </div>
-          <p className="text-[10px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
-            {"Probabilité de rappel souhaitée lors de chaque révision. 90% est le réglage recommandé."}
-          </p>
-        </div>
+          <button onClick={saveSettings} disabled={saving || !settings || (draftRetention === settings.desired_retention && draftInterval === settings.maximum_interval)} className={styles.primaryButton}>{saving ? 'Sauvegarde…' : 'Enregistrer les paramètres'}</button>
+        </section>
 
-        {/* Max interval */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
-              {"Intervalle maximum"}
-            </label>
-            <span className="mono text-sm" style={{ color: 'var(--ink-700)' }}>
-              {draftInterval >= 365
-                ? `${Math.round(draftInterval / 365)} ${Math.round(draftInterval / 365) === 1 ? 'an' : 'ans'}`
-                : `${draftInterval} j`}
-            </span>
-          </div>
-          <input
-            type="number"
-            min={30} max={36500}
-            value={draftInterval}
-            onChange={(e) => setDraftInterval(Math.max(30, Math.min(36500, parseInt(e.target.value) || 36500)))}
-            className="w-full px-3 py-2 rounded-xl text-sm outline-none transition-colors"
-            style={{
-              background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              color: 'var(--ink)',
-            }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
-            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
-          />
-          <p className="text-[10px] mt-1.5" style={{ color: 'var(--ink-400)' }}>
-            {"Intervalle maximal entre deux révisions, en jours (défaut : 36 500 j ≈ 100 ans)."}
-          </p>
-        </div>
-
-        <button
-          onClick={saveSettings}
-          disabled={saving || !settings || (draftRetention === settings.desired_retention && draftInterval === settings.maximum_interval)}
-          className="btn btn-primary w-full"
-        >
-          {saving ? "Sauvegarde…" : "Enregistrer les paramètres"}
-        </button>
-      </div>
-
-      {/* Algorithm info */}
-      <div
-        className="rounded-2xl p-5 animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '180ms' }}
-      >
-        <p className="mono text-[10px] uppercase tracking-wider mb-3" style={{ color: 'var(--ink-400)' }}>
-          {"Algorithme"}
-        </p>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: 'var(--ink)' }}>{"Paramètres"}</span>
-            <span
-              className="mono text-xs px-2 py-0.5 rounded"
-              style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}20` }}
-            >
-              {"Standards FSRS v5"}
-            </span>
-          </div>
-          <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-400)' }}>
-            {"Studra utilise les paramètres FSRS v5 par défaut, validés sur des millions de révisions. La personnalisation algorithmique basée sur votre historique sera disponible dans une prochaine mise à jour."}
-          </p>
-          {settings && settings.total_reviews > 0 && (
-            <p className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>
-              {`${settings.total_reviews} ${settings.total_reviews === 1 ? 'révision enregistrée' : 'révisions enregistrées'}`}
-            </p>
-          )}
-        </div>
+        <section className={styles.algorithmPanel}>
+          <p className={styles.panelKicker}><Brain size={14} weight="regular" />Algorithme</p>
+          <div className={styles.algorithmRow}><span className={styles.rowLabel}>Paramètres</span><span className={styles.versionBadge}>Standards FSRS v5</span></div>
+          <p className={styles.algorithmText}>Studra utilise les paramètres FSRS v5 par défaut, validés sur des millions de révisions. La personnalisation algorithmique basée sur ton historique sera disponible dans une prochaine mise à jour.</p>
+          {settings && settings.total_reviews > 0 && <p className={styles.algorithmCount}>{`${settings.total_reviews} ${settings.total_reviews === 1 ? 'révision enregistrée' : 'révisions enregistrées'}`}</p>}
+        </section>
       </div>
     </div>
   )

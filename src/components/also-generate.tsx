@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 export type AlsoKey = 'fiche' | 'flashcards' | 'schema' | 'exam' | 'timeline'
 
 export type ResultColor = 'violet' | 'blue' | 'emerald' | 'amber' | 'rose'
@@ -80,11 +81,13 @@ interface AlsoGenerateSectionProps {
   options: AlsoKey[]
   selected: Set<AlsoKey>
   onChange: (key: AlsoKey) => void
+  quiet?: boolean
+  className?: string
 }
 
-export function AlsoGenerateSection({ options, selected, onChange }: AlsoGenerateSectionProps) {
+export function AlsoGenerateSection({ options, selected, onChange, quiet = false, className }: AlsoGenerateSectionProps) {
   return (
-    <div className="rounded-xl p-4" style={{ border: '1px solid var(--ink-200)', background: 'var(--surface-2)' }}>
+    <div className={cn('rounded-xl p-4', className)} style={{ border: '1px solid var(--ink-200)', background: 'var(--surface-2)' }}>
       <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink-700)' }}>{"Générer aussi depuis ce contenu"}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((key) => {
@@ -103,7 +106,7 @@ export function AlsoGenerateSection({ options, selected, onChange }: AlsoGenerat
                   : { background: 'transparent', borderColor: 'var(--ink-200)', color: 'var(--ink-500)' }
               }
             >
-              <span>{icon}</span>
+              {!quiet && <span>{icon}</span>}
               <span>{label}</span>
               {on && <span className="opacity-60 text-xs">✓</span>}
             </button>
@@ -133,13 +136,15 @@ interface GenerationResultsScreenProps {
   resources: GeneratedResource[]
   newPath: string
   newLabel?: string
+  quiet?: boolean
+  className?: string
 }
 
-export function GenerationResultsScreen({ resources, newPath, newLabel = 'Créer un autre contenu' }: GenerationResultsScreenProps) {
+export function GenerationResultsScreen({ resources, newPath, newLabel = 'Créer un autre contenu', quiet = false, className }: GenerationResultsScreenProps) {
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className={cn('max-w-3xl mx-auto', className)}>
       <div className="mb-8 text-center">
-        <div className="text-5xl mb-4">🎉</div>
+        {!quiet && <div className="text-5xl mb-4">🎉</div>}
         <h1 className="section-h">{"Contenu généré."}</h1>
         <p className="lede mt-3">
           {resources.length > 1
@@ -156,7 +161,7 @@ export function GenerationResultsScreen({ resources, newPath, newLabel = 'Créer
             className="app-card flex items-center gap-4 p-5 transition-all group hover:-translate-y-0.5"
             style={{ borderColor: 'var(--ink-200)' }}
           >
-            <span className="text-3xl">{r.icon}</span>
+            {!quiet && <span className="text-3xl">{r.icon}</span>}
             <div className="flex-1 min-w-0">
               <p className="font-semibold" style={{ color: 'var(--ink)' }}>{r.title}</p>
               <p className="text-sm mt-0.5" style={{ color: 'var(--ink-500)' }}>{r.description}</p>

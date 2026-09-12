@@ -5,6 +5,7 @@ import { getAffiliateStats } from '@/lib/affiliate'
 import { AffiliateRegistrationForm } from '@/components/affiliate/AffiliateRegistrationForm'
 import { AffiliateDashboard } from '@/components/affiliate/AffiliateDashboard'
 import { AffiliateGate } from './affiliate-gate'
+import styles from './affiliate.module.css'
 import type { Affiliate, AffiliateCommission, AffiliatePayout } from '@/types'
 
 export default async function AffiliatePage() {
@@ -13,58 +14,55 @@ export default async function AffiliatePage() {
   const expected = process.env.BAC_BETA_PASSWORD
   const expectedHash = expected ? createHash('sha256').update(expected).digest('hex') : null
 
-  if (!expectedHash || access?.value !== expectedHash) {
-    return <AffiliateGate />
-  }
+  if (!expectedHash || access?.value !== expectedHash) return <AffiliateGate />
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data: settings, error: settingsError } = await supabase
+    .from('affiliate_settings')
+    .select('minimum_payout_threshold, affiliate_terms_version')
+    .eq('id', 1)
+    .single()
+  if (settingsError || !settings) throw new Error('Configuration affiliation indisponible')
 
   const { data: affiliate } = await supabase
     .from('affiliates')
     .select('*')
-    .eq('user_id', user!.id)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   if (!affiliate) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">{"Programme d'affiliation"}</h1>
-        <p className="text-sm mb-8" style={{ color: 'var(--text-4)' }}>
-          {"Parrainez vos amis et gagnez une commission récurrente à vie."}
-        </p>
-        <AffiliateRegistrationForm userEmail={user!.email ?? ''} />
-      </div>
+      <main className={styles.affiliatePage}>
+        <header>
+          <p className={styles.context}>Affiliation</p>
+          <h1>Programme d’affiliation</h1>
+          <p className={styles.summary}>Parraine de nouveaux utilisateurs et reçois une commission sur leurs paiements éligibles.</p>
+        </header>
+        <div className={styles.registration}><AffiliateRegistrationForm userEmail={user.email ?? ''} termsVersion={settings.affiliate_terms_version} /></div>
+      </main>
     )
   }
 
-  const [stats, commissionsRes, payoutsRes, settingsRes] = await Promise.all([
+  const [stats, commissionsRes, payoutsRes] = await Promise.all([
     getAffiliateStats(affiliate.id),
-    supabase
-      .from('affiliate_commissions')
-      .select('*')
-      .eq('affiliate_id', affiliate.id)
-      .order('created_at', { ascending: false })
-      .limit(50),
-    supabase
-      .from('affiliate_payouts')
-      .select('*')
-      .eq('affiliate_id', affiliate.id)
-      .order('created_at', { ascending: false }),
-    supabase.from('affiliate_settings').select('minimum_payout_threshold').eq('id', 1).single(),
+    supabase.from('affiliate_commissions').select('*').eq('affiliate_id', affiliate.id).order('created_at', { ascending: false }).limit(50),
+    supabase.from('affiliate_payouts').select('*').eq('affiliate_id', affiliate.id).order('created_at', { ascending: false }),
   ])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://studra.fr'
-  const threshold = settingsRes.data?.minimum_payout_threshold ?? 10
-
   return (
-    <AffiliateDashboard
-      affiliate={affiliate as Affiliate}
-      stats={stats}
-      commissions={(commissionsRes.data ?? []) as AffiliateCommission[]}
-      payouts={(payoutsRes.data ?? []) as AffiliatePayout[]}
-      appUrl={appUrl}
-      minimumPayoutThreshold={Number(threshold)}
-    />
+    <main className={styles.affiliatePage}>
+      <AffiliateDashboard
+        affiliate={affiliate as Affiliate}
+        stats={stats}
+        commissions={(commissionsRes.data ?? []) as AffiliateCommission[]}
+        payouts={(payoutsRes.data ?? []) as AffiliatePayout[]}
+        appUrl={appUrl}
+        minimumPayoutThreshold={Number(settings.minimum_payout_threshold)}
+      />
+    </main>
   )
 }

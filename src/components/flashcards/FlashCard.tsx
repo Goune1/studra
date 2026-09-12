@@ -1,32 +1,30 @@
 'use client'
 
 import { useState } from 'react'
+import { BookOpen, GitBranch, Lightbulb, ListNumbers, SpinnerGap, X } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { Lightbulb, GitMerge, Globe, BookOpen, ListOrdered, X } from 'lucide-react'
-const COLOR = '#1F4D3F'
+import styles from './study-card.module.css'
 
 type ExplainStyle = 'analogy' | 'example' | 'simple' | 'stepbystep'
 
 interface FlashCardProps {
   question: string
   answer: string
-  /** Notified whenever the card is flipped */
   onFlipChange?: (flipped: boolean) => void
-  current: number
-  total: number
 }
 
-export function FlashCard({ question, answer, onFlipChange, current, total }: FlashCardProps) {
+const EXPLAIN_STYLES = [
+  { key: 'analogy' as const, label: 'Avec une analogie', Icon: GitBranch },
+  { key: 'example' as const, label: 'Avec un exemple', Icon: Lightbulb },
+  { key: 'simple' as const, label: 'Plus simplement', Icon: BookOpen },
+  { key: 'stepbystep' as const, label: 'Étape par étape', Icon: ListNumbers },
+]
+
+export function FlashCard({ question, answer, onFlipChange }: FlashCardProps) {
   const [flipped, setFlipped] = useState(false)
   const [showExplain, setShowExplain] = useState(false)
   const [explaining, setExplaining] = useState(false)
   const [explanation, setExplanation] = useState<string | null>(null)
-  const explainStyles = [
-    { key: 'analogy' as const, label: "Analogie", Icon: GitMerge },
-    { key: 'example' as const, label: "Exemple concret", Icon: Globe },
-    { key: 'simple' as const, label: "Explication simple", Icon: BookOpen },
-    { key: 'stepbystep' as const, label: "Étape par étape", Icon: ListOrdered },
-  ]
 
   function handleFlip() {
     const next = !flipped
@@ -34,131 +32,70 @@ export function FlashCard({ question, answer, onFlipChange, current, total }: Fl
     onFlipChange?.(next)
   }
 
-
   async function handleExplain(style: ExplainStyle) {
     setExplaining(true)
     setShowExplain(false)
     try {
-      const res = await fetch('/api/generate/explain', {
+      const response = await fetch('/api/generate/explain', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, answer, style }),
       })
-      const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? "Erreur"); return }
+      const json = await response.json()
+      if (!response.ok) {
+        toast.error(json.error ?? 'Impossible de générer une explication')
+        return
+      }
       setExplanation(json.explanation)
     } catch {
-      toast.error("Erreur lors de la génération")
+      toast.error('Impossible de générer une explication')
     } finally {
       setExplaining(false)
     }
   }
 
   return (
-    <div className="flex flex-col items-center gap-5 w-full max-w-xl mx-auto">
-      {/* Progress */}
-      <div className="w-full flex items-center gap-3">
-        <div className="flex-1 h-1 rounded-full" style={{ background: 'var(--border)' }}>
-          <div className="h-1 rounded-full transition-all duration-500"
-            style={{ width: `${(current / total) * 100}%`, background: COLOR }} />
-        </div>
-        <span className="text-[10px] tabular-nums shrink-0"
-          style={{ color: 'var(--text-4)', fontFamily: 'var(--font-mono, monospace)' }}>
-          {current}/{total}
+    <div className={styles.studyCardShell}>
+      <button type="button" className={`${styles.flipCard}${flipped ? ` ${styles.flipped}` : ''}`} onClick={handleFlip} aria-label={flipped ? 'Afficher la question' : 'Afficher la réponse'}>
+        <span className={styles.flipInner}>
+          <span className={styles.cardFace}>
+            <span className={styles.faceHeader}><span>Question</span><span>Espace pour révéler</span></span>
+            <span className={styles.faceContent}>{question}</span>
+            <span className={styles.faceFooter}>Réfléchis avant de retourner la carte</span>
+          </span>
+          <span className={`${styles.cardFace} ${styles.cardBack}`}>
+            <span className={styles.faceHeader}><span>Réponse</span><span>Cliquer pour revoir la question</span></span>
+            <span className={styles.faceContent}>{explanation || answer}</span>
+            {explanation && <span className={styles.originalAnswer}>Réponse initiale : {answer}</span>}
+            <span className={styles.faceFooter}>Évalue maintenant la difficulté réelle</span>
+          </span>
         </span>
-      </div>
+      </button>
 
-      {/* Card */}
-      <div className={`card-flip w-full cursor-pointer select-none${flipped ? ' flipped' : ''}`}
-        style={{ height: 280 }}
-        onClick={handleFlip}>
-        <div className="card-flip-inner">
-          {/* Front */}
-          <div className="card-front rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
-            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
-            <span className="mono text-[9px] font-medium uppercase tracking-widest"
-              style={{ color: 'var(--ink-400)' }}>{"Question"}</span>
-            <p className="text-xl text-center leading-snug" style={{ color: 'var(--ink)' }}>
-              {question}
-            </p>
-            <span className="text-[10px] mt-2" style={{ color: 'var(--ink-400)' }}>
-              {"[Espace] pour retourner"}
-            </span>
-          </div>
-
-          {/* Back */}
-          <div className="card-back rounded-2xl flex flex-col items-center justify-center p-8 gap-4"
-            style={{ background: 'var(--bg-elev)', border: `1px solid ${COLOR}40`, backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}>
-            <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: COLOR }}>
-              {"Réponse"}
-            </span>
-            {explanation ? (
-              <div className="text-center space-y-2">
-                <p className="text-sm line-through opacity-40" style={{ color: 'var(--ink)' }}>{answer}</p>
-                <p className="text-base leading-relaxed italic" style={{ color: 'var(--ink)' }}>{explanation}</p>
-                <button onClick={(e) => { e.stopPropagation(); setExplanation(null) }}
-                  className="flex items-center gap-1 text-[10px] mx-auto transition-opacity hover:opacity-70"
-                  style={{ color: COLOR }}>
-                  <X size={10} />{"Voir la réponse originale"}
-                </button>
-              </div>
-            ) : (
-              <p className="text-xl text-center leading-snug" style={{ color: 'var(--ink)' }}>{answer}</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Explain button — only shown when flipped */}
       {flipped && (
-        <div className="w-full animate-fade-in">
+        <div className={styles.explainArea}>
           {showExplain ? (
-            <div className="rounded-xl p-3 border" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
-                <p className="text-[9px] font-semibold uppercase tracking-widest text-center mb-2.5"
-                style={{ color: 'var(--text-4)' }}>{"Style d'explication"}</p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {explainStyles.map(({ key, label, Icon }) => (
-                  <button key={key} onClick={() => handleExplain(key)} disabled={explaining}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs text-left transition-all hover:-translate-y-0.5 disabled:opacity-40"
-                    style={{ background: 'var(--surface-2)', color: 'var(--text-2)', border: '1px solid var(--border)' }}>
-                    <Icon size={12} style={{ color: COLOR, flexShrink: 0 }} />
+            <div className={styles.explainPanel}>
+              <div className={styles.explainPanelHeader}>
+                <div><span>Besoin d’un autre angle ?</span><strong>Choisis une manière d’expliquer</strong></div>
+                <button type="button" onClick={() => setShowExplain(false)} aria-label="Fermer"><X size={15} /></button>
+              </div>
+              <div className={styles.explainOptions}>
+                {EXPLAIN_STYLES.map(({ key, label, Icon }) => (
+                  <button type="button" key={key} onClick={() => handleExplain(key)} disabled={explaining}>
+                    <Icon size={15} aria-hidden="true" />
                     {label}
                   </button>
                 ))}
               </div>
-              <button onClick={() => setShowExplain(false)}
-                className="mt-2 w-full text-[10px] text-center transition-colors hover:opacity-60"
-                style={{ color: 'var(--text-4)' }}>
-                {"Annuler"}
-              </button>
             </div>
           ) : (
-            <button onClick={(e) => { e.stopPropagation(); setShowExplain(true) }}
-              disabled={explaining}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs transition-all hover:-translate-y-0.5 disabled:opacity-40"
-              style={{ background: 'var(--surface)', color: 'var(--text-3)', border: '1px solid var(--border)' }}>
-              {explaining ? (
-                <>
-                  <div className="w-3 h-3 rounded-full border border-t-transparent animate-spin" style={{ borderColor: COLOR }} />
-                  {"Génération…"}
-                </>
-              ) : (
-                <>
-                  <Lightbulb size={12} style={{ color: COLOR }} />
-                  {"Expliquer autrement"}
-                </>
-              )}
+            <button type="button" className={styles.explainButton} onClick={() => setShowExplain(true)} disabled={explaining}>
+              {explaining ? <SpinnerGap size={16} className={styles.spinner} /> : <Lightbulb size={16} />}
+              {explaining ? 'Génération de l’explication…' : 'Expliquer autrement'}
             </button>
           )}
         </div>
-      )}
-
-      {!flipped && (
-        <button onClick={handleFlip}
-          className="px-6 py-2.5 rounded-xl text-xs transition-all hover:-translate-y-0.5"
-          style={{ background: 'var(--surface)', color: 'var(--text-3)', border: '1px solid var(--border)' }}>
-          {"Retourner la carte"}
-        </button>
       )}
     </div>
   )

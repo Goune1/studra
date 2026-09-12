@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown, BookOpen, MessagesSquare } from 'lucide-react'
+import { BookOpen, CaretDown, Chats } from '@phosphor-icons/react'
 import type { MockCard } from '@/lib/lacunes/mock'
 
 const COLOR = '#1F4D3F'
@@ -27,10 +27,10 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden transition-all duration-200 animate-fade-up"
+      className="rounded-[11px] overflow-hidden transition-all duration-200 animate-fade-up"
       style={{
-        background: 'var(--surface)',
-        border: open ? `1px solid ${color}30` : '1px solid var(--border)',
+        background: 'var(--bg-elev)',
+        border: open ? `1px solid ${color}30` : '1px solid var(--ink-200)',
         animationDelay: `${index * 50}ms`,
       }}
     >
@@ -52,12 +52,12 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
           {/* Right meta */}
           <div className="flex-shrink-0 flex items-center gap-3">
             <span
-              className="mono text-xs hidden sm:block tabular-nums"
+              className=" text-xs hidden sm:block tabular-nums"
               style={{ color: 'var(--ink-400)' }}
             >
               {wrong}/{card.attempts.length} {"À retravailler"}
             </span>
-            <ChevronDown
+            <CaretDown
               size={16}
               style={{ color: 'var(--ink-400)', transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 200ms' }}
             />
@@ -65,7 +65,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
         </div>
 
         {/* Progress bar */}
-        <div className="h-px mx-5" style={{ background: 'var(--border)' }} />
+        <div className="h-px mx-5" style={{ background: 'var(--ink-200)' }} />
         <div className="h-[3px] rounded-b-sm overflow-hidden">
           <div
             className="h-full transition-all duration-700"
@@ -79,7 +79,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{ maxHeight: open ? '420px' : '0px' }}
       >
-        <div className="px-5 py-4 space-y-4" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="px-5 py-4 space-y-4" style={{ borderTop: '1px solid var(--ink-200)' }}>
           {/* Answer */}
           <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-700)' }}>
             {card.answer}
@@ -87,7 +87,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
 
           {/* Attempt timeline */}
           <div>
-            <p className="mono text-[10px] uppercase tracking-widest mb-2" style={{ color: 'var(--ink-400)' }}>
+            <p className=" text-[10px] uppercase tracking-widest mb-2" style={{ color: 'var(--ink-400)' }}>
               {"Sessions analysées"}
             </p>
             <div className="flex items-center gap-2">
@@ -101,7 +101,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
                     }}
                   />
                   <span
-                    className="mono text-[9px] tabular-nums"
+                    className=" text-[9px] tabular-nums"
                     style={{ color: 'var(--ink-400)' }}
                   >
                     #{i + 1}
@@ -115,7 +115,7 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
           <div className="flex gap-2 pt-1">
             <Link
               href={`/flashcards/${card.deckId}/study?card=${card.id}`}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-90 hover:-translate-y-0.5"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-90 "
               style={{ background: COLOR + '12', border: `1px solid ${COLOR}30`, color: COLOR }}
             >
               <BookOpen size={12} />
@@ -123,16 +123,16 @@ export function WeaknessCard({ card, index }: WeaknessCardProps) {
             </Link>
             <Link
               href="/socrate/new"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-90 hover:-translate-y-0.5"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink-700)' }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-90 "
+              style={{ background: '#fcfcfb', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
             >
-              <MessagesSquare size={12} />
+              <Chats size={14} />
               {"Mode Socrate"}
             </Link>
           </div>
 
           {/* Last seen */}
-          <p className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
+          <p className=" text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
             {`Vu pour la dernière fois : ${format.dateTime(new Date(card.lastSeen), {day: 'numeric', month: 'short', year: 'numeric'})}`}
           </p>
         </div>

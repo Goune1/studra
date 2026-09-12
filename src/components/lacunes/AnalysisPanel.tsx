@@ -1,23 +1,16 @@
 'use client'
 
-import {
-  Sparkles,
-  BookOpen,
-  Link as LinkIcon,
-  Repeat,
-  Users,
-  type LucideIcon,
-} from 'lucide-react'
+import { ArrowClockwise, BookOpen, LinkSimple, Sparkle, Users } from '@phosphor-icons/react'
 import { ScoreRing } from './ScoreRing'
 import type { LacunesAnalysis } from '@/lib/lacunes/mock'
 import type { MockStats } from '@/lib/lacunes/mock'
 
 const COLOR = '#1F4D3F'
 
-const ICON_MAP: Record<string, LucideIcon> = {
+const ICON_MAP = {
   BookOpen,
-  Link: LinkIcon,
-  Repeat,
+  Link: LinkSimple,
+  Repeat: ArrowClockwise,
   Users,
 }
 
@@ -33,18 +26,18 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
 
   return (
     <div
-      className="rounded-2xl p-6 space-y-6 sticky top-8"
+      className="rounded-[11px] p-6 space-y-6 sticky top-8"
       style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
+        background: 'var(--bg-elev)',
+        border: '1px solid var(--ink-200)',
       }}
     >
       {/* Panel header */}
       <div>
         <div className="flex items-center gap-1.5 mb-2">
-          <Sparkles size={13} style={{ color: COLOR }} />
+          <Sparkle size={13} style={{ color: COLOR }} />
           <span
-            className="mono text-[10px] font-semibold uppercase tracking-widest"
+            className=" text-[10px] font-semibold uppercase tracking-widest"
             style={{ color: COLOR }}
           >
             {"Analyse"}
@@ -64,13 +57,13 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
         />
       </div>
 
-      <div className="h-px" style={{ background: 'var(--border)' }} />
+      <div className="h-px" style={{ background: 'var(--ink-200)' }} />
 
       {/* Diagnostic */}
       <div className="space-y-3">
         {/* Summary callout */}
         <div
-          className="px-4 py-3 rounded-xl"
+          className="px-4 py-3 rounded-lg"
           style={{ background: 'var(--accent-soft)' }}
         >
           <p className="text-sm leading-relaxed italic" style={{ color: 'var(--ink-700)' }}>
@@ -92,26 +85,26 @@ export function AnalysisPanel({ analysis, stats, totalCards }: AnalysisPanelProp
         </div>
       </div>
 
-      <div className="h-px" style={{ background: 'var(--border)' }} />
+      <div className="h-px" style={{ background: 'var(--ink-200)' }} />
 
       {/* Conseils */}
       <div className="space-y-2">
         <p
-          className="mono text-[10px] font-semibold uppercase tracking-widest mb-3"
+          className=" text-[10px] font-semibold uppercase tracking-widest mb-3"
           style={{ color: 'var(--ink-400)' }}
         >
           {"Conseils ciblés"}
         </p>
 
         {analysis.conseils.map((conseil, i) => {
-          const Icon = ICON_MAP[conseil.icon] ?? BookOpen
+          const Icon = ICON_MAP[conseil.icon as keyof typeof ICON_MAP] ?? BookOpen
           return (
             <div
               key={i}
-              className="flex gap-3 px-3 py-3 rounded-xl transition-all duration-150 hover:-translate-y-0.5 cursor-default"
+              className="flex gap-3 px-3 py-3 rounded-lg transition-all duration-150  cursor-default"
               style={{
-                background: 'var(--surface-2)',
-                border: '1px solid var(--border)',
+                background: '#fcfcfb',
+                border: '1px solid var(--ink-200)',
               }}
             >
               <div

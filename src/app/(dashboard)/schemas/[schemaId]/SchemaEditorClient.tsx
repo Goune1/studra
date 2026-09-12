@@ -5,7 +5,7 @@ import type { SchemaData } from '@/types'
 
 function SchemaEditorLoading() {
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(230,231,238,0.55)', fontSize: 13 }}>
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-500)', fontSize: 13 }}>
       Chargement…
     </div>
   )

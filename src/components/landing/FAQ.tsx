@@ -23,10 +23,6 @@ export default function FAQ() {
     <section className="sec" id="faq">
       <div className="container" style={{ maxWidth: 720, margin: "0 auto" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 48 }}>
-          <div className="eyebrow">
-            <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>{"Questions fréquentes"}</span>
-          </div>
           <h2 className="section-h">
             {"Tout ce que tu peux te demander"}<br />
             <span className="dim">{"avant de t'inscrire."}</span>

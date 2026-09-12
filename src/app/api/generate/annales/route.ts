@@ -23,9 +23,6 @@ export async function POST(request: Request) {
     return NextResponse.json(aiRateLimitResponse(rateLimit.reason), { status: 429 })
   }
 
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  if (!profile) return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 })
-
   const body = await request.json()
   const rawExam = (body as { exam_text?: unknown }).exam_text
   const rawCourse = (body as { course_content?: unknown }).course_content

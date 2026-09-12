@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { CaretDown } from '@phosphor-icons/react'
 import type { TimelineEvent, TimelineData } from '@/types'
 
 // Catégories — palette désaturée, cohérente avec le système clair
 const categoryColors: Record<string, string> = {
-  politique: '#3E6B7A', militaire: '#B4503C', economique: '#A8762E',
-  social: '#1F4D3F', culturel: '#7A5E8A', default: '#6b7280',
+  politique: '#1F4D3F', militaire: '#1F4D3F', economique: '#1F4D3F',
+  social: '#1F4D3F', culturel: '#1F4D3F', default: '#1F4D3F',
 }
 
 const categoryLabels: Record<string, string> = {
@@ -26,8 +26,8 @@ function CardContent({
 
   return (
     <div
-      className="cursor-pointer rounded-xl border transition-all duration-200 hover:-translate-y-0.5 overflow-hidden"
-      style={{ backgroundColor: config.color + '0e', borderColor: config.color + '33' }}
+      className="cursor-pointer rounded-lg border overflow-hidden"
+      style={{ backgroundColor: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}
       onClick={() => setExpanded(!expanded)}
     >
       <div className="flex items-center justify-between gap-2 px-4 pt-3 pb-2">
@@ -45,7 +45,7 @@ function CardContent({
             {config.label}
           </span>
         </div>
-        <ChevronDown
+        <CaretDown
           size={14}
           className="flex-shrink-0 transition-transform duration-200"
           style={{ color: config.color + '99', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
@@ -149,7 +149,7 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setActiveFilter(null)}
-          className="text-xs px-3 py-1.5 rounded-full font-medium transition-all"
+          className="text-xs px-3 py-1.5 rounded-md font-medium transition-colors"
           style={{
             backgroundColor: activeFilter === null ? 'var(--accent-soft)' : 'transparent',
             color: activeFilter === null ? 'var(--accent)' : 'var(--ink-500)',
@@ -163,7 +163,7 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
           const active = activeFilter === cat
           return (
             <button key={cat} onClick={() => setActiveFilter(active ? null : cat)}
-              className="text-xs px-3 py-1.5 rounded-full font-medium transition-all"
+              className="text-xs px-3 py-1.5 rounded-md font-medium transition-colors"
               style={{
                 backgroundColor: active ? c.color + '30' : c.color + '12',
                 color: active ? c.color : c.color + 'aa',
@@ -180,11 +180,11 @@ export function TimelineViewer({ data }: { data: TimelineData }) {
       <div className="relative">
         {/* Mobile line */}
         <div className="absolute top-0 bottom-0 w-px md:hidden"
-          style={{ left: '5px', background: 'linear-gradient(to bottom, transparent, var(--ink-200) 5%, var(--ink-200) 95%, transparent)' }}
+          style={{ left: '5px', background: 'var(--ink-200)' }}
         />
         {/* Desktop center line */}
         <div className="absolute top-0 bottom-0 w-px hidden md:block"
-          style={{ left: 'calc(50% - 0.5px)', background: 'linear-gradient(to bottom, transparent, var(--ink-200) 5%, var(--ink-200) 95%, transparent)' }}
+          style={{ left: 'calc(50% - 0.5px)', background: 'var(--ink-200)' }}
         />
 
         <div className="pl-5 md:pl-0 space-y-4 md:space-y-5">

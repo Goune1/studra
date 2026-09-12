@@ -1,6 +1,17 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
-import { DashboardShell } from '@/components/dashboard-shell'
+import { Manrope } from 'next/font/google'
+import { Suspense } from 'react'
+import { DashboardLayoutContent } from './dashboard-layout-content'
+import { DashboardShellSkeleton } from '@/components/dashboard-shell-skeleton'
+import styles from './dashboard-font.module.css'
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-manrope',
+  display: 'swap',
+})
+
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
@@ -8,28 +19,16 @@ export const metadata: Metadata = {
   alternates: { canonical: null },
 }
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = user
-    ? await supabase.from('profiles').select('plan').eq('id', user.id).single()
-    : { data: null }
-
-  const isPro = profile?.plan === 'pro'
-  const userName = (user?.user_metadata?.full_name as string | undefined)
-    ?? (user?.user_metadata?.name as string | undefined)
-    ?? user?.email?.split('@')[0]
-    ?? 'Utilisateur'
-  const userEmail = user?.email ?? ''
-  const userAvatar = (user?.user_metadata?.avatar_url as string | null) ?? null
-
   return (
-    <DashboardShell isPro={isPro} userName={userName} userEmail={userEmail} userAvatar={userAvatar}>
-      {children}
-    </DashboardShell>
+    <div className={`${manrope.variable} ${manrope.className} ${styles.scope}`}>
+      <Suspense fallback={<DashboardShellSkeleton />}>
+        <DashboardLayoutContent>{children}</DashboardLayoutContent>
+      </Suspense>
+    </div>
   )
 }

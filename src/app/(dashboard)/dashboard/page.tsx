@@ -16,13 +16,13 @@ export default async function DashboardPage() {
   const isNewUser = data.dueCards === 0 && data.recentItems.length === 0 && data.todayTasks.length === 0
 
   return (
-    <>
+    <div>
       <DashboardTracker />
       {isNewUser ? (
         <DashboardEmpty user={data.user} dateLabel={dateLabel} upcomingExams={data.upcomingExams} />
       ) : (
         <DashboardActive data={data} dateLabel={dateLabel} />
       )}
-    </>
+    </div>
   )
 }

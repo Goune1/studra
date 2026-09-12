@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { Camera, Check, FilePdf, FileText, SpinnerGap, YoutubeLogo } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { ImageUploadInput } from '@/components/image-upload-input'
+import { cn } from '@/lib/utils'
 interface ContentInputFormProps {
   onSubmit: (data: { title: string; subject: string; content: string; language: string }) => Promise<void>
   submitLabel: string
@@ -10,6 +12,7 @@ interface ContentInputFormProps {
   contentPlaceholder: string
   loading: boolean
   extras?: React.ReactNode
+  className?: string
 }
 
 const MAX_CHARS = 100000
@@ -35,6 +38,7 @@ export function ContentInputForm({
   contentPlaceholder,
   loading,
   extras,
+  className,
 }: ContentInputFormProps) {
   const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
 
@@ -103,7 +107,7 @@ export function ContentInputForm({
   const busy = loading || extracting
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={cn('space-y-4', className)}>
       {/* Title + Subject */}
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
@@ -163,20 +167,25 @@ export function ContentInputForm({
       {/* Source type tabs */}
       <div>
         <div className="flex gap-1 mb-3 p-1 rounded-xl w-fit" style={{ background: 'var(--surface-2)' }}>
-          {([['text', 'Texte', '📝'], ['pdf', 'PDF', '📄'], ['youtube', 'YouTube', '🎬'], ['photo', 'Photo', '📷']] as const).map(([tab, label, icon]) => (
+          {([
+            ['text', 'Texte', FileText],
+            ['pdf', 'PDF', FilePdf],
+            ['youtube', 'YouTube', YoutubeLogo],
+            ['photo', 'Photo', Camera],
+          ] as const).map(([tab, label, Icon]) => (
             <button
               key={tab}
               type="button"
               disabled={busy}
               onClick={() => setSourceTab(tab)}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2"
               style={
                 sourceTab === tab
                   ? { background: 'var(--accent)', color: 'var(--accent-fg)' }
                   : { background: 'transparent', color: 'var(--ink-500)' }
               }
             >
-              {icon} {label}
+              <Icon size={15} aria-hidden="true" /> {label}
             </button>
           ))}
         </div>
@@ -195,7 +204,7 @@ export function ContentInputForm({
               required
               disabled={busy}
               rows={12}
-              className="w-full px-4 py-3 rounded-xl outline-none transition-colors disabled:opacity-50 resize-none font-mono text-sm"
+              className="w-full px-4 py-3 rounded-xl outline-none transition-colors disabled:opacity-50 resize-none  text-sm"
               style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
               onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
               onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
@@ -222,18 +231,18 @@ export function ContentInputForm({
             />
             {extracting ? (
               <div className="flex flex-col items-center gap-2" style={{ color: 'var(--accent)' }}>
-                <span className="animate-spin text-2xl">⟳</span>
+                <SpinnerGap size={24} className="animate-spin" aria-hidden="true" />
                 <span className="text-sm">{"Extraction du PDF..."}</span>
               </div>
             ) : content && sourceTab === 'pdf' ? (
               <div style={{ color: 'var(--accent)' }}>
-                <div className="text-2xl mb-1">✓</div>
+                <Check size={24} className="mx-auto mb-1" aria-hidden="true" />
                 <div className="text-sm">{`${content.length} caractères extraits`}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--ink-500)' }}>{"Cliquez pour changer de fichier"}</div>
               </div>
             ) : (
               <div style={{ color: 'var(--ink-500)' }}>
-                <div className="text-3xl mb-2">📄</div>
+                <FilePdf size={30} className="mx-auto mb-2" aria-hidden="true" />
                 <div className="font-medium mb-1" style={{ color: 'var(--ink)' }}>{"Déposez votre PDF ici"}</div>
                 <div className="text-sm">{"ou cliquez pour sélectionner un fichier"}</div>
                 <div className="text-xs mt-2" style={{ color: 'var(--ink-400)' }}>{"Max 10 Mo · PDF uniquement"}</div>
@@ -274,7 +283,7 @@ export function ContentInputForm({
                   disabled={busy || !youtubeUrl}
                   className="btn btn-primary disabled:cursor-not-allowed"
                 >
-                  {extracting ? <span className="animate-spin">⟳</span> : "Extraire"}
+                  {extracting ? <SpinnerGap size={16} className="animate-spin" aria-hidden="true" /> : "Extraire"}
                 </button>
               </div>
             </div>
@@ -303,7 +312,7 @@ export function ContentInputForm({
       >
         {loading ? (
           <>
-            <span className="animate-spin">⟳</span>
+            <SpinnerGap size={17} className="animate-spin" aria-hidden="true" />
             {"Génération en cours..."}
           </>
         ) : (

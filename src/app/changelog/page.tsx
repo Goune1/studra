@@ -35,18 +35,6 @@ const entries: Entry[] = [
       'Blocage de l\'escalade de privilèges sur les profils utilisateur et les abonnements Pro',
       'Limite dure de 200 appels IA par jour et par utilisateur, avec protection anti-burst par endpoint',
       'Mise à jour de Next.js vers 16.2.6 pour corriger les vulnérabilités critiques connues',
-      'Chiffrement applicatif AES-256-GCM des identifiants et données Pronote stockés en base',
-    ],
-  },
-  {
-    date: '20 mai 2026',
-    tag: 'Nouvelle fonctionnalité',
-    title: 'Page Bac avec intégration Pronote',
-    items: [
-      'Connexion à Pronote via identifiants ou QR code pour récupérer automatiquement tes notes',
-      'Affichage des notes par période et par matière',
-      'Simulateur de moyenne bac avec calcul des coefficients',
-      'Accès bêta protégé par mot de passe (hash SHA-256 en cookie, jamais de mot de passe en clair)',
     ],
   },
   {

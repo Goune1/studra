@@ -72,14 +72,14 @@ export function ScoreRing({ rate, masteredCount, weakCount }: ScoreRingProps) {
           <div className="text-lg font-semibold tabular-nums" style={{ color: '#10B981' }}>
             {masteredCount}
           </div>
-          <div className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>{"maîtrisées"}</div>
+          <div className=" text-[10px]" style={{ color: 'var(--ink-400)' }}>{"maîtrisées"}</div>
         </div>
         <div className="w-px" style={{ background: 'var(--border)' }} />
         <div className="text-center">
           <div className="text-lg font-semibold tabular-nums" style={{ color: '#EF4444' }}>
             {weakCount}
           </div>
-          <div className="mono text-[10px]" style={{ color: 'var(--ink-400)' }}>{"À retravailler"}</div>
+          <div className=" text-[10px]" style={{ color: 'var(--ink-400)' }}>{"À retravailler"}</div>
         </div>
       </div>
     </div>
