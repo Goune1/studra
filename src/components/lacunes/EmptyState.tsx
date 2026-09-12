@@ -9,8 +9,8 @@ export function EmptyState() {
       </div>
 
       <h2
-        className="text-2xl text-white mb-3 tracking-tight"
-        style={{  }}
+        className="text-2xl font-medium mb-3 tracking-tight"
+        style={{ color: 'var(--ink)', letterSpacing: '-0.03em' }}
       >
         {"Aucune donnée de révision"}
       </h2>

@@ -21,7 +21,7 @@ export function DashboardContentSkeleton() {
 
 export function DashboardShellSkeleton() {
   return (
-    <div className={styles.shell} role="status" aria-label="Chargement de l’application">
+    <div className={`app-v2 ${styles.shell}`} role="status" aria-label="Chargement de l’application">
       <aside className={styles.sidebar} aria-hidden="true">
         <div className={styles.brand}><SkeletonLine width="78px" /></div>
         <div className={styles.navigation}>

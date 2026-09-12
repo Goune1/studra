@@ -2,8 +2,10 @@
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
+import { Percent } from '@phosphor-icons/react'
 import { registerAffiliate } from '@/app/(dashboard)/affiliate/actions'
 import Link from 'next/link'
+import styles from './affiliate.module.css'
 
 export function AffiliateRegistrationForm({
   userEmail,
@@ -30,67 +32,71 @@ export function AffiliateRegistrationForm({
   }
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-      <div className="mb-6 p-4 rounded-xl bg-violet-500/10 border border-violet-500/20">
-        <p className="text-sm text-violet-300 font-medium mb-1">{"20% sur les paiements éligibles"}</p>
-        <p className="text-xs" style={{ color: 'var(--text-4)' }}>
-          {"Les commissions sont calculées sur les montants effectivement encaissés, puis deviennent payables après le délai de validation. Les remboursements et litiges sont déduits."}
-        </p>
+    <div className={`${styles.panel} ${styles.section}`}>
+      <div className={styles.notice}>
+        <Percent size={16} weight="regular" />
+        <div>
+          <strong>{"20% sur les paiements éligibles"}</strong>
+          <p>
+            {"Les commissions sont calculées sur les montants effectivement encaissés, puis deviennent payables après le délai de validation. Les remboursements et litiges sont déduits."}
+          </p>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className={styles.form}>
         <input type="hidden" name="terms_version" value={termsVersion} />
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">{"Prénom"} *</label>
+
+        <div className={styles.fieldGrid}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="first_name">{"Prénom"} *</label>
             <input
+              id="first_name"
               name="first_name"
               required
               maxLength={100}
-              className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors"
+              className={styles.input}
               placeholder="Jean"
             />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">{"Nom"} *</label>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="last_name">{"Nom"} *</label>
             <input
+              id="last_name"
               name="last_name"
               required
               maxLength={100}
-              className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors"
+              className={styles.input}
               placeholder="Dupont"
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">{"Email de contact"} *</label>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="contact_email">{"Email de contact"} *</label>
           <input
+            id="contact_email"
             name="contact_email"
             type="email"
             required
             defaultValue={userEmail}
             maxLength={254}
-            className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors"
+            className={styles.input}
             placeholder="jean@example.com"
           />
         </div>
 
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-2">{"Moyen de paiement"} *</label>
-          <div className="grid grid-cols-2 gap-3">
+        <div className={styles.field}>
+          <span className={styles.label}>{"Moyen de paiement"} *</span>
+          <div className={styles.choiceGrid}>
             {(['paypal', 'bank_transfer'] as const).map((m) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setMethod(m)}
-                className={`px-4 py-3 rounded-xl border text-sm font-medium transition-colors text-left ${
-                  method === m
-                    ? 'border-violet-500/50 bg-violet-500/10 text-violet-300'
-                    : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
-                }`}
+                aria-pressed={method === m}
+                className={`${styles.choice} ${method === m ? styles.choiceActive : ''}`}
               >
-                {m === 'paypal' ? "💳 PayPal" : "🏦 Virement bancaire"}
+                {m === 'paypal' ? 'PayPal' : 'Virement bancaire'}
               </button>
             ))}
           </div>
@@ -98,71 +104,71 @@ export function AffiliateRegistrationForm({
         </div>
 
         {method === 'paypal' ? (
-          <div>
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">{"Email PayPal"} *</label>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="paypal_email">{"Email PayPal"} *</label>
             <input
+              id="paypal_email"
               name="paypal_email"
               type="email"
               required
               maxLength={254}
-              className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors"
+              className={styles.input}
               placeholder="jean@paypal.com"
             />
           </div>
         ) : (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">{"Titulaire du compte"} *</label>
+          <div className={styles.form}>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="account_holder_name">{"Titulaire du compte"} *</label>
               <input
+                id="account_holder_name"
                 name="account_holder_name"
                 required
                 maxLength={200}
-                className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors"
+                className={styles.input}
                 placeholder="Jean Dupont"
               />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">{"IBAN"} *</label>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="iban">{"IBAN"} *</label>
               <input
+                id="iban"
                 name="iban"
                 required
                 maxLength={34}
-                className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors font-mono"
+                className={`${styles.input} ${styles.mono}`}
                 placeholder="FR76 3000 6000 0112 3456 7890 189"
               />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">{"BIC / SWIFT (optionnel)"}</label>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="bic">{"BIC / SWIFT (optionnel)"}</label>
               <input
+                id="bic"
                 name="bic"
                 maxLength={11}
-                className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors font-mono"
+                className={`${styles.input} ${styles.mono}`}
                 placeholder="BNPAFRPP"
               />
             </div>
           </div>
         )}
 
-        <label className="flex items-start gap-3 text-xs text-gray-400">
+        <label className={styles.terms}>
           <input
             type="checkbox"
             name="accept_terms"
             required
-            className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/5 accent-violet-600"
+            className={styles.checkbox}
           />
           <span>
             {"J'accepte les conditions du programme d'affiliation, notamment le délai de validation, les déductions en cas de remboursement ou litige et le seuil de paiement."}{' '}
-            <Link href="/cgu#affiliation" className="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+            <Link href="/cgu#affiliation" className={styles.link}>
               {"Lire les conditions détaillées"}
             </Link>
           </span>
         </label>
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-semibold text-sm transition-colors"
-        >
+        <button type="submit" disabled={isPending} className={styles.button}>
           {isPending ? "Inscription..." : "Rejoindre le programme d'affiliation"}
         </button>
       </form>

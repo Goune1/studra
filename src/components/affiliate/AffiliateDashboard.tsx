@@ -2,18 +2,10 @@
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { Copy, Check, Users, MousePointer, TrendingUp, Wallet } from 'lucide-react'
+import { Check, Copy, CursorClick, TrendUp, Users, Wallet } from '@phosphor-icons/react'
 import { updatePaymentMethod } from '@/app/(dashboard)/affiliate/actions'
 import type { Affiliate, AffiliateCommission, AffiliatePayout, AffiliateStats } from '@/types'
-
-const STATUS_LABELS: Record<string, { key: string; color: string }> = {
-  pending:   { key: 'pending', color: 'text-yellow-400' },
-  approved:  { key: 'approved', color: 'text-blue-400' },
-  payable:   { key: 'payable', color: 'text-green-400' },
-  paid:      { key: 'paid', color: 'text-gray-400' },
-  cancelled: { key: 'cancelled', color: 'text-red-400' },
-  refunded:  { key: 'refunded', color: 'text-orange-400' },
-}
+import styles from './affiliate.module.css'
 
 const STATUS_TEXT: Record<string, string> = {
   pending: 'En attente',
@@ -22,6 +14,20 @@ const STATUS_TEXT: Record<string, string> = {
   paid: 'Payées',
   cancelled: 'Annulées',
   refunded: 'Remboursées',
+}
+
+const STATUS_CLASS: Record<string, string> = {
+  pending: styles.statusPending,
+  approved: styles.statusApproved,
+  payable: styles.statusPayable,
+  paid: styles.statusPaid,
+  cancelled: styles.statusCancelled,
+  refunded: styles.statusRefunded,
+}
+
+const PAYOUT_STATUS_CLASS: Record<string, string> = {
+  paid: styles.statusPayable,
+  failed: styles.statusCancelled,
 }
 
 function fmt(v: number) {
@@ -67,191 +73,183 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
   }
 
   const kpis = [
-    { label: 'Clics',           value: stats.total_clicks,       icon: MousePointer, color: '#8B5CF6' },
-    { label: 'Inscriptions',    value: stats.total_referrals,     icon: Users,        color: '#3B82F6' },
-    { label: 'Abonnés actifs',  value: stats.active_subscribers,  icon: TrendingUp,   color: '#10B981' },
-    { label: 'Commissions dues', value: fmt(stats.commission_pending + stats.commission_approved + stats.commission_payable), icon: Wallet, color: '#F59E0B' },
+    { label: 'Clics', value: stats.total_clicks, icon: CursorClick },
+    { label: 'Inscriptions', value: stats.total_referrals, icon: Users },
+    { label: 'Abonnés actifs', value: stats.active_subscribers, icon: TrendUp },
+    { label: 'Commissions dues', value: fmt(stats.commission_pending + stats.commission_approved + stats.commission_payable), icon: Wallet },
   ]
 
+  const suspended = affiliate.status === 'suspended'
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">{"Programme d'affiliation"}</h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--text-4)' }}>
-          {affiliate.status === 'suspended'
-            ? "⚠️ Votre compte est suspendu. Contactez le support."
+    <div className={styles.dashboard}>
+      <header className={styles.header}>
+        <h1>{"Programme d'affiliation"}</h1>
+        <p className={suspended ? styles.suspended : undefined}>
+          {suspended
+            ? 'Votre compte est suspendu. Contacte le support.'
             : `Bonjour ${affiliate.first_name} ! Voici votre tableau de bord.`}
         </p>
-      </div>
+      </header>
 
       {/* Lien de parrainage */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <p className="text-xs font-mono text-gray-500 mb-2 uppercase tracking-wider">{"Votre lien de parrainage"}</p>
-        <div className="flex items-center gap-3">
-          <code className="flex-1 text-sm text-violet-300 bg-violet-500/10 border border-violet-500/20 rounded-xl px-4 py-3 font-mono truncate">
-            {link}
-          </code>
-          <button
-            onClick={copyLink}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors shrink-0"
-          >
-            {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+      <section className={`${styles.panel} ${styles.section}`}>
+        <p className={styles.eyebrow}>{"Votre lien de parrainage"}</p>
+        <div className={styles.referralRow}>
+          <code className={styles.referralCode}>{link}</code>
+          <button onClick={copyLink} className={styles.copyButton}>
+            {copied ? <Check size={14} weight="regular" /> : <Copy size={14} weight="regular" />}
             {copied ? "Copié !" : "Copier"}
           </button>
         </div>
-        <p className="text-xs text-gray-600 mt-2">{"Code :"} <span className="font-mono text-gray-400">{affiliate.referral_code}</span></p>
-      </div>
+        <p className={styles.reference}>{"Code :"} <span>{affiliate.referral_code}</span></p>
+      </section>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        {kpis.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white/5 border border-white/10 rounded-2xl p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${color}18`, border: `1px solid ${color}30` }}>
-                <Icon size={14} style={{ color }} />
-              </div>
-              <p className="text-xs text-gray-500">{label}</p>
+      <section className={styles.kpis}>
+        {kpis.map(({ label, value, icon: Icon }) => (
+          <div key={label} className={styles.kpi}>
+            <div className={styles.kpiLabel}>
+              <span className={styles.iconBox}><Icon size={14} weight="regular" /></span>
+              {label}
             </div>
-            <p className="text-2xl font-bold">{typeof value === 'number' ? value : value}</p>
+            <p className={styles.kpiValue}>{value}</p>
           </div>
         ))}
-      </div>
+      </section>
 
       {/* Solde détaillé */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <h2 className="text-sm font-semibold mb-4">Solde des commissions</h2>
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <section className={`${styles.panel} ${styles.section}`}>
+        <h2 className={styles.sectionTitle}>Solde des commissions</h2>
+        <div className={styles.balances}>
           {[
             { label: 'En attente',    value: stats.commission_pending,  note: 'En cours de validation' },
             { label: 'Validées',      value: stats.commission_approved, note: 'Prêtes à verser' },
             { label: 'Payables',      value: stats.commission_payable,  note: `Seuil : ${minimumPayoutThreshold} €` },
             { label: 'Payées',        value: stats.commission_paid,     note: 'Total versé' },
           ].map(({ label, value, note }) => (
-            <div key={label}>
-              <p className="text-xs text-gray-500 mb-1">{label}</p>
-              <p className="text-xl font-bold">{fmt(value)}</p>
-              <p className="text-[10px] text-gray-600 mt-0.5">{note}</p>
+            <div key={label} className={styles.balance}>
+              <p className={styles.balanceLabel}>{label}</p>
+              <p className={styles.balanceValue}>{fmt(value)}</p>
+              <p className={styles.balanceNote}>{note}</p>
             </div>
           ))}
         </div>
-        {(stats.commission_payable) < minimumPayoutThreshold && (stats.commission_payable) > 0 && (
-          <p className="text-xs text-yellow-400 mt-4">
+        {stats.commission_payable < minimumPayoutThreshold && stats.commission_payable > 0 && (
+          <p className={styles.threshold}>
             Il vous manque {fmt(minimumPayoutThreshold - stats.commission_payable)} pour atteindre le seuil de paiement.
           </p>
         )}
-      </div>
+      </section>
 
       {/* Historique commissions */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10">
-          <h2 className="text-sm font-semibold">Historique des commissions</h2>
+      <section className={`${styles.panel} ${styles.tablePanel}`}>
+        <div className={styles.tableHeader}>
+          <h2 className={styles.sectionTitle}>Historique des commissions</h2>
         </div>
         {commissions.length === 0 ? (
-          <p className="text-sm text-gray-500 p-6">Aucune commission pour le moment.</p>
+          <p className={styles.empty}>Aucune commission pour le moment.</p>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/5">
-                {['Date', 'Revenu', 'Commission', 'Statut'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {commissions.map((c) => {
-                const st = STATUS_LABELS[c.status] ?? { key: c.status, color: 'text-gray-400' }
-                return (
-                  <tr key={c.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                    <td className="px-5 py-3 text-xs text-gray-400 font-mono">{format.dateTime(new Date(c.created_at), {day: '2-digit', month: 'short', year: 'numeric'})}</td>
-                    <td className="px-5 py-3 text-xs">{fmt(c.amount_revenue)}</td>
-                    <td className="px-5 py-3 text-sm font-semibold">{fmt(c.amount_commission)}</td>
-                    <td className="px-5 py-3">
-                      <span className={`text-xs font-mono ${st.color}`}>{STATUS_TEXT[st.key] ?? st.key}</span>
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  {['Date', 'Revenu', 'Commission', 'Statut'].map(h => (
+                    <th key={h}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {commissions.map((c) => (
+                  <tr key={c.id}>
+                    <td className={styles.muted}>{format.dateTime(new Date(c.created_at), {day: '2-digit', month: 'short', year: 'numeric'})}</td>
+                    <td>{fmt(c.amount_revenue)}</td>
+                    <td className={styles.amount}>{fmt(c.amount_commission)}</td>
+                    <td>
+                      <span className={`${styles.status} ${STATUS_CLASS[c.status] ?? styles.statusPaid}`}>
+                        {STATUS_TEXT[c.status] ?? c.status}
+                      </span>
                     </td>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
+      </section>
 
       {/* Historique paiements */}
       {payouts.length > 0 && (
-        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-white/10">
-            <h2 className="text-sm font-semibold">Historique des paiements</h2>
+        <section className={`${styles.panel} ${styles.tablePanel}`}>
+          <div className={styles.tableHeader}>
+            <h2 className={styles.sectionTitle}>Historique des paiements</h2>
           </div>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/5">
-                {['Date', 'Montant', 'Méthode', 'Référence', 'Statut'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {payouts.map((p) => (
-                <tr key={p.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                  <td className="px-5 py-3 text-xs text-gray-400 font-mono">{format.dateTime(new Date(p.created_at), {day: '2-digit', month: 'short', year: 'numeric'})}</td>
-                  <td className="px-5 py-3 font-semibold">{fmt(p.amount)}</td>
-                  <td className="px-5 py-3 text-xs text-gray-400">{p.payment_method === 'paypal' ? 'PayPal' : 'Virement'}</td>
-                  <td className="px-5 py-3 text-xs font-mono text-gray-500">{p.payment_reference ?? '—'}</td>
-                  <td className="px-5 py-3">
-                    <span className={`text-xs font-mono ${p.status === 'paid' ? 'text-green-400' : p.status === 'failed' ? 'text-red-400' : 'text-yellow-400'}`}>
-                      {p.status === 'paid' ? 'Payé' : p.status === 'failed' ? 'Échoué' : 'En attente'}
-                    </span>
-                  </td>
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  {['Date', 'Montant', 'Méthode', 'Référence', 'Statut'].map(h => (
+                    <th key={h}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {payouts.map((p) => (
+                  <tr key={p.id}>
+                    <td className={styles.muted}>{format.dateTime(new Date(p.created_at), {day: '2-digit', month: 'short', year: 'numeric'})}</td>
+                    <td className={styles.amount}>{fmt(p.amount)}</td>
+                    <td className={styles.muted}>{p.payment_method === 'paypal' ? 'PayPal' : 'Virement'}</td>
+                    <td className={styles.muted}>{p.payment_reference ?? '—'}</td>
+                    <td>
+                      <span className={`${styles.status} ${PAYOUT_STATUS_CLASS[p.status] ?? styles.statusPending}`}>
+                        {p.status === 'paid' ? 'Payé' : p.status === 'failed' ? 'Échoué' : 'En attente'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       )}
 
       {/* Méthode de paiement */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold">Méthode de paiement</h2>
+      <section className={`${styles.panel} ${styles.section}`}>
+        <div className={styles.paymentHeader}>
+          <h2 className={styles.sectionTitle}>Méthode de paiement</h2>
           {!editPayment && (
-            <button
-              onClick={() => setEditPayment(true)}
-              className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
-            >
+            <button onClick={() => setEditPayment(true)} className={styles.editButton}>
               Modifier
             </button>
           )}
         </div>
 
         {!editPayment ? (
-          <div className="text-sm text-gray-300">
+          <div className={styles.paymentDetails}>
             {affiliate.payment_method === 'paypal' ? (
-              <p>💳 PayPal — <span className="font-mono text-gray-400">{affiliate.paypal_email}</span></p>
+              <p>PayPal · <strong>{affiliate.paypal_email}</strong></p>
             ) : affiliate.payment_method === 'bank_transfer' ? (
-              <div className="space-y-1">
-                <p>🏦 Virement — <span className="font-mono text-gray-400">{affiliate.iban}</span></p>
-                {affiliate.bic && <p className="text-xs text-gray-500">BIC : {affiliate.bic}</p>}
-                <p className="text-xs text-gray-500">Titulaire : {affiliate.account_holder_name}</p>
-              </div>
+              <>
+                <p>Virement · <strong>{affiliate.iban}</strong></p>
+                {affiliate.bic && <p>BIC : {affiliate.bic}</p>}
+                <p>Titulaire : {affiliate.account_holder_name}</p>
+              </>
             ) : (
-              <p className="text-gray-500">{"Non renseigné"}</p>
+              <p>{"Non renseigné"}</p>
             )}
           </div>
         ) : (
-          <form onSubmit={handlePaymentUpdate} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handlePaymentUpdate} className={styles.form}>
+            <div className={styles.choiceGrid}>
               {(['paypal', 'bank_transfer'] as const).map((m) => (
                 <button
                   key={m}
                   type="button"
                   onClick={() => setMethod(m)}
-                  className={`px-4 py-3 rounded-xl border text-sm font-medium transition-colors text-left ${
-                    method === m
-                      ? 'border-violet-500/50 bg-violet-500/10 text-violet-300'
-                      : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
-                  }`}
+                  aria-pressed={method === m}
+                  className={`${styles.choice} ${method === m ? styles.choiceActive : ''}`}
                 >
-                  {m === 'paypal' ? "💳 PayPal" : "🏦 Virement bancaire"}
+                  {m === 'paypal' ? 'PayPal' : 'Virement bancaire'}
                 </button>
               ))}
             </div>
@@ -263,53 +261,49 @@ export function AffiliateDashboard({ affiliate, stats, commissions, payouts, app
                 type="email"
                 required
                 defaultValue={affiliate.paypal_email ?? ''}
-                className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors"
+                className={styles.input}
                 placeholder="Email PayPal"
+                aria-label="Email PayPal"
               />
             ) : (
-              <div className="space-y-3">
+              <div className={styles.form}>
                 <input
                   name="account_holder_name"
                   required
                   defaultValue={affiliate.account_holder_name ?? ''}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors"
+                  className={styles.input}
                   placeholder="Titulaire du compte"
+                  aria-label="Titulaire du compte"
                 />
                 <input
                   name="iban"
                   required
                   defaultValue={affiliate.iban ?? ''}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors font-mono"
+                  className={`${styles.input} ${styles.mono}`}
                   placeholder="IBAN"
+                  aria-label="IBAN"
                 />
                 <input
                   name="bic"
                   defaultValue={affiliate.bic ?? ''}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:border-violet-500/50 focus:outline-none transition-colors font-mono"
+                  className={`${styles.input} ${styles.mono}`}
                   placeholder="BIC / SWIFT (optionnel)"
+                  aria-label="BIC / SWIFT"
                 />
               </div>
             )}
 
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                disabled={isPending}
-                className="px-6 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 rounded-xl text-sm font-semibold transition-colors"
-              >
+            <div className={styles.actions}>
+              <button type="submit" disabled={isPending} className={styles.button}>
                 {isPending ? 'Mise à jour...' : 'Enregistrer'}
               </button>
-              <button
-                type="button"
-                onClick={() => setEditPayment(false)}
-                className="px-6 py-2.5 rounded-xl border border-white/10 text-sm text-gray-400 hover:text-white transition-colors"
-              >
+              <button type="button" onClick={() => setEditPayment(false)} className={styles.secondaryButton}>
                 Annuler
               </button>
             </div>
           </form>
         )}
-      </div>
+      </section>
     </div>
   )
 }

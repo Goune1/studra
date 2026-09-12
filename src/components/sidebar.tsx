@@ -179,7 +179,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
           >
             <Link
               href="/settings"
-              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-white/4 transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-[var(--hover-bg)] transition-colors"
               style={{ color: 'var(--text-2)' }}
             >
               <Settings size={15} />
@@ -187,7 +187,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
             </Link>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-white/4 transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium hover:bg-[var(--hover-bg)] transition-colors"
               style={{ color: 'var(--text-2)' }}
             >
               <LogOut size={15} />
@@ -197,7 +197,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
         )}
         <button
           onClick={() => setUserMenuOpen((v) => !v)}
-          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/4 transition-all duration-150"
+          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-[var(--hover-bg)] transition-all duration-150"
         >
           {userAvatar ? (
             // eslint-disable-next-line @next/next/no-img-element

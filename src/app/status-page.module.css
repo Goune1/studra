@@ -1,0 +1,115 @@
+/* Pages d'état (erreur, 404). Rendues hors du shell dashboard : le wrapper
+   porte `app-v2` pour résoudre les tokens et couvrir toute la hauteur. */
+.page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 32px 24px;
+  background: var(--bg);
+}
+
+.inner {
+  width: min(100%, 440px);
+  text-align: center;
+}
+
+.eyebrow {
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.iconBox {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  margin: 0 auto 20px;
+  border: 1px solid rgba(163, 57, 49, 0.2);
+  border-radius: 11px;
+  background: #fdf5f4;
+  color: #a33931;
+}
+
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.body {
+  margin: 12px 0 0;
+  color: var(--ink-500);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  min-height: 43px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.primary {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.primary:hover {
+  background: #173d32;
+}
+
+.secondary {
+  border: 1px solid var(--ink-200);
+  background: var(--bg-elev);
+  color: var(--ink-700);
+}
+
+.secondary:hover {
+  border-color: var(--ink-400);
+  color: var(--ink);
+}
+
+.primary:active,
+.secondary:active {
+  transform: translateY(1px);
+}
+
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.digest {
+  margin: 24px 0 0;
+  color: var(--ink-400);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondary {
+    transition: none;
+  }
+}
