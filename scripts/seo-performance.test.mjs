@@ -22,6 +22,13 @@ test('la CSP ne casse pas les assets sur un serveur local HTTP', () => {
   assert.doesNotMatch(read('next.config.ts'), /upgrade-insecure-requests/)
 })
 
+test('la CSP autorise eval uniquement pour le serveur de développement', () => {
+  const config = read('next.config.ts')
+  assert.match(config, /process\.env\.NODE_ENV\s*===\s*['"]development['"]/)
+  assert.match(config, /isDevelopment\s*\?\s*\[\s*["']'unsafe-eval'["']\s*\]\s*:\s*\[\s*\]/)
+  assert.doesNotMatch(config, /"script-src 'self' 'unsafe-inline' 'unsafe-eval'"/)
+})
+
 test('la FAQ visible et le JSON-LD partagent une source unique', () => {
   const faq = read('src/components/landing/FAQ.tsx')
   const jsonLd = read('src/components/landing/LandingJsonLd.tsx')
