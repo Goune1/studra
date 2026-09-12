@@ -31,11 +31,6 @@ export default function Hero() {
 
           {/* Left — text */}
           <div className="hero-left-order" style={{ display: "flex", flexDirection: "column", gap: 28, maxWidth: 620 }}>
-            <div className="eyebrow" style={{ textAlign: "left" }}>
-              <span className="eyebrow-dot" />
-              <span>{"Pour les partiels, concours et examens"}</span>
-            </div>
-
             <h1 className="hero-h1" style={{ margin: 0, fontSize: "clamp(40px, 6.4vw, 78px)", fontWeight: 500, letterSpacing: "-0.035em", lineHeight: 0.96 }}>
               <span>{"Réviser sérieusement."}</span>
               <br />

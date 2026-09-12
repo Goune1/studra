@@ -2,18 +2,18 @@
 
 import { memo } from 'react'
 import {
-  Plus,
-  ZoomIn,
-  ZoomOut,
-  Maximize,
-  LayoutGrid,
-  Lock,
-  Unlock,
-  Map as MapIcon,
-  Save,
-  Loader2,
+  ArrowsOut,
   Check,
-} from 'lucide-react'
+  CircleNotch,
+  FloppyDisk,
+  GridFour,
+  Lock,
+  LockOpen,
+  MagnifyingGlassMinus,
+  MagnifyingGlassPlus,
+  MapTrifold,
+  Plus,
+} from '@phosphor-icons/react'
 
 export type SaveStatus = 'clean' | 'dirty' | 'saving' | 'saved'
 
@@ -54,26 +54,23 @@ function ToolbarImpl({
         alignItems: 'center',
         gap: 4,
         padding: '6px 8px',
-        borderRadius: 16,
-        background: 'rgba(13,13,18,0.82)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 14px 40px -18px rgba(0,0,0,0.65)',
+        borderRadius: 8,
+        background: 'var(--bg-elev)',
+        border: '1px solid var(--ink-200)',
         flexWrap: 'wrap',
         justifyContent: 'center',
       }}
     >
-      <IconBtn label={"Zoom arrière"} onClick={onZoomOut}><ZoomOut size={16} /></IconBtn>
-      <IconBtn label={"Zoom avant"} onClick={onZoomIn}><ZoomIn size={16} /></IconBtn>
+      <IconBtn label={"Zoom arrière"} onClick={onZoomOut}><MagnifyingGlassMinus size={16} /></IconBtn>
+      <IconBtn label={"Zoom avant"} onClick={onZoomIn}><MagnifyingGlassPlus size={16} /></IconBtn>
       <IconBtn label={"Zoom 100%"} onClick={onResetZoom}><span style={{ fontSize: 11, fontWeight: 600, lineHeight: 1 }}>1:1</span></IconBtn>
-      <IconBtn label={"Ajuster à la vue"} onClick={onFitToView}><Maximize size={15} /></IconBtn>
+      <IconBtn label={"Ajuster à la vue"} onClick={onFitToView}><ArrowsOut size={15} /></IconBtn>
       <Divider />
       <IconBtn label={"Ajouter un nœud"} onClick={onAddNode} tone="primary"><Plus size={16} /></IconBtn>
-      <IconBtn label={"Mise en page auto"} onClick={onAutoLayout}><LayoutGrid size={15} /></IconBtn>
-      {compact ? <IconBtn label={"Afficher la minimap"} onClick={onToggleMinimap}><MapIcon size={15} /></IconBtn> : null}
+      <IconBtn label={"Mise en page auto"} onClick={onAutoLayout}><GridFour size={15} /></IconBtn>
+      {compact ? <IconBtn label={"Afficher la minimap"} onClick={onToggleMinimap}><MapTrifold size={15} /></IconBtn> : null}
       <IconBtn label={locked ? "Déverrouiller" : "Verrouiller"} onClick={onToggleLock}>
-        {locked ? <Lock size={15} /> : <Unlock size={15} />}
+        {locked ? <Lock size={15} /> : <LockOpen size={15} />}
       </IconBtn>
       <Divider />
       <SaveBtn onSave={onSave} status={status} />
@@ -104,23 +101,23 @@ function IconBtn({
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10,
+        borderRadius: 7,
         padding: '0 8px',
         border: '1px solid transparent',
-        background: tone === 'primary' ? 'rgba(139,122,255,0.18)' : 'transparent',
-        color: tone === 'primary' ? '#d4ccff' : 'rgba(230,231,238,0.85)',
+        background: tone === 'primary' ? 'var(--accent-soft)' : 'transparent',
+        color: tone === 'primary' ? 'var(--accent)' : 'var(--ink-700)',
         cursor: 'pointer',
         transition: 'background 120ms ease, color 120ms ease, border-color 120ms ease',
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget
-        el.style.background = tone === 'primary' ? 'rgba(139,122,255,0.28)' : 'rgba(255,255,255,0.06)'
-        el.style.color = '#fff'
+        el.style.background = 'var(--accent-soft)'
+        el.style.color = 'var(--accent)'
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget
-        el.style.background = tone === 'primary' ? 'rgba(139,122,255,0.18)' : 'transparent'
-        el.style.color = tone === 'primary' ? '#d4ccff' : 'rgba(230,231,238,0.85)'
+        el.style.background = tone === 'primary' ? 'var(--accent-soft)' : 'transparent'
+        el.style.color = tone === 'primary' ? 'var(--accent)' : 'var(--ink-700)'
       }}
     >
       {children}
@@ -129,7 +126,7 @@ function IconBtn({
 }
 
 function Divider() {
-  return <span style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.08)', margin: '0 4px' }} />
+  return <span style={{ width: 1, height: 20, background: 'var(--ink-200)', margin: '0 4px' }} />
 }
 
 function SaveBtn({ onSave, status }: { onSave: () => void; status: SaveStatus }) {
@@ -138,18 +135,18 @@ function SaveBtn({ onSave, status }: { onSave: () => void; status: SaveStatus })
   const dirty = status === 'dirty'
   let label = "Sauvegardé"
   let icon: React.ReactNode = <Check size={14} />
-  let bg = 'rgba(34,197,94,0.15)'
-  let color = '#86efac'
+  let bg = 'var(--accent-soft)'
+  let color = 'var(--accent)'
   if (saving) {
     label = "Sauvegarde…"
-    icon = <Loader2 size={14} style={{ animation: 'schema-spin 1s linear infinite' }} />
-    bg = 'rgba(139,122,255,0.18)'
-    color = '#d4ccff'
+    icon = <CircleNotch size={14} style={{ animation: 'schema-spin 1s linear infinite' }} />
+    bg = 'var(--accent-soft)'
+    color = 'var(--accent)'
   } else if (dirty) {
     label = "Sauvegarder"
-    icon = <Save size={14} />
-    bg = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
-    color = '#fff'
+    icon = <FloppyDisk size={14} />
+    bg = 'var(--accent)'
+    color = 'var(--accent-fg)'
   } else if (saved) {
     label = "Sauvegardé"
   }
@@ -164,8 +161,8 @@ function SaveBtn({ onSave, status }: { onSave: () => void; status: SaveStatus })
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        borderRadius: 10,
-        border: '1px solid rgba(255,255,255,0.05)',
+        borderRadius: 7,
+        border: '1px solid var(--ink-200)',
         background: bg,
         color,
         fontSize: 12,

@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import {useRouter} from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { ArrowRight, CheckCircle } from '@phosphor-icons/react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import ContentPicker from '@/components/ContentPicker'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { ProGate } from '@/components/pro-gate'
 import { createClient } from '@/lib/supabase/client'
-import type { ContentItem } from '@/types'
-import type { Profile } from '@/types'
+import type { ContentItem, Profile } from '@/types'
+import styles from '../socrate.module.css'
 
 export default function SocrateNewPage() {
   const [selected, setSelected] = useState<ContentItem | null>(null)
@@ -42,12 +42,12 @@ export default function SocrateNewPage() {
       })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? "Impossible de démarrer la session")
+        toast.error(json.error ?? 'Impossible de démarrer la session')
         return
       }
       router.push(`/socrate/${json.sessionId}`)
     } catch {
-      toast.error("Une erreur est survenue")
+      toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)
     }
@@ -58,45 +58,29 @@ export default function SocrateNewPage() {
   if (profile.plan !== 'pro') return <ProGate profile={profile}>{null}</ProGate>
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <Eyebrow className="mb-2">{"Mode Socrate"}</Eyebrow>
-        <h1 className="section-h">{"Mode Socrate"}</h1>
-        <p className="lede mt-3">
-          {"Teste ta compréhension en répondant aux questions de l’IA."}
-        </p>
-      </div>
+    <div className={styles.newPage}>
+      <header className={styles.pageHeader}>
+        <p className={styles.eyebrow}>Mode Socrate</p>
+        <h1>Teste ta compréhension.</h1>
+        <p>Réponds aux questions de Socrate à partir d&apos;un contenu que tu as déjà étudié.</p>
+      </header>
 
-      <div className="app-card p-6 mb-4">
-        <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--ink-700)' }}>
-          {"Contenu à étudier"}
-        </h2>
+      <section className={styles.pickerPanel} aria-labelledby="content-title">
+        <h2 id="content-title" className={styles.panelLabel}>Contenu à étudier</h2>
         <ContentPicker selected={selected} onSelect={setSelected} />
-      </div>
+      </section>
 
       {selected && (
-        <div
-          className="rounded-xl px-4 py-3 mb-4 flex items-center gap-3"
-          style={{ background: 'var(--accent-soft)', border: '1px solid rgba(31,77,63,0.2)' }}
-        >
-          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: 'var(--accent)' }} />
-          <span className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
-            {selected.title}
-          </span>
+        <div className={styles.selectedContent}>
+          <CheckCircle size={17} weight="fill" aria-hidden="true" />
+          <span>{selected.title}</span>
         </div>
       )}
 
-      <button
-        onClick={handleStart}
-        disabled={!selected || loading}
-        className="btn btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {loading ? "Démarrage…" : "Commencer la session"}
+      <button onClick={handleStart} disabled={!selected || loading} className={styles.primaryButton}>
+        {loading ? 'Démarrage…' : <>Commencer la session <ArrowRight size={16} aria-hidden="true" /></>}
       </button>
-
-      <p className="text-xs text-center mt-3" style={{ color: 'var(--ink-500)' }}>
-        {"Compte comme 1 génération sur ton quota mensuel"}
-      </p>
+      <p className={styles.quotaNote}>Compte comme 1 génération sur ton quota mensuel</p>
     </div>
   )
 }

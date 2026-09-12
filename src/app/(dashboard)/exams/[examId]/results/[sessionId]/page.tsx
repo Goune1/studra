@@ -1,41 +1,46 @@
-import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { ArrowLeft, Check, ClipboardText, Sparkle, X } from '@phosphor-icons/react/dist/ssr'
+import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { Sparkles, Check, X, ClipboardCheck } from 'lucide-react'
 import type { ExamAnswer, ExamQuestion, ExamQuestionMCQ } from '@/types'
-function scoreColor(s: number) { return s >= 75 ? '#1F4D3F' : s >= 50 ? '#A8762E' : '#B4503C' }
-const OK = '#1F4D3F'
-const KO = '#B4503C'
+import styles from '../../../../flashcards/flashcards.module.css'
+import examStyles from '../../../exams.module.css'
 
-const CIRC = 2 * Math.PI * 40
+const SUCCESS = '#1F4D3F'
+const ERROR = '#B4503C'
+const CIRCUMFERENCE = 2 * Math.PI * 40
+
+function scoreColor(score: number) {
+  return score >= 75 ? SUCCESS : score >= 50 ? '#A8762E' : ERROR
+}
 
 function DonutChart({ score }: { score: number }) {
   const color = scoreColor(score)
-  const fill = CIRC * (score / 100)
+  const fill = CIRCUMFERENCE * (score / 100)
+
   return (
-    <div className="relative" style={{ width: 96, height: 96 }}>
-      <svg width={96} height={96} viewBox="0 0 96 96">
-        <circle cx={48} cy={48} r={40} fill="none" stroke="var(--ink-200)" strokeWidth={8} />
-        <circle cx={48} cy={48} r={40} fill="none" stroke={color} strokeWidth={8}
-          strokeLinecap="round" strokeDasharray={`${fill} ${CIRC}`}
+    <div className={examStyles.donut}>
+      <svg width="92" height="92" viewBox="0 0 96 96" aria-hidden="true">
+        <circle cx="48" cy="48" r="40" fill="none" stroke="var(--ink-200)" strokeWidth="7" />
+        <circle
+          cx="48"
+          cy="48"
+          r="40"
+          fill="none"
+          stroke={color}
+          strokeWidth="7"
+          strokeLinecap="round"
+          strokeDasharray={`${fill} ${CIRCUMFERENCE}`}
           transform="rotate(-90 48 48)"
-          style={{ transition: 'stroke-dasharray 1s ease-out' }} />
+        />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-2xl font-normal tracking-tight" style={{ color }}>
-          {score}%
-        </span>
-      </div>
+      <span className={examStyles.donutValue} style={{ color }}>{score}%</span>
     </div>
   )
 }
 
-export default async function ExamResultsPage({
-  params,
-}: {
-  params: Promise<{ examId: string; sessionId: string }>
-}) {
-  const {examId, sessionId} = await params
+export default async function ExamResultsPage({ params }: { params: Promise<{ examId: string; sessionId: string }> }) {
+  const { examId, sessionId } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -50,157 +55,102 @@ export default async function ExamResultsPage({
   const answers = session.answers as ExamAnswer[]
   const questions = exam.questions as ExamQuestion[]
   const score = session.score as number
-  const correctCount = answers.filter((a) => a.is_correct).length
-  const sc = scoreColor(score)
-
-  const mcqQs = questions.filter((q) => q.type === 'mcq')
-  const openQs = questions.filter((q) => q.type === 'open')
+  const correctCount = answers.filter((answer) => answer.is_correct).length
+  const mcqQuestions = questions.filter((question) => question.type === 'mcq')
+  const openQuestions = questions.filter((question) => question.type === 'open')
 
   return (
-    <div className="max-w-350">
-      {/* Score hero */}
-      <div className="rounded-2xl border p-6 md:p-8 mb-8 animate-fade-up"
-        style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
-        <div className="flex flex-col md:flex-row md:items-center gap-6">
-          <div className="flex items-center gap-6">
-            <DonutChart score={score} />
-            <div>
-              <h1 className="text-5xl font-normal leading-none mb-2 tracking-tight" style={{ color: sc }}>
-                {correctCount}/{answers.length}
-              </h1>
-              <p className="text-sm" style={{ color: 'var(--ink-500)' }}>{"questions correctes"}</p>
-              <h2 className="text-lg mt-2 line-clamp-1" style={{ color: 'var(--ink)' }}>
-                {exam.title}
-              </h2>
-              {exam.subject && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold mt-2 inline-block"
-                  style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid rgba(31,77,63,0.2)' }}>
-                  {exam.subject}
-                </span>
-              )}
-            </div>
-          </div>
+    <div className={styles.deckPage}>
+      <Link href={`/exams/${examId}`} className={styles.backLink}><ArrowLeft size={14} /> Revenir à l’examen</Link>
 
-          <div className="md:ml-auto flex gap-3 flex-wrap">
-            <Link href={`/exams/${examId}`} className="btn btn-outline">
-              {"← Refaire l’examen"}
-            </Link>
-            <Link href="/exams" className="btn btn-primary">
-              <ClipboardCheck size={14} />{"Mes examens"}
-            </Link>
+      <section className={examStyles.resultsHero}>
+        <div className={examStyles.scoreSummary}>
+          <DonutChart score={score} />
+          <div>
+            <p className={examStyles.resultCount}>{correctCount}/{answers.length}</p>
+            <p className={examStyles.resultLabel}>questions correctes</p>
+            <h1 className={examStyles.resultTitle}>{exam.title}</h1>
+            <p className={examStyles.resultSubject}>{exam.subject || 'Sans matière'}</p>
           </div>
         </div>
-      </div>
+        <div className={examStyles.resultActions}>
+          <Link href={`/exams/${examId}`} className={styles.secondaryButton}><ArrowLeft size={14} /> Refaire l’examen</Link>
+          <Link href="/exams" className={styles.primaryButton}><ClipboardText size={15} /> Mes examens</Link>
+        </div>
+      </section>
 
-      {/* Correction détaillée */}
-      <p className="mono text-[10px] font-medium uppercase tracking-widest mb-5" style={{ color: 'var(--ink-400)' }}>{"Correction détaillée"}</p>
+      <section className={examStyles.resultsSection}>
+        <header className={examStyles.resultsSectionHeader}>
+          <h2>Correction détaillée</h2>
+          <span>{questions.length} question{questions.length > 1 ? 's' : ''}</span>
+        </header>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* QCM column */}
-        {mcqQs.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#3E6B7A' }}>{"QCM"}</span>
-              <div className="flex-1 h-px" style={{ background: 'var(--ink-200)' }} />
-              <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                {`${mcqQs.length} ${mcqQs.length === 1 ? 'question' : 'questions'}`}
-              </span>
-            </div>
-            {mcqQs.map((q, i) => {
-              const ans = answers.find((a) => a.question_id === q.id)
-              if (!ans) return null
-              const mcq = q as ExamQuestionMCQ
-              const chosen = mcq.options[parseInt(ans.user_answer)]
-              const correct = mcq.options[mcq.correct_index]
+        <div className={examStyles.resultsGrid}>
+          {mcqQuestions.length > 0 && (
+            <div className={examStyles.resultColumn}>
+              <p className={examStyles.columnHeading}><span>QCM</span><span>{mcqQuestions.length} question{mcqQuestions.length > 1 ? 's' : ''}</span></p>
+              <div className={examStyles.answerList}>
+                {mcqQuestions.map((question, index) => {
+                  const answer = answers.find((item) => item.question_id === question.id)
+                  if (!answer) return null
+                  const mcq = question as ExamQuestionMCQ
+                  const chosen = mcq.options[Number.parseInt(answer.user_answer)]
+                  const correct = mcq.options[mcq.correct_index]
+                  const statusColor = answer.is_correct ? SUCCESS : ERROR
 
-              return (
-                <div key={q.id} className="rounded-xl border p-4 animate-fade-up"
-                  style={{ background: 'var(--bg-elev)', borderColor: ans.is_correct ? `${OK}30` : `${KO}30`, animationDelay: `${i * 40}ms` }}>
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                      style={{ background: ans.is_correct ? `${OK}15` : `${KO}15` }}>
-                      {ans.is_correct
-                        ? <Check size={12} style={{ color: OK }} />
-                        : <X size={12} style={{ color: KO }} />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>Q{i + 1}</span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#3E6B7A15', color: '#3E6B7A' }}>{"QCM"}</span>
+                  return (
+                    <article key={question.id} className={examStyles.answerCard}>
+                      <div className={examStyles.answerHeader}>
+                        <span className={examStyles.statusIcon} style={{ background: `${statusColor}15`, color: statusColor }}>
+                          {answer.is_correct ? <Check size={12} /> : <X size={12} />}
+                        </span>
+                        <span className={examStyles.questionNumber}>Q{index + 1}</span>
+                        <span className={examStyles.answerType}>QCM</span>
                       </div>
-                      <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink)' }}>{q.question}</p>
-                      <div className="space-y-1.5 text-xs">
-                        <p style={{ color: ans.is_correct ? OK : KO }}>
-                          {ans.is_correct ? '✓' : '✗'} {"Ta réponse :"} <span className={ans.is_correct ? '' : 'line-through opacity-70'}>{chosen}</span>
+                      <p className={examStyles.answerQuestion}>{question.question}</p>
+                      <p className={examStyles.correctionLine} style={{ color: statusColor }}>Ta réponse : {chosen || 'Aucune réponse'}</p>
+                      {!answer.is_correct && <p className={examStyles.correctionLine} style={{ color: SUCCESS }}>Bonne réponse : {correct}</p>}
+                      {!answer.is_correct && mcq.explanation && <p className={examStyles.feedback}>{mcq.explanation}</p>}
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {openQuestions.length > 0 && (
+            <div className={examStyles.resultColumn}>
+              <p className={examStyles.columnHeading}><span>Questions ouvertes</span><span>{openQuestions.length} question{openQuestions.length > 1 ? 's' : ''}</span></p>
+              <div className={examStyles.answerList}>
+                {openQuestions.map((question, index) => {
+                  const answer = answers.find((item) => item.question_id === question.id)
+                  if (!answer) return null
+                  const answerScore = Math.round(answer.score * 10)
+                  const color = scoreColor(answerScore * 10)
+
+                  return (
+                    <article key={question.id} className={examStyles.answerCard}>
+                      <div className={examStyles.answerHeader}>
+                        <span className={examStyles.questionNumber}>Q{mcqQuestions.length + index + 1}</span>
+                        <span className={examStyles.answerType}>Ouverte</span>
+                        <span className={examStyles.answerScore} style={{ color }}>{answerScore}/10</span>
+                      </div>
+                      <p className={examStyles.answerQuestion}>{question.question}</p>
+                      <p className={examStyles.answerText}>{answer.user_answer || 'Aucune réponse'}</p>
+                      {answer.feedback && (
+                        <p className={examStyles.feedback}>
+                          <strong><Sparkle size={11} /> Retour IA</strong>
+                          {answer.feedback}
                         </p>
-                        {!ans.is_correct && (
-                          <p style={{ color: OK }}>✓ {"Bonne réponse :"} {correct}</p>
-                        )}
-                        {!ans.is_correct && mcq.explanation && (
-                          <p className="italic mt-2 pt-2 border-t" style={{ color: 'var(--ink-500)', borderColor: 'var(--ink-200)' }}>{mcq.explanation}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-
-        {/* Open questions column */}
-        {openQs.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="mono text-[9px] font-medium uppercase tracking-widest" style={{ color: '#A8762E' }}>{"Ouvertes"}</span>
-              <div className="flex-1 h-px" style={{ background: 'var(--ink-200)' }} />
-              <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                {`${openQs.length} ${openQs.length === 1 ? 'question' : 'questions'}`}
-              </span>
+                      )}
+                    </article>
+                  )
+                })}
+              </div>
             </div>
-            {openQs.map((q, i) => {
-              const ans = answers.find((a) => a.question_id === q.id)
-              if (!ans) return null
-              const aiScore = Math.round(ans.score * 10)
-
-              return (
-                <div key={q.id} className="rounded-xl border p-4 animate-fade-up"
-                  style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)', animationDelay: `${(mcqQs.length + i) * 40}ms` }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="mono text-[9px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                      Q{mcqQs.length + i + 1}
-                    </span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: '#A8762E15', color: '#A8762E' }}>{"Ouverte"}</span>
-                    <span className="mono text-[9px] px-2 py-0.5 rounded-full font-semibold ml-auto"
-                      style={{ background: scoreColor(aiScore * 10) + '15', color: scoreColor(aiScore * 10) }}>
-                      {aiScore}/10
-                    </span>
-                  </div>
-                  <p className="text-sm font-medium mb-3" style={{ color: 'var(--ink)' }}>{q.question}</p>
-                  {ans.user_answer ? (
-                    <div className="mb-3 px-3 py-2.5 rounded-lg text-xs leading-relaxed"
-                      style={{ background: 'var(--surface-2)', color: 'var(--ink-700)' }}>
-                      {ans.user_answer}
-                    </div>
-                  ) : (
-                    <p className="text-xs italic mb-3" style={{ color: 'var(--ink-400)' }}>{"Aucune réponse"}</p>
-                  )}
-                  {ans.feedback && (
-                    <div className="px-3 py-2.5 rounded-lg text-xs leading-relaxed"
-                      style={{ background: 'var(--accent-soft)' }}>
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Sparkles size={11} style={{ color: 'var(--accent)' }} />
-                        <span className="text-[10px] font-semibold" style={{ color: 'var(--accent)' }}>{"Retour IA"}</span>
-                      </div>
-                      <p style={{ color: 'var(--ink-700)' }}>{ans.feedback}</p>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

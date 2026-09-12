@@ -69,25 +69,25 @@ interface NodeProps {
 
 const COLOR_STYLES: Record<SchemaNodeColor, { bg: string; border: string; text: string; ring: string; shadow: string }> = {
   primary: {
-    bg: 'linear-gradient(135deg, rgba(99,102,241,0.55) 0%, rgba(139,92,246,0.50) 100%)',
-    border: 'rgba(167,139,250,0.55)',
-    text: '#ffffff',
-    ring: 'rgba(167,139,250,0.85)',
-    shadow: '0 12px 30px -10px rgba(99,102,241,0.55)',
+    bg: 'rgba(31,77,63,0.14)',
+    border: 'rgba(31,77,63,0.42)',
+    text: '#173D32',
+    ring: '#1F4D3F',
+    shadow: 'none',
   },
   accent: {
-    bg: 'linear-gradient(135deg, rgba(236,72,153,0.40) 0%, rgba(239,68,68,0.32) 100%)',
-    border: 'rgba(244,114,182,0.45)',
-    text: '#fdf2f8',
-    ring: 'rgba(244,114,182,0.85)',
-    shadow: '0 12px 26px -12px rgba(236,72,153,0.4)',
+    bg: 'rgba(31,77,63,0.08)',
+    border: 'rgba(31,77,63,0.28)',
+    text: '#1F4D3F',
+    ring: '#1F4D3F',
+    shadow: 'none',
   },
   neutral: {
-    bg: 'rgba(20,20,28,0.92)',
-    border: 'rgba(255,255,255,0.10)',
-    text: '#e6e7ee',
-    ring: 'rgba(139,122,255,0.85)',
-    shadow: '0 10px 24px -14px rgba(0,0,0,0.6)',
+    bg: '#FFFFFF',
+    border: '#E4E4E7',
+    text: '#18181B',
+    ring: '#1F4D3F',
+    shadow: 'none',
   },
 }
 
@@ -126,13 +126,9 @@ function NodeImpl({
         transform: `translate3d(${node.x}px, ${node.y}px, 0)${dragging ? ' scale(1.025)' : ''}`,
         background: colors.bg,
         border: `1px solid ${selected ? colors.ring : colors.border}`,
-        boxShadow: dragging
-          ? `${colors.shadow}, 0 0 0 2px ${colors.ring}`
-          : selected
-            ? `${colors.shadow}, 0 0 0 2px ${colors.ring}`
-            : colors.shadow,
+        boxShadow: selected || dragging ? '0 0 0 2px rgba(31,77,63,0.16)' : colors.shadow,
         color: colors.text,
-        borderRadius: 14,
+        borderRadius: 11,
         padding: '10px 14px',
         display: 'flex',
         alignItems: 'center',
@@ -184,9 +180,8 @@ function NodeImpl({
                   width: size,
                   height: size,
                   borderRadius: '50%',
-                  background: 'rgba(139,122,255,0.95)',
-                  border: '2px solid rgba(255,255,255,0.85)',
-                  boxShadow: '0 0 0 3px rgba(139,122,255,0.20)',
+                  background: '#1F4D3F',
+                  border: '2px solid #FFFFFF',
                   cursor: 'crosshair',
                   padding: 0,
                   touchAction: 'none',

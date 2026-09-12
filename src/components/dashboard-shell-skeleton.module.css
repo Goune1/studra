@@ -1,0 +1,214 @@
+.shell {
+  min-height: 100dvh;
+  background: var(--app-bg);
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  width: 256px;
+  flex-direction: column;
+  border-right: 1px solid var(--ink-200);
+  padding: 22px 16px 16px;
+  background: var(--bg-elev);
+}
+
+.brand {
+  padding: 5px 9px 24px;
+}
+
+.navigation {
+  display: grid;
+  gap: 7px;
+}
+
+.navItem {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 11px;
+  padding: 0 9px;
+}
+
+.navIcon,
+.avatar,
+.mobileMenu,
+.line,
+.controls,
+.card {
+  overflow: hidden;
+  background: var(--ink-200);
+}
+
+.navIcon {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  border-radius: 5px;
+}
+
+.line {
+  display: block;
+  height: 11px;
+  border-radius: 4px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 14px 9px 2px;
+  border-top: 1px solid var(--ink-200);
+}
+
+.profile > div {
+  display: grid;
+  flex: 1;
+  gap: 7px;
+}
+
+.profile .line:last-child {
+  height: 8px;
+  opacity: 0.7;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.mainColumn {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  margin-left: 256px;
+}
+
+.mobileBar {
+  display: none;
+}
+
+.main {
+  flex: 1;
+  padding: 32px;
+}
+
+.contentSkeleton {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+}
+
+.contentSkeleton > .line:first-child {
+  margin-bottom: 12px;
+  background: var(--accent-soft);
+}
+
+.title {
+  width: min(42%, 430px);
+  height: 42px;
+  margin-bottom: 12px;
+  border-radius: 7px;
+}
+
+.controls {
+  height: 68px;
+  margin: 28px 0 18px;
+  border: 1px solid var(--ink-200);
+  border-radius: 11px;
+  background: var(--bg-elev);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.card {
+  height: 178px;
+  border: 1px solid var(--ink-200);
+  border-radius: 11px;
+  background: var(--bg-elev);
+}
+
+.navIcon,
+.avatar,
+.mobileMenu,
+.line,
+.controls,
+.card {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.48; }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    display: none;
+  }
+
+  .mainColumn {
+    margin-left: 0;
+  }
+
+  .mobileBar {
+    display: flex;
+    min-height: 57px;
+    align-items: center;
+    gap: 13px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--ink-200);
+    background: var(--bg-elev);
+  }
+
+  .mobileMenu {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+  }
+
+  .main {
+    padding: 16px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    width: 72%;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navIcon,
+  .avatar,
+  .mobileMenu,
+  .line,
+  .controls,
+  .card {
+    animation: none;
+  }
+}

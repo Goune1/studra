@@ -27,7 +27,10 @@ export function DashboardEmpty({ user, dateLabel, upcomingExams }: Props) {
   return (
     <div className={styles.dashboard}>
       <header className={styles.masthead}>
-        <p className={styles.date}>{dateLabel.toLowerCase()}</p>
+        <div>
+          <p className={styles.pageContext}>Tableau de bord</p>
+          <p className={styles.date}>{dateLabel.toLowerCase()}</p>
+        </div>
       </header>
 
       <section className={styles.emptyIntro} aria-labelledby="empty-title">

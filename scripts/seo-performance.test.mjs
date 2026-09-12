@@ -29,6 +29,21 @@ test('la CSP autorise eval uniquement pour le serveur de développement', () => 
   assert.doesNotMatch(config, /"script-src 'self' 'unsafe-inline' 'unsafe-eval'"/)
 })
 
+test('le layout privé affiche un shell skeleton avant les lectures Supabase', () => {
+  const layout = read('src/app/(dashboard)/layout.tsx')
+  const content = read('src/app/(dashboard)/dashboard-layout-content.tsx')
+  const skeleton = read('src/components/dashboard-shell-skeleton.tsx')
+  const loading = read('src/app/(dashboard)/loading.tsx')
+
+  assert.doesNotMatch(layout, /export default async function DashboardLayout/)
+  assert.doesNotMatch(layout, /supabase\/server/)
+  assert.match(layout, /<Suspense fallback=\{<DashboardShellSkeleton \/>\}>/)
+  assert.match(content, /export async function DashboardLayoutContent/)
+  assert.match(content, /createClient\(\)/)
+  assert.match(skeleton, /role="status"/)
+  assert.match(loading, /<DashboardContentSkeleton \/>/)
+})
+
 test('la FAQ visible et le JSON-LD partagent une source unique', () => {
   const faq = read('src/components/landing/FAQ.tsx')
   const jsonLd = read('src/components/landing/LandingJsonLd.tsx')

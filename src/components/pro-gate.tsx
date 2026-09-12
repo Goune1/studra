@@ -1,6 +1,7 @@
-import { Lock, Check } from 'lucide-react'
 import Link from 'next/link'
+import { ArrowRight, Check } from '@phosphor-icons/react/dist/ssr'
 import type { Profile } from '@/types'
+import styles from './pro-gate.module.css'
 
 interface ProGateProps {
   profile: Profile
@@ -11,52 +12,22 @@ export function ProGate({ profile, children }: ProGateProps) {
   if (profile.plan === 'pro') return <>{children}</>
 
   const features = [
-    "Générations illimitées",
-    "Mode Socrate — apprentissage par dialogue",
-    "Analyse des lacunes — coaching IA personnalisé",
+    'Générations illimitées',
+    'Mode Socrate par dialogue',
+    'Analyse personnalisée des lacunes',
   ]
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4 py-10">
-      <div className="app-card w-full max-w-lg p-8 text-center sm:p-10">
-        <div
-          className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl"
-          style={{ background: 'var(--accent-soft)' }}
-        >
-          <Lock size={22} strokeWidth={1.75} style={{ color: 'var(--accent)' }} aria-hidden="true" />
-        </div>
-
-        <h2 className="section-h">{"Fonctionnalité Pro"}</h2>
-
-        <p
-          className="mx-auto mt-4 max-w-md text-[17px] leading-relaxed"
-          style={{ color: 'var(--ink-700)' }}
-        >
-          {"Cette section est réservée aux membres Pro. Débloquez toutes les fonctionnalités avancées."}
-        </p>
-
-        <ul className="mx-auto mt-8 flex max-w-sm flex-col gap-3 text-left">
-          {features.map((feature) => (
-            <li
-              key={feature}
-              className="flex items-start gap-3 text-[15px]"
-              style={{ color: 'var(--ink-700)' }}
-            >
-              <span
-                className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
-                style={{ background: 'var(--accent-soft)' }}
-              >
-                <Check size={12} strokeWidth={2.5} style={{ color: 'var(--accent)' }} aria-hidden="true" />
-              </span>
-              {feature}
-            </li>
-          ))}
+    <div className={styles.page}>
+      <section className={styles.card}>
+        <p className={styles.context}>Fonctionnalité Pro</p>
+        <h2>Réservé au plan Pro.</h2>
+        <p className={styles.description}>Débloque les outils avancés de Studra pour approfondir tes révisions et générer sans limite.</p>
+        <ul className={styles.features}>
+          {features.map((feature) => <li key={feature}><Check size={15} weight="bold" />{feature}</li>)}
         </ul>
-
-        <Link href="/upgrade" className="btn btn-primary btn-lg mt-8 w-full sm:w-auto">
-          {"Passer en Pro — 4,99€/mois"}
-        </Link>
-      </div>
+        <Link href="/upgrade" className={styles.button}>Passer en Pro · 4,99 €/mois <ArrowRight size={15} /></Link>
+      </section>
     </div>
   )
 }

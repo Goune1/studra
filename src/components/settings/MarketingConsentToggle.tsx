@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, Loader2, X } from 'lucide-react'
+import { Check, CircleNotch, X } from '@phosphor-icons/react'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 type UpdateMarketingConsentResult = {
@@ -46,17 +46,17 @@ export function MarketingConsentToggle({
       onClick={handleToggle}
       className="group relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border p-0.5 transition-all duration-200 focus:outline-none disabled:cursor-wait disabled:opacity-75"
       style={{
-        background: enabled ? 'var(--accent)' : 'var(--surface-2)',
-        borderColor: enabled ? 'var(--accent)' : 'var(--border)',
+        background: enabled ? 'var(--accent)' : 'var(--bg-elev)',
+        borderColor: enabled ? 'var(--accent)' : 'var(--ink-200)',
       }}
     >
       <span
-        className={`absolute inset-y-0.5 flex w-7 items-center justify-center rounded-full bg-white text-[#13131A] shadow-sm transition-transform duration-200 ${
+        className={`absolute inset-y-0.5 flex w-7 items-center justify-center rounded-full bg-white text-[#18181B] transition-transform duration-200 ${
           enabled ? 'translate-x-6' : 'translate-x-0'
         }`}
       >
         {isPending ? (
-          <Loader2 size={14} className="animate-spin" style={{ color: 'var(--accent)' }} />
+          <CircleNotch size={14} className="animate-spin" style={{ color: 'var(--accent)' }} />
         ) : enabled ? (
           <Check size={14} strokeWidth={2.5} />
         ) : (

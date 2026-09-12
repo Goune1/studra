@@ -65,7 +65,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       <span className="flex-1">{item.label}</span>
       {item.pro && (
         <span
-          className="mono text-[9px] px-1.5 py-0.5 rounded-full font-medium tracking-wide"
+          className=" text-[9px] px-1.5 py-0.5 rounded-full font-medium tracking-wide"
           style={{ color: 'var(--accent)', background: 'var(--accent-soft)' }}
         >
           Pro

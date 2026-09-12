@@ -1,14 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { ArrowLeft, Check, FileText, ListDashes } from '@phosphor-icons/react'
 import { ContentInputForm } from '@/components/content-input-form'
 import { AlsoGenerateSection, GenerationResultsScreen, generateWithAlso, buildResources } from '@/components/also-generate'
 import type { AlsoKey, GeneratedResource } from '@/components/also-generate'
 import { toast } from 'sonner'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { trackFichesGenerate, trackAIGenerationSuccess, trackAIGenerationError } from '@/lib/analytics'
 import { PaywallBanner } from '@/components/paywall/PaywallBanner'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
+import styles from '../../flashcards/flashcards.module.css'
 
 const ALSO_OPTIONS: AlsoKey[] = ['flashcards', 'schema', 'exam', 'timeline']
 
@@ -24,8 +26,8 @@ export default function NewFichePage({ showPaywall, price }: Props) {
   const [paywallOpen, setPaywallOpen] = useState(false)
 
   function toggleAlso(key: AlsoKey) {
-    setAlso((prev) => {
-      const next = new Set(prev)
+    setAlso((current) => {
+      const next = new Set(current)
       if (next.has(key)) next.delete(key)
       else next.add(key)
       return next
@@ -37,47 +39,93 @@ export default function NewFichePage({ showPaywall, price }: Props) {
       setPaywallOpen(true)
       return
     }
+
     setLoading(true)
     trackFichesGenerate(data.subject || data.title, data.title)
     const startedAt = Date.now()
     try {
-      const { primary, also: alsoRes } = await generateWithAlso('fiche', [...also], data, toast.error)
+      const { primary, also: alsoResults } = await generateWithAlso('fiche', [...also], data, toast.error)
       if (!primary.ok) {
         trackAIGenerationError('fiches', 'generation_failed')
-        toast.error("Erreur lors de la génération de la fiche")
+        toast.error('Impossible de générer la fiche')
         return
       }
       trackAIGenerationSuccess('fiches', Date.now() - startedAt)
-      toast.success("Fiche générée avec succès !")
-      setResults(buildResources('fiche', primary.id!, alsoRes))
+      toast.success('Fiche générée avec succès')
+      setResults(buildResources('fiche', primary.id!, alsoResults))
     } catch {
       trackAIGenerationError('fiches', 'exception')
-      toast.error("Une erreur est survenue")
+      toast.error('Une erreur est survenue pendant la génération')
     } finally {
       setLoading(false)
     }
   }
 
-  if (results) return <GenerationResultsScreen resources={results} newPath="/fiches/new" newLabel={"Créer une autre fiche"} />
+  if (results) {
+    return (
+      <GenerationResultsScreen
+        resources={results}
+        newPath="/fiches/new"
+        newLabel="Créer une autre fiche"
+        quiet
+        className={styles.resultsScreen}
+      />
+    )
+  }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className={styles.createPage}>
+      <Link href="/fiches" className={styles.backLink}><ArrowLeft size={14} /> Mes fiches</Link>
+
+      <header className={styles.pageHeader}>
+        <div>
+          <p className={styles.pageContext}>Nouvelle fiche</p>
+          <h1>Pars de ton cours.</h1>
+          <p className={styles.pageSummary}>Choisis une source, vérifie le contenu et laisse Studra construire une synthèse claire.</p>
+        </div>
+      </header>
+
       {showPaywall && <PaywallBanner tool="fiches" />}
-      <div className="mb-8">
-        <Eyebrow className="mb-2">{"Fiches"}</Eyebrow>
-        <h1 className="section-h">{"Nouvelle fiche"}</h1>
-        <p className="lede mt-3">{"Colle ton cours, l'IA génère ta fiche de révision."}</p>
+
+      <div className={styles.creationGrid}>
+        <section className={styles.formPanel} aria-label="Créer une fiche de révision">
+          <ContentInputForm
+            onSubmit={handleGenerate}
+            submitLabel={also.size > 0 ? `Générer la fiche et ${also.size} autre${also.size > 1 ? 's' : ''} support${also.size > 1 ? 's' : ''}` : 'Générer la fiche'}
+            titlePlaceholder="Ex. La photosynthèse"
+            contentPlaceholder="Colle ici ton cours ou tes notes…"
+            loading={loading}
+            className={styles.creationForm}
+            extras={
+              <AlsoGenerateSection
+                options={ALSO_OPTIONS}
+                selected={also}
+                onChange={toggleAlso}
+                quiet
+                className={styles.alsoPanel}
+              />
+            }
+          />
+        </section>
+
+        <aside className={styles.creationAside}>
+          <p className={styles.asideLabel}>Ce que tu obtiens</p>
+          <div className={styles.asideItem}>
+            <ListDashes size={18} aria-hidden="true" />
+            <div><strong>Un plan structuré</strong><span>Les idées importantes organisées par sections.</span></div>
+          </div>
+          <div className={styles.asideItem}>
+            <Check size={18} aria-hidden="true" />
+            <div><strong>Une fiche modifiable</strong><span>Corrige et complète le contenu après génération.</span></div>
+          </div>
+          <div className={styles.asideItem}>
+            <FileText size={18} aria-hidden="true" />
+            <div><strong>Plusieurs sources</strong><span>Texte, PDF, photo ou vidéo sous-titrée.</span></div>
+          </div>
+          <p className={styles.asideNote}>La langue choisie concerne le contenu généré, pas l’interface de Studra.</p>
+        </aside>
       </div>
-      <div className="app-card p-8">
-        <ContentInputForm
-          onSubmit={handleGenerate}
-          submitLabel={also.size > 0 ? `✨ Générer la fiche + ${also.size} ${also.size === 1 ? 'autre' : 'autres'}` : '✨ Générer la fiche'}
-          titlePlaceholder={"Ex : Chapitre 3 - La photosynthèse"}
-          contentPlaceholder={"Colle ici le contenu de ton cours, tes notes, ou tout texte à résumer..."}
-          loading={loading}
-          extras={<AlsoGenerateSection options={ALSO_OPTIONS} selected={also} onChange={toggleAlso} />}
-        />
-      </div>
+
       {paywallOpen && <PaywallModal tool="fiches" price={price} onClose={() => setPaywallOpen(false)} />}
     </div>
   )

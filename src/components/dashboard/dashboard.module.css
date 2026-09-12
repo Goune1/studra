@@ -1,26 +1,29 @@
 .dashboard {
-  --dashboard-font: var(--font-dashboard), ui-sans-serif, system-ui, sans-serif;
-  width: min(100%, 960px);
+  width: min(100%, 1080px);
   margin: 0 auto;
   color: var(--ink);
-  font-family: var(--dashboard-font);
+  font-family: inherit;
 }
 
 .masthead {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 20px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--ink-200);
+  padding-bottom: 20px;
+}
+
+.pageContext {
+  margin: 0 0 7px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .date {
   margin: 0;
   color: var(--ink-500);
-  font-size: 13px;
-  letter-spacing: 0.01em;
-  text-transform: lowercase;
+  font-size: 12px;
 }
 
 .meta {
@@ -74,8 +77,11 @@
 .sectionTitle {
   margin: 0;
   color: var(--ink-500);
-  font-size: 13px;
+  font-family: inherit;
+  font-size: 10.5px;
   font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .emptyTitle {
@@ -98,8 +104,8 @@
 .emptyIntro {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.65fr);
-  gap: 64px;
-  padding: 52px 0 44px;
+  gap: 54px;
+  padding: 44px 0 40px;
 }
 
 .emptyAside {
@@ -119,9 +125,10 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 230px;
   gap: 40px;
-  padding: 30px 0;
-  border-top: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink-200);
+  padding: 24px;
+  border: 1px solid var(--ink-200);
+  border-radius: 11px;
+  background: var(--bg-elev);
 }
 
 .importerTitle {
@@ -193,8 +200,11 @@
   grid-template-columns: 160px minmax(0, 1fr) auto;
   align-items: center;
   gap: 28px;
-  padding: 26px 0;
-  border-bottom: 1px solid var(--ink-200);
+  margin-top: 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--ink-200);
+  border-radius: 11px;
+  background: var(--bg-elev);
 }
 
 .deadline p {
@@ -205,7 +215,7 @@
 }
 
 .dashboardIntro {
-  padding: 40px 0 26px;
+  padding: 30px 0 26px;
 }
 
 .dashboardTitle {
@@ -235,12 +245,17 @@
 .supportCard {
   background: var(--bg-elev);
   border: 1px solid var(--ink-200);
-  border-radius: 12px;
+  border-radius: 11px;
 }
 
 .nextCard {
   overflow: hidden;
-  box-shadow: 0 18px 40px -34px rgba(24, 24, 27, 0.5);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.nextCard:hover {
+  border-color: rgba(31, 77, 63, 0.38);
+  box-shadow: 0 18px 38px -34px rgba(24, 24, 27, 0.55);
 }
 
 .cardTopline {
@@ -327,8 +342,11 @@
 .cardLabel {
   margin: 0;
   color: var(--ink-500);
-  font-size: 12px;
+  font-family: inherit;
+  font-size: 10.5px;
   font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .examCard h2 {
@@ -501,6 +519,92 @@
   color: var(--accent);
 }
 
+.upgradeBanner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+  padding: 22px;
+  border: 1px solid var(--ink-200);
+  border-radius: 11px;
+  background: var(--bg-elev);
+}
+
+.upgradeKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.upgradeKicker::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  content: '';
+}
+
+.upgradeTitle {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.upgradeCopy {
+  margin: 7px 0 0;
+  color: var(--ink-500);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.upgradeCopy strong {
+  color: var(--ink-700);
+  font-weight: 500;
+}
+
+.upgradeFeatures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 14px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upgradeFeatures li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-700);
+  font-size: 12px;
+}
+
+.upgradeFeatures svg {
+  color: var(--accent);
+}
+
+.upgradeAction {
+  min-width: 184px;
+}
+
+.upgradeNote {
+  display: block;
+  margin-top: 9px;
+  color: var(--ink-500);
+  font-size: 11px;
+  text-align: center;
+}
+
 @media (max-width: 760px) {
   .dashboard {
     width: 100%;
@@ -508,6 +612,15 @@
 
   .masthead {
     padding-bottom: 14px;
+  }
+
+  .upgradeBanner {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .upgradeAction {
+    width: 100%;
   }
 
   .dashboardIntro {

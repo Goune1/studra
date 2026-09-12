@@ -1,14 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import {useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { CaretRight, CheckCircle, Clock, Timer } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { Timer } from 'lucide-react'
 import ContentPicker from '@/components/ContentPicker'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { ContentItem } from '@/types'
-
-const COLOR = '#1F4D3F'
+import styles from '../recall.module.css'
 
 const DURATIONS = [
   { label: '3 min', seconds: 180 },
@@ -30,99 +28,65 @@ export default function RecallNewPage() {
       const res = await fetch('/api/recall/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content_title: selected.title,
-          source_content: selected.source_content,
-          duration_seconds: duration,
-        }),
+        body: JSON.stringify({ content_title: selected.title, source_content: selected.source_content, duration_seconds: duration }),
       })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? "Erreur lors du démarrage")
+        toast.error(json.error ?? 'Erreur lors du démarrage')
         return
       }
       router.push(`/recall/${json.sessionId}`)
     } catch {
-      toast.error("Une erreur est survenue")
+      toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="mb-8 animate-fade-up">
-        <Eyebrow className="mb-2">{"Rappel libre"}</Eyebrow>
-        <h1 className="section-h">{"Lance une session"}</h1>
-        <p className="mt-3 text-sm" style={{ color: 'var(--ink-500)' }}>
-          {"Écris tout ce que tu sais sur un sujet en temps limité. L’IA évalue ta complétude et pointe les oublis."}
-        </p>
-      </div>
+    <div className={styles.page}>
+      <header className={styles.pageHeader}>
+        <div>
+          <p className={styles.eyebrow}><Timer size={14} weight="regular" /> Rappel libre</p>
+          <h1 className={styles.title}>Lance une session.</h1>
+          <p className={styles.summary}>Écris tout ce que tu sais sur un sujet en temps limité. L’évaluation identifie ce qui est acquis et ce qu’il faut revoir.</p>
+        </div>
+      </header>
 
-      <div
-        className="rounded-2xl p-6 mb-4 animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
-      >
-        <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--ink)' }}>
-          {"Contenu à rappeler"}
-        </h2>
-        <ContentPicker selected={selected} onSelect={setSelected} />
-      </div>
-
-      <div
-        className="rounded-2xl p-6 mb-4 animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
-      >
-        <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--ink)' }}>
-          {"Durée"}
-        </h2>
-        <div className="grid grid-cols-4 gap-2">
-          {DURATIONS.map((d) => (
-            <button
-              key={d.seconds}
-              onClick={() => setDuration(d.seconds)}
-              className="py-3 rounded-xl text-sm font-medium transition-all cursor-pointer"
-              style={{
-                background: duration === d.seconds ? COLOR + '15' : 'var(--surface-2)',
-                border: duration === d.seconds ? `1.5px solid ${COLOR}` : '1px solid var(--border)',
-                color: duration === d.seconds ? COLOR : 'var(--ink-700)',
-              }}
-            >
-              {d.label}
+      <div className={styles.newLayout}>
+        <div>
+          <section className={styles.panel}>
+            <h2 className={styles.panelHeading}>Contenu à rappeler</h2>
+            <div className={styles.contentPicker}><ContentPicker selected={selected} onSelect={setSelected} /></div>
+          </section>
+          <section className={styles.panel}>
+            <h2 className={styles.panelHeading}>Durée</h2>
+            <div className={styles.durationGrid}>
+              {DURATIONS.map((option) => (
+                <button key={option.seconds} type="button" className={styles.durationButton} data-selected={duration === option.seconds} onClick={() => setDuration(option.seconds)}>
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            {selected && (
+              <div className={styles.selectionNote}>
+                <CheckCircle size={16} weight="fill" color="var(--accent)" />
+                <span>{selected.title}</span>
+                <time>{DURATIONS.find((option) => option.seconds === duration)?.label}</time>
+              </div>
+            )}
+            <button type="button" className={`${styles.primaryButton} ${styles.startButton}`} onClick={handleStart} disabled={!selected || loading}>
+              <CaretRight size={16} weight="bold" /> {loading ? 'Démarrage…' : 'Lancer le chronomètre'}
             </button>
-          ))}
+            <p className={styles.generationNote}>Compte comme une génération lors de l’évaluation finale</p>
+          </section>
         </div>
+        <aside className={styles.aside}>
+          <p className={styles.asideLabel}>Le déroulé</p>
+          <div className={styles.asideItem}><Clock size={16} weight="regular" /><div><strong>Temps limité</strong><span>Choisis un créneau et écris sans interruption.</span></div></div>
+          <div className={styles.asideItem}><CheckCircle size={16} weight="regular" /><div><strong>Évaluation ciblée</strong><span>Repère les notions couvertes, oubliées et imprécises.</span></div></div>
+        </aside>
       </div>
-
-      {selected && (
-        <div
-          className="rounded-xl px-4 py-3 mb-4 flex items-center gap-3 animate-fade-up"
-          style={{ background: 'var(--accent-soft)', border: `1px solid ${COLOR}30`, animationDelay: '110ms' }}
-        >
-          <div className="w-2 h-2 rounded-full shrink-0" style={{ background: COLOR }} />
-          <span className="text-sm font-medium flex-1" style={{ color: 'var(--ink)' }}>
-            {selected.title}
-          </span>
-          <span className="mono text-xs" style={{ color: 'var(--ink-500)' }}>
-            {DURATIONS.find((d) => d.seconds === duration)?.label}
-          </span>
-        </div>
-      )}
-
-      <button
-        onClick={handleStart}
-        disabled={!selected || loading}
-        className="btn btn-primary w-full"
-        style={{ padding: '14px', fontSize: '14px' }}
-      >
-        <Timer size={15} />
-        {loading ? "Démarrage…" : "Lancer le chronomètre"}
-      </button>
-
-      <p className="mono text-xs text-center mt-3" style={{ color: 'var(--ink-400)' }}>
-        {"Compte comme 1 génération lors de l’évaluation finale"}
-      </p>
     </div>
   )
 }

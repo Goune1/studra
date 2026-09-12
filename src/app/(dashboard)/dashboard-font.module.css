@@ -1,0 +1,8 @@
+.scope,
+.scope * {
+  font-family: var(--font-manrope), sans-serif !important;
+}
+
+.scope h1 {
+  font-weight: 600 !important;
+}

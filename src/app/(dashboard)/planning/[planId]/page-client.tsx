@@ -1,30 +1,29 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
-import {useRouter} from 'next/navigation'
-import { useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
-  AlertTriangle,
-  Calendar,
-  CalendarClock,
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
+  ArrowCounterClockwise,
+  ArrowLeft,
+  ArrowsClockwise,
+  CalendarDots,
+  CaretDown,
+  CaretRight,
+  CheckCircle,
   Circle,
-  Clock,
+  DotsThree,
   FastForward,
-  MoreHorizontal,
-  Pencil,
+  PencilSimple,
   Play,
-  RefreshCw,
-  RotateCcw,
-  Trash2,
-} from 'lucide-react'
+  Trash,
+  Warning,
+} from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { StudyPlan, StudyPlanTask, StudyPlanTaskType } from '@/types'
+import sharedStyles from '../../flashcards/flashcards.module.css'
+import styles from '../planning.module.css'
 
 // ─────────────────────────────────────────────────────────────────────
 // Constants
@@ -34,11 +33,11 @@ const DANGER = '#EF4444'
 const SUCCESS = '#10B981'
 
 const TASK_TYPE_COLORS: Record<StudyPlanTaskType, string> = {
-  flashcards: '#F59E0B',
-  fiche: '#3B82F6',
-  exam: '#EF4444',
-  review: '#8B5CF6',
-  general_review: '#10B981',
+  flashcards: COLOR,
+  fiche: COLOR,
+  exam: COLOR,
+  review: COLOR,
+  general_review: COLOR,
 }
 const TASK_TYPE_LABELS: Record<StudyPlanTaskType, string> = {
   flashcards: 'Flashcards',
@@ -51,15 +50,19 @@ const TASK_TYPE_LABELS: Record<StudyPlanTaskType, string> = {
 // ─────────────────────────────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────────────────────────────
-export default function PlanningViewPage() {
+export default function PlanningViewPage({
+  initialPlan,
+  initialSessions,
+}: {
+  initialPlan: StudyPlan
+  initialSessions: StudyPlanTask[]
+}) {
   const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
-  const params = useParams()
   const router = useRouter()
-  const planId = params.planId as string
+  const planId = initialPlan.id
 
-  const [plan, setPlan] = useState<StudyPlan | null>(null)
-  const [sessions, setSessions] = useState<StudyPlanTask[]>([])
-  const [loading, setLoading] = useState(true)
+  const [plan, setPlan] = useState<StudyPlan | null>(initialPlan)
+  const [sessions, setSessions] = useState<StudyPlanTask[]>(initialSessions)
   const [collapsedDays, setCollapsedDays] = useState<Set<string>>(new Set())
   const [historyOpen, setHistoryOpen] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -81,12 +84,7 @@ export default function PlanningViewPage() {
     if (!planRes.data) { router.push('/planning'); return }
     setPlan(planRes.data as StudyPlan)
     setSessions((sessionsRes.data ?? []) as StudyPlanTask[])
-    setLoading(false)
   }, [planId, router])
-
-  // Legitimate external sync: load plan + sessions from Supabase on mount / planId change.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load() }, [load])
 
   // ── Actions ────────────────────────────────────────────────────────
   const mutateSession = useCallback(
@@ -181,10 +179,10 @@ export default function PlanningViewPage() {
     ? Math.max(0, Math.round((new Date(plan.exam_date + 'T00:00:00').getTime() - nowMs) / 86_400_000))
     : 0
 
-  if (loading || !plan) {
+  if (!plan) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-sm" style={{ color: 'var(--text-3)' }}>{"Chargement…"}</div>
+        <div className="text-sm" style={{ color: 'var(--ink-500)' }}>{"Chargement…"}</div>
       </div>
     )
   }
@@ -193,71 +191,64 @@ export default function PlanningViewPage() {
 
   // ── Render ─────────────────────────────────────────────────────────
   return (
-    <div className="max-w-2xl mx-auto pb-10">
-      {/* Back */}
-      <Link
-        href="/planning"
-        className="text-xs mb-4 inline-flex items-center gap-1 hover:underline"
-        style={{ color: 'var(--ink-500)' }}
-      >
-        {"← Tous les plannings"}
+    <div className={styles.planningPage}>
+      <Link href="/planning" className={sharedStyles.backLink}>
+        <ArrowLeft size={14} /> Mes plannings
       </Link>
 
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-start gap-3">
-          <div className="flex-1 min-w-0">
-        <Eyebrow className="mb-1">{"Planning"}</Eyebrow>
-            <h1 className="section-h mb-1 truncate">{plan.title}</h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: 'var(--text-2)' }}>
-              <span className="flex items-center gap-1.5">
-                <Calendar size={14} />
-                {`Examen le ${format.dateTime(new Date(plan.exam_date + 'T00:00:00'), {weekday: 'long', day: 'numeric', month: 'long'})}`}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock size={14} />
-                {`${plan.available_minutes_per_day} min/jour`}
-              </span>
-            </div>
+      <section className={sharedStyles.deckHeaderCard}>
+        <div className={sharedStyles.deckHeaderMain}>
+          <div className={sharedStyles.deckIdentity}>
+            <p>
+              Examen le {format.dateTime(new Date(`${plan.exam_date}T00:00:00`), { weekday: 'long', day: 'numeric', month: 'long' })} · {plan.available_minutes_per_day} min/jour
+            </p>
+            <h1>{plan.title}</h1>
+            <span>{isCompletedPlan ? 'Planning terminé' : `J-${daysUntilExam} avant l’examen`}</span>
           </div>
-          <PlanMenu
-            onEdit={() => setEditing(true)}
-            onRegenerate={handleRegenerate}
-            onDelete={handleDelete}
-            regenerating={regenerating}
-          />
+          <div className={sharedStyles.deckActions}>
+            <PlanMenu
+              onEdit={() => setEditing(true)}
+              onRegenerate={handleRegenerate}
+              onDelete={handleDelete}
+              regenerating={regenerating}
+            />
+          </div>
         </div>
-      </div>
+        <div className={sharedStyles.deckHeaderNote}>
+          <span>{completedCount}/{totalCount} sessions terminées</span>
+          <span>{plan.strategy_notes || 'Suis les sessions dans l’ordre et adapte le planning en cas de retard.'}</span>
+        </div>
+      </section>
 
       {/* Progress */}
       <div
-        className="rounded-2xl p-5 mb-5"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        className="rounded-[11px] p-5 mb-5"
+        style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
       >
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-            {isCompletedPlan ? "Planning terminé 🎉" : "Progression"}
+          <span className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
+            {isCompletedPlan ? "Planning terminé" : "Progression"}
           </span>
           <span className="text-sm font-bold" style={{ color: COLOR }}>
             {`${completedCount}/${totalCount} sessions`}
           </span>
         </div>
-        <div className="h-2 rounded-full overflow-hidden mb-3" style={{ background: 'var(--surface-2)' }}>
+        <div className="h-2 rounded-full overflow-hidden mb-3" style={{ background: '#fcfcfb' }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{ width: `${progress}%`, background: COLOR }}
           />
         </div>
-        <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-3)' }}>
+        <div className="flex items-center justify-between text-xs" style={{ color: 'var(--ink-500)' }}>
           <span>
             {`${progress}% complété`}{skippedCount > 0 ? ` · ${`${skippedCount} session${skippedCount === 1 ? "" : "s"} sautée${skippedCount === 1 ? "" : "s"}`}` : ''}
           </span>
-          <span style={{ color: daysUntilExam <= 3 ? DANGER : 'var(--text-3)' }}>
+          <span style={{ color: daysUntilExam <= 3 ? DANGER : 'var(--ink-500)' }}>
             J-{daysUntilExam}
           </span>
         </div>
         {plan.strategy_notes && (
-          <p className="text-xs mt-3 pt-3 border-t italic" style={{ color: 'var(--text-2)', borderColor: 'var(--border)' }}>
+          <p className="text-xs mt-3 pt-3 border-t italic" style={{ color: 'var(--ink-700)', borderColor: 'var(--ink-200)' }}>
             « {plan.strategy_notes} »
           </p>
         )}
@@ -266,15 +257,15 @@ export default function PlanningViewPage() {
       {/* Overdue banner */}
       {overdueSessions.length > 0 && (
         <div
-          className="rounded-2xl p-4 mb-5 flex items-start gap-3"
+          className="rounded-[11px] p-4 mb-5 flex items-start gap-3"
           style={{ background: DANGER + '10', border: `1px solid ${DANGER}30` }}
         >
-          <AlertTriangle size={18} style={{ color: DANGER }} className="shrink-0 mt-0.5" />
+          <Warning size={18} style={{ color: DANGER }} className="shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+            <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
               {overdueSessions.length} session{overdueSessions.length > 1 ? 's' : ''} en retard
             </p>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--text-2)' }}>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--ink-700)' }}>
               {"Reporte-les ou régénère le planning pour les recompacter."}
             </p>
             <div className="space-y-1.5 mt-3">
@@ -288,7 +279,7 @@ export default function PlanningViewPage() {
                 />
               ))}
               {overdueSessions.length > 3 && (
-                <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+                <p className="text-xs mt-1" style={{ color: 'var(--ink-500)' }}>
                   + {overdueSessions.length - 3} autres
                 </p>
               )}
@@ -299,7 +290,7 @@ export default function PlanningViewPage() {
               className="mt-3 text-xs font-semibold inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-50"
               style={{ background: DANGER + '20', color: DANGER }}
             >
-              <RefreshCw size={12} className={regenerating ? 'animate-spin' : ''} />
+              <ArrowsClockwise size={12} className={regenerating ? 'animate-spin' : ''} />
               {"Recompacter le planning"}
             </button>
           </div>
@@ -313,7 +304,7 @@ export default function PlanningViewPage() {
             <h2 className="text-xs font-bold uppercase tracking-wide" style={{ color: COLOR }}>
               {"Aujourd’hui"}
             </h2>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+            <span className="text-xs" style={{ color: 'var(--ink-500)' }}>
               {todaySessions.filter((s) => s.status === 'completed').length}/{todaySessions.length}
             </span>
           </div>
@@ -332,14 +323,14 @@ export default function PlanningViewPage() {
 
       {todaySessions.length === 0 && !isCompletedPlan && (
         <div
-          className="rounded-2xl p-6 mb-6 text-center"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+          className="rounded-[11px] p-6 mb-6 text-center"
+          style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
         >
-          <CheckCircle2 size={24} className="mx-auto mb-2" style={{ color: SUCCESS }} />
-          <p className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+          <CheckCircle size={24} className="mx-auto mb-2" style={{ color: SUCCESS }} />
+          <p className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
             {"Rien à faire aujourd’hui"}
           </p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--ink-500)' }}>
             {"Profites-en pour réviser à ton rythme."}
           </p>
         </div>
@@ -348,7 +339,7 @@ export default function PlanningViewPage() {
       {/* Upcoming (next 7 days) */}
       {upcomingSessions.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--text-2)' }}>
+          <h2 className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--ink-700)' }}>
             {"Prochaines sessions"}
           </h2>
           <div className="space-y-1.5">
@@ -367,7 +358,7 @@ export default function PlanningViewPage() {
       {/* Full calendar (future, grouped by day) */}
       {calendarDays.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--text-2)' }}>
+          <h2 className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--ink-700)' }}>
             {"Calendrier complet"}
           </h2>
           <div className="space-y-2">
@@ -378,28 +369,28 @@ export default function PlanningViewPage() {
               return (
                 <div
                   key={date}
-                  className="rounded-2xl overflow-hidden"
-                  style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                  className="rounded-[11px] overflow-hidden"
+                  style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
                 >
                   <button
                     onClick={() => toggleSet(setCollapsedDays, date)}
                     className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer text-left"
                   >
-                    <span className="text-sm font-semibold flex-1 capitalize" style={{ color: 'var(--text-1)' }}>
+                    <span className="text-sm font-semibold flex-1 capitalize" style={{ color: 'var(--ink)' }}>
                       {format.dateTime(new Date(date + 'T00:00:00'), {weekday: 'long', day: 'numeric', month: 'long'})}
                     </span>
-                    <span className="text-xs shrink-0" style={{ color: 'var(--text-3)' }}>
+                    <span className="text-xs shrink-0" style={{ color: 'var(--ink-500)' }}>
                       {tasks.length} · {dayMinutes} min
                     </span>
-                    {dayCompleted && <CheckCircle2 size={14} style={{ color: SUCCESS }} />}
+                    {dayCompleted && <CheckCircle size={14} style={{ color: SUCCESS }} />}
                     {collapsed
-                      ? <ChevronRight size={14} style={{ color: 'var(--text-3)' }} />
-                      : <ChevronDown size={14} style={{ color: 'var(--text-3)' }} />}
+                      ? <CaretRight size={14} style={{ color: 'var(--ink-500)' }} />
+                      : <CaretDown size={14} style={{ color: 'var(--ink-500)' }} />}
                   </button>
                   {!collapsed && (
-                    <div className="border-t divide-y" style={{ borderColor: 'var(--border)' }}>
+                    <div className="border-t divide-y" style={{ borderColor: 'var(--ink-200)' }}>
                       {tasks.map((s) => (
-                        <div key={s.id} className="px-4 py-2" style={{ borderColor: 'var(--border)' }}>
+                        <div key={s.id} className="px-4 py-2" style={{ borderColor: 'var(--ink-200)' }}>
                           <SessionRow session={s} onAction={mutateSession} />
                         </div>
                       ))}
@@ -418,9 +409,9 @@ export default function PlanningViewPage() {
           <button
             onClick={() => setHistoryOpen((v) => !v)}
             className="w-full flex items-center gap-2 text-xs font-bold uppercase tracking-wide cursor-pointer"
-            style={{ color: 'var(--text-2)' }}
+            style={{ color: 'var(--ink-700)' }}
           >
-            {historyOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            {historyOpen ? <CaretDown size={14} /> : <CaretRight size={14} />}
             {`Historique (${historySessions.length})`}
           </button>
           {historyOpen && (
@@ -467,10 +458,10 @@ function TodaySessionCard({
 
   return (
     <article
-      className="rounded-2xl p-5"
+      className="rounded-[11px] p-5"
       style={{
-        background: primary ? `linear-gradient(135deg, ${COLOR}10, var(--surface))` : 'var(--surface)',
-        border: primary ? `1.5px solid ${COLOR}60` : '1px solid var(--border)',
+        background: primary ? 'var(--accent-soft)' : 'var(--bg-elev)',
+        border: primary ? `1.5px solid ${COLOR}60` : '1px solid var(--ink-200)',
         opacity: done || skipped ? 0.65 : 1,
       }}
     >
@@ -481,7 +472,7 @@ function TodaySessionCard({
         >
           {TASK_TYPE_LABELS[session.task_type]}
         </span>
-        <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+        <span className="text-xs" style={{ color: 'var(--ink-500)' }}>
           {session.duration_minutes} min
         </span>
       </div>
@@ -489,7 +480,7 @@ function TodaySessionCard({
       <h3
         className="text-lg font-bold leading-tight"
         style={{
-          color: 'var(--text-1)',
+          color: 'var(--ink)',
           textDecoration: done ? 'line-through' : 'none',
         }}
       >
@@ -497,7 +488,7 @@ function TodaySessionCard({
       </h3>
 
       {session.rationale && (
-        <p className="text-sm mt-1.5" style={{ color: 'var(--text-2)' }}>
+        <p className="text-sm mt-1.5" style={{ color: 'var(--ink-700)' }}>
           {session.rationale}
         </p>
       )}
@@ -508,7 +499,7 @@ function TodaySessionCard({
             <span
               key={r.id}
               className="text-[11px] px-2 py-0.5 rounded-md"
-              style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}
+              style={{ background: '#fcfcfb', color: 'var(--ink-700)' }}
             >
               {r.title}
             </span>
@@ -533,9 +524,9 @@ function TodaySessionCard({
           <button
             onClick={() => onAction(session.id, 'complete')}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer"
-            style={{ background: 'var(--surface-2)', color: 'var(--text-1)' }}
+            style={{ background: '#fcfcfb', color: 'var(--ink)' }}
           >
-            <CheckCircle2 size={14} />
+            <CheckCircle size={14} />
             {"Marquer fait"}
           </button>
         )}
@@ -543,9 +534,9 @@ function TodaySessionCard({
           <button
             onClick={() => onAction(session.id, 'reset')}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer"
-            style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}
+            style={{ background: '#fcfcfb', color: 'var(--ink-700)' }}
           >
-            <RotateCcw size={14} />
+            <ArrowCounterClockwise size={14} />
             {"Annuler"}
           </button>
         )}
@@ -554,15 +545,15 @@ function TodaySessionCard({
             <button
               onClick={() => onAction(session.id, 'postpone')}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer"
-              style={{ background: 'transparent', color: 'var(--text-2)' }}
+              style={{ background: 'transparent', color: 'var(--ink-700)' }}
             >
-              <CalendarClock size={14} />
+              <CalendarDots size={14} />
               {"Reporter"}
             </button>
             <button
               onClick={() => onAction(session.id, 'skip')}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer"
-              style={{ background: 'transparent', color: 'var(--text-3)' }}
+              style={{ background: 'transparent', color: 'var(--ink-500)' }}
             >
               <FastForward size={14} />
               {"Sauter"}
@@ -601,10 +592,10 @@ function SessionRow({
   const [menuOpen, setMenuOpen] = useState(false)
 
   const statusIcon = done
-    ? <CheckCircle2 size={16} style={{ color: SUCCESS }} />
+    ? <CheckCircle size={16} style={{ color: SUCCESS }} />
     : skipped
-      ? <FastForward size={16} style={{ color: 'var(--text-3)' }} />
-      : <Circle size={16} style={{ color: overdue ? DANGER : 'var(--border-2)' }} />
+      ? <FastForward size={16} style={{ color: 'var(--ink-500)' }} />
+      : <Circle size={16} style={{ color: overdue ? DANGER : 'var(--ink-200)' }} />
 
   return (
     <div
@@ -624,7 +615,7 @@ function SessionRow({
           <Link href={target} onClick={() => { void onAction(session.id, 'start') }} className="block">
             <p
               className="text-sm font-medium truncate hover:underline"
-              style={{ color: 'var(--text-1)' }}
+              style={{ color: 'var(--ink)' }}
             >
               {session.content_title}
             </p>
@@ -633,7 +624,7 @@ function SessionRow({
           <p
             className="text-sm font-medium truncate"
             style={{
-              color: 'var(--text-1)',
+              color: 'var(--ink)',
               textDecoration: done || skipped ? 'line-through' : 'none',
             }}
           >
@@ -654,7 +645,7 @@ function SessionRow({
             className="p-1.5 rounded-md hover:bg-black/10 cursor-pointer"
             aria-label={"Actions"}
           >
-            <MoreHorizontal size={14} style={{ color: 'var(--text-3)' }} />
+            <DotsThree size={14} style={{ color: 'var(--ink-500)' }} />
           </button>
           {menuOpen && (
             <>
@@ -666,9 +657,9 @@ function SessionRow({
               />
               <div
                 className="absolute right-0 top-8 z-20 rounded-lg py-1 min-w-[140px] shadow-lg"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border-2)' }}
+                style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
               >
-                <MenuItem icon={<CalendarClock size={13} />} onClick={() => { setMenuOpen(false); onAction(session.id, 'postpone') }}>
+                <MenuItem icon={<CalendarDots size={13} />} onClick={() => { setMenuOpen(false); onAction(session.id, 'postpone') }}>
                   {"Reporter"}
                 </MenuItem>
                 <MenuItem icon={<FastForward size={13} />} onClick={() => { setMenuOpen(false); onAction(session.id, 'skip') }}>
@@ -688,7 +679,7 @@ function MenuItem({ icon, children, onClick }: { icon: React.ReactNode; children
     <button
       onClick={onClick}
       className="w-full flex items-center gap-2 px-3 py-1.5 text-left text-xs cursor-pointer hover:bg-black/10"
-      style={{ color: 'var(--text-2)' }}
+      style={{ color: 'var(--ink-700)' }}
     >
       {icon}
       {children}
@@ -716,10 +707,10 @@ function PlanMenu({
       <button
         onClick={() => setOpen((v) => !v)}
         className="p-2 rounded-xl cursor-pointer"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
         aria-label={"Actions"}
       >
-        <MoreHorizontal size={16} style={{ color: 'var(--text-2)' }} />
+        <DotsThree size={16} style={{ color: 'var(--ink-700)' }} />
       </button>
       {open && (
         <>
@@ -731,18 +722,18 @@ function PlanMenu({
           />
           <div
             className="absolute right-0 top-11 z-20 rounded-xl py-1 min-w-[180px] shadow-lg"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border-2)' }}
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
           >
-            <MenuItem icon={<Pencil size={13} />} onClick={() => { setOpen(false); onEdit() }}>
+            <MenuItem icon={<PencilSimple size={13} />} onClick={() => { setOpen(false); onEdit() }}>
               {"Modifier les paramètres"}
             </MenuItem>
             <MenuItem
-              icon={<RefreshCw size={13} className={regenerating ? 'animate-spin' : ''} />}
+              icon={<ArrowsClockwise size={13} className={regenerating ? 'animate-spin' : ''} />}
               onClick={() => { setOpen(false); onRegenerate() }}
             >
               {"Régénérer"}
             </MenuItem>
-            <MenuItem icon={<Trash2 size={13} />} onClick={() => { setOpen(false); onDelete() }}>
+            <MenuItem icon={<Trash size={13} />} onClick={() => { setOpen(false); onDelete() }}>
               {"Supprimer"}
             </MenuItem>
           </div>
@@ -797,10 +788,10 @@ function EditPlanModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
       <div
-        className="w-full max-w-md rounded-2xl p-6"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        className="w-full max-w-md rounded-[11px] p-6"
+        style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
       >
-        <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--text-1)' }}>
+        <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--ink)' }}>
           {"Modifier le planning"}
         </h2>
         <div className="space-y-4">
@@ -810,7 +801,7 @@ function EditPlanModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
+              style={{ background: '#fcfcfb', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             />
           </Field>
           <Field label={"Date de l’examen"}>
@@ -820,7 +811,7 @@ function EditPlanModal({
               min={minDate}
               onChange={(e) => setExamDate(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
+              style={{ background: '#fcfcfb', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             />
           </Field>
           <Field label={"Temps disponible par jour (min)"}>
@@ -831,10 +822,10 @@ function EditPlanModal({
               value={minutes}
               onChange={(e) => setMinutes(parseInt(e.target.value, 10) || 60)}
               className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
+              style={{ background: '#fcfcfb', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
             />
           </Field>
-          <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+          <p className="text-xs" style={{ color: 'var(--ink-500)' }}>
             {"Si tu changes la date ou le temps/jour, lance « Régénérer » ensuite pour rebâtir les sessions."}
           </p>
         </div>
@@ -842,7 +833,7 @@ function EditPlanModal({
           <button
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
-            style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}
+            style={{ background: '#fcfcfb', color: 'var(--ink-700)' }}
           >
             {"Annuler"}
           </button>
@@ -863,7 +854,7 @@ function EditPlanModal({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-2)' }}>
+      <span className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--ink-700)' }}>
         {label}
       </span>
       {children}

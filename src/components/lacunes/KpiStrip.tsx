@@ -1,6 +1,6 @@
 'use client'
 
-import { BarChart2, AlertTriangle, Target } from 'lucide-react'
+import { ChartBar, Target, Warning } from '@phosphor-icons/react'
 import type { MockStats } from '@/lib/lacunes/mock'
 function scoreColor(rate: number): string {
   if (rate >= 75) return '#22C55E'
@@ -19,14 +19,14 @@ interface Pill {
 export function KpiStrip({ stats }: { stats: MockStats }) {
   const pills: Pill[] = [
     {
-      icon: <BarChart2 size={15} style={{ color: '#94A3B8' }} />,
+      icon: <ChartBar size={15} style={{ color: 'var(--ink-500)' }} />,
       label: "Sessions analysées",
       value: String(stats.sessions),
       color: '#94A3B8',
       delay: 0,
     },
     {
-      icon: <AlertTriangle size={15} style={{ color: '#EF4444' }} />,
+      icon: <Warning size={15} style={{ color: '#B4503C' }} />,
       label: "Points faibles",
       value: String(stats.weakPoints),
       color: '#EF4444',
@@ -48,18 +48,18 @@ export function KpiStrip({ stats }: { stats: MockStats }) {
           key={pill.label}
           className="flex items-center gap-3 px-4 py-2.5 rounded-full border animate-fade-up"
           style={{
-            background: 'var(--surface)',
-            borderColor: 'var(--border)',
+            background: 'var(--bg-elev)',
+            borderColor: 'var(--ink-200)',
             animationDelay: `${pill.delay}ms`,
           }}
         >
           {pill.icon}
-          <span className="text-xs" style={{ color: 'var(--text-2)' }}>{pill.label}</span>
+          <span className="text-xs" style={{ color: 'var(--ink-700)' }}>{pill.label}</span>
           <span
             className="text-sm font-semibold tabular-nums"
             style={{
               color: pill.color,
-              fontFamily: 'var(--font-mono, monospace)',
+              fontFamily: 'inherit',
             }}
           >
             {pill.value}

@@ -56,7 +56,10 @@ export function DashboardActive({ data, dateLabel }: { data: DashboardData; date
   return (
     <div className={styles.dashboard}>
       <header className={styles.masthead}>
-        <p className={styles.date}>{dateLabel.toLowerCase()}</p>
+        <div>
+          <p className={styles.pageContext}>Tableau de bord</p>
+          <p className={styles.date}>{dateLabel.toLowerCase()}</p>
+        </div>
         <div className={styles.meta}>
           {user.plan === 'pro' && <span>Pro</span>}
         </div>

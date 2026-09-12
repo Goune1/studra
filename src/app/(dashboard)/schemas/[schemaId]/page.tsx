@@ -1,62 +1,39 @@
-import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import SchemaEditor from './SchemaEditorClient'
-import { normalizeSchemaData } from '@/components/schema/utils/adapter'
-import { GitBranch } from 'lucide-react'
+import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
+import { notFound } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
-const COLOR = '#1F4D3F'
+import { normalizeSchemaData } from '@/components/schema/utils/adapter'
+import SchemaEditor from './SchemaEditorClient'
+import styles from '../schemas.module.css'
 
 export default async function SchemaPage({ params }: { params: Promise<{ schemaId: string }> }) {
-  const {schemaId} = await params
-  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
+  const { schemaId } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
-  const { data: schema } = await supabase
-    .from('schemas').select('*').eq('id', schemaId).eq('user_id', user!.id).single()
+  const { data: schema } = await supabase.from('schemas').select('*').eq('id', schemaId).eq('user_id', user!.id).single()
   if (!schema) notFound()
 
   const data = normalizeSchemaData(schema.generated_data)
   const nodeCount = data.nodes.length
   const edgeCount = data.edges.length
+  const date = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(schema.created_at))
 
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 4rem)' }}>
-      <div className="flex items-center justify-between gap-4 px-2 pb-4 mb-2 border-b shrink-0" style={{ borderColor: 'var(--ink-200)' }}>
-        <div className="flex items-center gap-3 min-w-0">
-          <Link href="/schemas"
-            className="text-xs transition-colors shrink-0 flex items-center gap-1" style={{ color: 'var(--ink-500)' }}>
-            <GitBranch size={12} />{"← Mes schémas"}
-          </Link>
-          <div className="w-px h-4 shrink-0" style={{ background: 'var(--ink-200)' }} />
-          <h1 className="text-lg font-semibold truncate" style={{ color: 'var(--ink)' }}>{schema.title}</h1>
-          {schema.subject && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0"
-              style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
-              {schema.subject}
-            </span>
-          )}
-          <span className="mono text-[10px] px-2 py-0.5 rounded-full shrink-0 tabular-nums hidden sm:inline"
-            style={{ background: 'var(--surface-2)', color: 'var(--ink-500)', border: '1px solid var(--ink-200)' }}>
-            {`${nodeCount} nœuds · ${edgeCount} liens`}
-          </span>
+    <div className={styles.schemaDetail}>
+      <header className={styles.detailHeader}>
+        <div className={styles.detailIdentity}>
+          <Link href="/schemas" className={styles.backLink}><ArrowLeft size={14} /> Mes schémas</Link>
+          <h1>{schema.title}</h1>
+          {schema.subject && <span className={styles.detailSubject}>{schema.subject}</span>}
+          <span className={styles.detailMeta}>{nodeCount} nœud{nodeCount > 1 ? 's' : ''} · {edgeCount} lien{edgeCount > 1 ? 's' : ''}</span>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="mono text-xs tabular-nums hidden md:block" style={{ color: 'var(--ink-400)' }}>
-            {format.dateTime(new Date(schema.created_at), {day: 'numeric', month: 'short', year: 'numeric'})}
-          </span>
-          <DeleteEntityButton
-            table="schemas"
-            id={schema.id}
-            entityLabel={"ce schéma"}
-            variant="button"
-            redirectTo="/schemas"
-          />
+        <div className={styles.detailActions}>
+          <time className={styles.detailDate} dateTime={schema.created_at}>{date}</time>
+          <DeleteEntityButton table="schemas" id={schema.id} entityLabel="ce schéma" variant="button" redirectTo="/schemas" />
         </div>
-      </div>
-
-      <div className="flex-1 rounded-2xl overflow-hidden border" style={{ borderColor: 'var(--ink-200)', background: 'var(--bg-elev)' }}>
+      </header>
+      <div className={styles.editorFrame}>
         <SchemaEditor schemaId={schemaId} initialData={data} />
       </div>
     </div>

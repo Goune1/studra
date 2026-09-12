@@ -76,10 +76,6 @@ export default function Features() {
           transition={{ duration: 0.7, ease: [0.2, 0.7, 0.3, 1] }}
           style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 56, maxWidth: 760 }}
         >
-          <div className="eyebrow">
-            <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>{"Fonctionnalités"}</span>
-          </div>
           <h2 className="section-h">
             {"Un cours."}<br />
             <span className="dim">{"Sept manières de le réviser."}</span>

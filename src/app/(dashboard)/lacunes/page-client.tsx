@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { RefreshCw } from 'lucide-react'
+import { ArrowClockwise } from '@phosphor-icons/react'
 import { KpiStrip } from '@/components/lacunes/KpiStrip'
 import { WeaknessCardList } from '@/components/lacunes/WeaknessCardList'
 import { AnalysisPanel } from '@/components/lacunes/AnalysisPanel'
@@ -12,6 +12,7 @@ import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { MockCard, MockStats, LacunesAnalysis } from '@/lib/lacunes/mock'
 import type { Profile } from '@/types'
 import { trackLacunesOpen, trackLacunesAnalyze } from '@/lib/analytics'
+import styles from './lacunes.module.css'
 
 const COLOR = '#1F4D3F'
 
@@ -87,8 +88,9 @@ export default function LacunesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <RefreshCw size={20} className="animate-spin" style={{ color: COLOR }} />
+      <div className={styles.loadingState} role="status" aria-label="Analyse des lacunes en cours">
+        <ArrowClockwise size={20} weight="regular" className={styles.spinner} style={{ color: COLOR }} aria-hidden="true" />
+        <span>Analyse de tes révisions…</span>
       </div>
     )
   }
@@ -108,43 +110,42 @@ export default function LacunesPage() {
   }))
 
   return (
-    <div className="max-w-350">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
+    <div className={styles.page}>
+      <header className={styles.pageHeader}>
         <div>
-          <Eyebrow className="mb-2">{"Lacunes"}</Eyebrow>
-          <h1 className="section-h">{"Mes points faibles"}</h1>
-          <p className="mono text-xs mt-2" style={{ color: 'var(--ink-400)' }}>
+          <Eyebrow className={styles.eyebrow}>{"Lacunes"}</Eyebrow>
+          <h1>Mes points faibles</h1>
+          <p className={styles.pageSummary}>
             {`Basé sur ${data.stats.sessions} révisions · ${data.lacunes.length} point${data.lacunes.length === 1 ? "" : "s"} faible${data.lacunes.length === 1 ? "" : "s"}`}
           </p>
         </div>
 
         <button
+          type="button"
           onClick={handleRefresh}
           disabled={refreshing}
-          className="btn btn-outline shrink-0"
-          style={{ padding: '10px 16px', fontSize: '13px' }}
+          className={styles.refreshButton}
         >
-          <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+          <ArrowClockwise size={15} weight="regular" className={refreshing ? styles.spinner : undefined} aria-hidden="true" />
           {refreshing ? "Analyse…" : "Relancer l’analyse"}
         </button>
-      </div>
+      </header>
 
-      {/* KPI strip */}
-      <KpiStrip stats={data.stats} />
+      <section className={styles.metrics} aria-label="Résumé de l’analyse">
+        <KpiStrip stats={data.stats} />
+      </section>
 
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,60fr)_minmax(0,40fr)] gap-8">
-        <div className="min-w-0">
+      <div className={styles.contentGrid}>
+        <section className={styles.weaknesses} aria-label="Cartes à retravailler">
           <WeaknessCardList cards={cards} />
-        </div>
-        <div className="min-w-0">
+        </section>
+        <aside className={styles.analysis} aria-label="Diagnostic et conseils">
           <AnalysisPanel
             analysis={data.analysis}
             stats={data.stats}
             totalCards={cards.length}
           />
-        </div>
+        </aside>
       </div>
     </div>
   )

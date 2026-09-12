@@ -1,247 +1,159 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
-import { FileText, PlusCircle, Search, ChevronDown } from 'lucide-react'
-import { EmptyState } from '@/components/content/EmptyState'
-import { Eyebrow } from '@/components/ui/Eyebrow'
-import type { Fiche } from '@/types'
-import { trackFichesOpen } from '@/lib/analytics'
+import { ArrowRight, FileText, MagnifyingGlass, Plus } from '@phosphor-icons/react'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
-const COLOR = '#1F4D3F'
-const MATIERES = ['all', 'SES', 'HGGSP', 'Maths', 'Histoire', 'Physique', 'Autre']
-type SortKey = 'date_desc' | 'date_asc' | 'alpha'
+import { formatDate } from '@/lib/utils'
+import { trackFichesOpen } from '@/lib/analytics'
+import styles from '../flashcards/flashcards.module.css'
+import ficheStyles from './fiches.module.css'
+
+export interface FicheSummary {
+  id: string
+  title: string
+  subject: string | null
+  generated_content: string
+  created_at: string
+}
+
+type SortKey = 'recent' | 'oldest' | 'alpha'
 
 function wordCount(content: string): number {
   return content.trim().split(/\s+/).filter(Boolean).length
 }
 
-function excerpt(content: string, maxLen = 120): string {
-  const plain = content.replace(/#{1,6}\s+/g, '').replace(/\*\*/g, '').replace(/\*/g, '').replace(/`/g, '')
-  return plain.length > maxLen ? plain.slice(0, maxLen).trim() + '…' : plain
+function excerpt(content: string, maxLength = 120): string {
+  const plain = content
+    .replace(/#{1,6}\s+/g, '')
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '')
+    .replace(/`/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return plain.length > maxLength ? `${plain.slice(0, maxLength).trim()}…` : plain
 }
 
-export default function FichesPage() {
-  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
-  const [fiches, setFiches] = useState<Fiche[]>([])
-  const [loading, setLoading] = useState(true)
+export default function FichesPage({ initialFiches, userId }: { initialFiches: FicheSummary[]; userId: string }) {
+  const [fiches, setFiches] = useState(initialFiches)
   const [search, setSearch] = useState('')
-  const [matiere, setMatiere] = useState('all')
-  const [sort, setSort] = useState<SortKey>('date_desc')
-  const [sortOpen, setSortOpen] = useState(false)
-  const supabase = createClient()
-  const sortLabels: Record<SortKey, string> = {
-    date_desc: "Date ↓",
-    date_asc: "Date ↑",
-    alpha: "Titre A→Z",
-  }
+  const [subject, setSubject] = useState<string | null>(null)
+  const [sort, setSort] = useState<SortKey>('recent')
 
   useEffect(() => {
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      trackFichesOpen(user.id)
-      const { data } = await supabase
-        .from('fiches')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-      setFiches((data as Fiche[]) ?? [])
-      setLoading(false)
-    }
-    load()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    trackFichesOpen(userId)
+  }, [userId])
+
+  const subjects = useMemo(() => {
+    return Array.from(new Set(fiches.map((fiche) => fiche.subject).filter(Boolean) as string[])).sort()
+  }, [fiches])
 
   const filtered = useMemo(() => {
-    let list = fiches
-    if (search) list = list.filter((f) => f.title.toLowerCase().includes(search.toLowerCase()))
-    if (matiere !== 'all') list = list.filter((f) => f.subject === matiere)
-    return [...list].sort((a, b) => {
-      if (sort === 'date_desc') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      if (sort === 'date_asc') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      return a.title.localeCompare(b.title, 'fr')
-    })
-  }, [fiches, search, matiere, sort])
+    let result = fiches
+    if (search) result = result.filter((fiche) => fiche.title.toLowerCase().includes(search.toLowerCase()))
+    if (subject) result = result.filter((fiche) => fiche.subject === subject)
+    if (sort === 'alpha') result = [...result].sort((a, b) => a.title.localeCompare(b.title, 'fr'))
+    if (sort === 'oldest') result = [...result].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    return result
+  }, [fiches, search, subject, sort])
+
+  const totalWords = fiches.reduce((sum, fiche) => sum + wordCount(fiche.generated_content), 0)
 
   return (
-    <div className="max-w-350">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-6 animate-fade-up">
+    <div className={styles.libraryPage}>
+      <header className={styles.pageHeader}>
         <div>
-          <Eyebrow className="mb-2">{"Fiches"}</Eyebrow>
-          <div className="flex items-center gap-3">
-          <h1 className="section-h">{"Mes fiches"}</h1>
-            <span
-              className="mono text-xs px-2 py-1 rounded-full font-medium tabular-nums"
-              style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}
-            >
-              {loading ? '…' : `${fiches.length} ${fiches.length === 1 ? 'fiche' : 'fiches'}`}
-            </span>
-          </div>
+          <p className={styles.pageContext}>Fiches</p>
+          <h1>Mes fiches</h1>
+          <p className={styles.pageSummary}>
+            {fiches.length === 0
+              ? 'Transforme un cours en une synthèse claire, structurée et modifiable.'
+              : `${fiches.length} fiche${fiches.length > 1 ? 's' : ''} · ${totalWords.toLocaleString('fr-FR')} mots`}
+          </p>
         </div>
-        <Link href="/fiches/new" className="btn btn-primary shrink-0">
-          <PlusCircle size={15} />
-          {"Nouvelle fiche"}
+        <Link href="/fiches/new" className={styles.primaryButton}>
+          <Plus size={15} weight="bold" aria-hidden="true" />
+          Nouvelle fiche
         </Link>
-      </div>
+      </header>
 
-      {/* Search + filters */}
-      <div className="flex flex-wrap gap-2 mb-6 animate-fade-up" style={{ animationDelay: '60ms' }}>
-        <div className="relative flex-1 min-w-50">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ink-400)' }} />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={"Rechercher une fiche…"}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none transition-colors"
-            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink)' }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = COLOR + '50')}
-            onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--ink-200)')}
-          />
-        </div>
-
-        <div className="flex gap-1 p-1 rounded-xl overflow-x-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          {MATIERES.map((m) => (
-            <button
-              key={m}
-              onClick={() => setMatiere(m)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all"
-              style={{
-                background: matiere === m ? COLOR + '20' : 'transparent',
-                color: matiere === m ? COLOR : 'var(--text-3)',
-                border: matiere === m ? `1px solid ${COLOR}30` : '1px solid transparent',
-              }}
-            >
-              {m}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative">
-          <button
-            onClick={() => setSortOpen((o) => !o)}
-            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-colors"
-            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
-          >
-            {sortLabels[sort]}
-            <ChevronDown size={12} />
-          </button>
-          {sortOpen && (
-            <div
-              className="absolute right-0 top-full mt-1 rounded-xl overflow-hidden z-10 min-w-35"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-            >
-              {(Object.entries(sortLabels) as [SortKey, string][]).map(([k, label]) => (
-                <button
-                  key={k}
-                  onClick={() => { setSort(k); setSortOpen(false) }}
-                  className="w-full text-left px-4 py-2.5 text-xs transition-colors hover:bg-white/5"
-                  style={{ color: sort === k ? COLOR : 'var(--text-2)' }}
-                >
-                  {label}
+      {fiches.length > 0 && (
+        <section className={styles.libraryControls} aria-label="Rechercher et filtrer les fiches">
+          <label className={styles.searchField}>
+            <MagnifyingGlass size={16} aria-hidden="true" />
+            <span className="sr-only">Rechercher une fiche</span>
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Rechercher par titre" />
+          </label>
+          <label className={styles.sortField}>
+            <span>Trier</span>
+            <select value={sort} onChange={(event) => setSort(event.target.value as SortKey)}>
+              <option value="recent">Plus récent</option>
+              <option value="oldest">Plus ancien</option>
+              <option value="alpha">Alphabétique</option>
+            </select>
+          </label>
+          {subjects.length > 0 && (
+            <div className={styles.subjectFilters} aria-label="Filtrer par matière">
+              <button type="button" data-active={subject === null} onClick={() => setSubject(null)}>Toutes</button>
+              {subjects.map((item) => (
+                <button key={item} type="button" data-active={subject === item} onClick={() => setSubject(subject === item ? null : item)}>
+                  {item}
                 </button>
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </section>
+      )}
 
-      {/* Grid */}
-      {!loading && fiches.length === 0 ? (
-        <EmptyState
-          Icon={FileText}
-          color={COLOR}
-          title={"Aucune fiche"}
-          subtitle={"Créez votre première fiche à partir de votre cours"}
-          ctaLabel={"Créer ma première fiche"}
-          ctaHref="/fiches/new"
-        />
+      {fiches.length === 0 ? (
+        <section className={styles.emptyLibrary}>
+          <FileText size={25} weight="regular" aria-hidden="true" />
+          <div>
+            <h2>Commence avec un seul cours</h2>
+            <p>Colle un texte, importe un PDF ou prends tes notes en photo. Tu pourras modifier la fiche après sa génération.</p>
+          </div>
+          <Link href="/fiches/new" className={styles.primaryButton}>Créer ma première fiche <ArrowRight size={15} /></Link>
+        </section>
+      ) : filtered.length === 0 ? (
+        <section className={styles.noResults}>
+          <div>
+            <h2>Aucune fiche ne correspond</h2>
+            <p>Modifie la recherche ou affiche toutes les matières.</p>
+          </div>
+          <button type="button" onClick={() => { setSearch(''); setSubject(null) }}>Réinitialiser les filtres</button>
+        </section>
       ) : (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filtered.map((fiche, i) => {
-            const wc = wordCount(fiche.generated_content)
+        <section className={styles.deckGrid} aria-label="Fiches de révision">
+          {filtered.map((fiche) => {
+            const words = wordCount(fiche.generated_content)
             return (
-              <div
-                key={fiche.id}
-                className="relative group/card animate-fade-up"
-                style={{ animationDelay: `${i * 40}ms` }}
-              >
-                <div className="absolute top-3 right-3 z-10 w-0 overflow-hidden group-hover/card:w-8 transition-[width] duration-200">
-                  <DeleteEntityButton
-                    table="fiches"
-                    id={fiche.id}
-                    entityLabel={"cette fiche"}
-                    variant="icon"
-                    color={COLOR}
-                    onDeleted={(id) => setFiches((prev) => prev.filter((f) => f.id !== id))}
-                  />
-                </div>
-                <Link
-                href={`/fiches/${fiche.id}`}
-                className="group flex flex-col rounded-2xl border overflow-hidden transition-all duration-200 hover:-translate-y-0.5"
-                style={{
-                  background: 'var(--surface)',
-                  borderColor: 'var(--border)',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = COLOR + '50'; (e.currentTarget as HTMLElement).style.boxShadow = `0 0 20px ${COLOR}12` }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
-              >
-                <div className="flex flex-col flex-1 p-5">
-                  {/* Top row */}
-                  <div className="flex items-start justify-between gap-2 mb-3 transition-[padding] duration-200 group-hover/card:pr-9">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: COLOR + '15' }}>
-                      <FileText size={15} style={{ color: COLOR }} />
-                    </div>
-                    {fiche.subject && (
-                      <span
-                        className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0"
-                        style={{ background: COLOR + '12', color: COLOR }}
-                      >
-                        {fiche.subject}
-                      </span>
-                    )}
+              <article key={fiche.id} className={styles.deckCard}>
+                <div className={styles.deckCardTop}>
+                  <span className={styles.deckSubject}>{fiche.subject || 'Sans matière'}</span>
+                  <div className={styles.deckCardActions}>
+                    <time dateTime={fiche.created_at}>{formatDate(fiche.created_at)}</time>
+                    <DeleteEntityButton
+                      table="fiches"
+                      id={fiche.id}
+                      entityLabel="cette fiche"
+                      variant="icon"
+                      color="#1F4D3F"
+                      onDeleted={(id) => setFiches((current) => current.filter((item) => item.id !== id))}
+                    />
                   </div>
-
-                  {/* Title */}
-                  <h3 className="text-base font-semibold mb-2 line-clamp-2 leading-snug transition-colors" style={{ color: 'var(--ink)' }}>
-                    {fiche.title}
-                  </h3>
-
-                  {/* Excerpt */}
-                  <p className="text-xs line-clamp-2 leading-relaxed flex-1" style={{ color: 'var(--ink-500)' }}>
-                    {excerpt(fiche.generated_content)}
-                  </p>
                 </div>
-
-                {/* Footer */}
-                <div
-                  className="flex items-center justify-between px-5 py-3 border-t"
-                  style={{ borderColor: 'var(--ink-200)', background: 'var(--surface-2)' }}
-                >
-                  <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                  {format.dateTime(new Date(fiche.created_at), { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </span>
-                  <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-                    {`~${wc} mots`}
-                  </span>
-                  <span className="text-[10px] font-semibold" style={{ color: COLOR }}>
-                    {"Lire →"}
-                  </span>
-                </div>
-              </Link>
-              </div>
+                <Link href={`/fiches/${fiche.id}`} className={styles.deckCardLink}>
+                  <h2>{fiche.title}</h2>
+                  <p className={ficheStyles.ficheExcerpt}>{excerpt(fiche.generated_content)}</p>
+                  <div className={styles.deckCardMeta}>
+                    <span>~{words.toLocaleString('fr-FR')} mots</span>
+                    <span className={styles.openDeck}>Lire la fiche <ArrowRight size={14} /></span>
+                  </div>
+                </Link>
+              </article>
             )
           })}
-
-          {!loading && filtered.length === 0 && fiches.length > 0 && (
-            <div className="col-span-full text-center py-16 text-sm" style={{ color: 'var(--ink-400)' }}>
-              {"Aucune fiche ne correspond à votre recherche."}
-            </div>
-          )}
-        </div>
+        </section>
       )}
     </div>
   )

@@ -1,14 +1,12 @@
 import Link from 'next/link'
-import { Brain, ChevronRight } from 'lucide-react'
+import { Brain, CaretRight, Check, X } from '@phosphor-icons/react/dist/ssr'
 import { createClient } from '@/lib/supabase/server'
 import { CheckoutButton } from '@/components/checkout-button'
 import { ManageSubscriptionButton } from '@/components/manage-subscription-button'
 import { MarketingConsentToggle } from '@/components/settings/MarketingConsentToggle'
 import { DeleteAccountButton } from '@/components/settings/DeleteAccountButton'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import { updateMarketingConsent, deleteAccount } from './actions'
-
-const COLOR = '#1F4D3F'
+import styles from './settings.module.css'
 
 export default async function SettingsPage() {
   const format = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -20,142 +18,99 @@ export default async function SettingsPage() {
   const generationsLeft = isPro ? null : Math.max(0, 5 - (profile?.generations_used_this_month ?? 0))
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="animate-fade-up">
-        <Eyebrow className="mb-2">{"Compte"}</Eyebrow>
-        <h1 className="section-h">{"Paramètres"}</h1>
-      </div>
+    <div className={styles.page}>
+      <header className={styles.pageHeader}>
+        <p className={styles.eyebrow}>Compte</p>
+        <h1>Paramètres</h1>
+        <p className={styles.pageSummary}>Gère ton compte, ton abonnement et les réglages de révision.</p>
+      </header>
 
-      {/* FSRS shortcut */}
-      <Link
-        href="/settings/revision"
-        className="flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 group animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '40ms' }}
-      >
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: COLOR + '15', border: `1px solid ${COLOR}25` }}
-        >
-          <Brain size={18} style={{ color: COLOR }} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm" style={{ color: 'var(--ink)' }}>{"Répétition espacée (FSRS)"}</p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--ink-400)' }}>
-            {"Stats, rétention cible, prévision"}
-          </p>
-        </div>
-        <ChevronRight
-          size={16}
-          className="shrink-0 transition-transform group-hover:translate-x-0.5"
-          style={{ color: 'var(--ink-400)' }}
-        />
-      </Link>
-
-
-      {/* Profil */}
-      <div
-        className="rounded-2xl p-8 space-y-6 animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
-      >
-        <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>{"Profil"}</h2>
-        <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>{"Email"}</label>
-          <p className="text-sm" style={{ color: 'var(--ink)' }}>{user?.email}</p>
-        </div>
-        <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>{"Nom complet"}</label>
-          <p className="text-sm" style={{ color: 'var(--ink)' }}>{profile?.full_name ?? "Non renseigné"}</p>
-        </div>
-        <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--ink-500)' }}>{"Membre depuis"}</label>
-          <p className="text-sm" style={{ color: 'var(--ink)' }}>
-            {profile?.created_at
-              ? format.format(new Date(profile.created_at))
-              : '-'}
-          </p>
-        </div>
-        <div
-          className="flex items-center justify-between gap-4 border-t pt-6"
-          style={{ borderColor: 'var(--border)' }}
-        >
-          <div>
-            <p className="text-sm font-medium mb-1" style={{ color: 'var(--ink-700)' }}>{"Emails marketing"}</p>
-            <p className="text-xs" style={{ color: 'var(--ink-500)' }}>{"Recevoir les actualités et offres Studra par email."}</p>
+      <div className={styles.settingsGrid}>
+        <section className={`${styles.panel} ${styles.widePanel}`}>
+          <div className={styles.panelHeader}>
+            <div>
+              <h2>Profil</h2>
+              <p>Les informations associées à ton compte Studra.</p>
+            </div>
           </div>
-          <MarketingConsentToggle
-            initialValue={profile?.marketing_consent ?? false}
-            updateMarketingConsent={updateMarketingConsent}
-          />
-        </div>
-      </div>
-
-      {/* Abonnement */}
-      <div
-        className="rounded-2xl p-8 animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '80ms' }}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>{"Abonnement"}</h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>{"Votre abonnement Studra"}</p>
+          <dl className={styles.infoList}>
+            <div className={styles.infoRow}>
+              <dt>Email</dt>
+              <dd>{user?.email}</dd>
+            </div>
+            <div className={styles.infoRow}>
+              <dt>Nom complet</dt>
+              <dd>{profile?.full_name ?? 'Non renseigné'}</dd>
+            </div>
+            <div className={styles.infoRow}>
+              <dt>Membre depuis</dt>
+              <dd>{profile?.created_at ? format.format(new Date(profile.created_at)) : '—'}</dd>
+            </div>
+          </dl>
+          <div className={`${styles.settingRow} ${styles.preferenceRow}`}>
+            <div className={styles.preferenceCopy}>
+              <p>Emails marketing</p>
+              <span>Recevoir les actualités et offres Studra par email.</span>
+            </div>
+            <MarketingConsentToggle initialValue={profile?.marketing_consent ?? false} updateMarketingConsent={updateMarketingConsent} />
           </div>
-          <span
-            className="mono px-3 py-1.5 rounded-full text-xs font-semibold"
-            style={isPro
-              ? { background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}30` }
-              : { background: 'var(--surface-2)', color: 'var(--ink-500)', border: '1px solid var(--border)' }
-            }
-          >
-            {isPro ? "Pro" : "Gratuit"}
+        </section>
+
+        <Link href="/settings/revision" className={styles.revisionLink}>
+          <span className={styles.revisionIcon}><Brain size={19} weight="regular" /></span>
+          <span>
+            <h2>Répétition espacée</h2>
+            <p>FSRS, rétention cible et prévisions.</p>
           </span>
-        </div>
+          <CaretRight size={17} weight="regular" />
+        </Link>
 
-        {!isPro && (
-          <div
-            className="mb-6 p-4 rounded-xl"
-            style={{ background: 'var(--accent-soft)', border: `1px solid ${COLOR}25` }}
-          >
-            <p className="text-sm" style={{ color: COLOR }}>
+        <section className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <h2>Abonnement</h2>
+              <p>Ton accès actuel à Studra.</p>
+            </div>
+            <span className={`${styles.planBadge} ${isPro ? styles.proBadge : ''}`}>{isPro ? 'Pro' : 'Gratuit'}</span>
+          </div>
+          {!isPro && (
+            <p className={styles.usageNotice}>
               {generationsLeft === 0
-                ? "Tu as utilisé toutes tes générations ce mois-ci."
+                ? 'Tu as utilisé toutes tes générations ce mois-ci.'
                 : `Il te reste ${generationsLeft!} ${generationsLeft === 1 ? 'génération' : 'générations'} ce mois-ci.`}
             </p>
+          )}
+          <div className={styles.featureList}>
+            {[
+              { label: 'Flashcards illimitées', included: isPro },
+              { label: 'Fiches illimitées', included: isPro },
+              { label: 'Générations par mois', value: isPro ? 'Illimitées' : '5' },
+            ].map((item) => (
+              <div key={item.label} className={styles.featureRow}>
+                <span>{item.label}</span>
+                {item.value ? <strong className={styles.rowValue}>{item.value}</strong> : (
+                  <span className={`${styles.featureStatus} ${item.included ? styles.featureAvailable : styles.featureUnavailable}`}>
+                    {item.included ? <Check size={15} weight="bold" /> : <X size={15} weight="bold" />}
+                    {item.included ? 'Inclus' : 'Pro'}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
-        )}
+          <div className={styles.subscriptionAction}>{!isPro ? <CheckoutButton /> : <ManageSubscriptionButton />}</div>
+        </section>
 
-        <div className="space-y-3 mb-8">
-          {[
-            { label: "Flashcards illimitées",  included: isPro },
-            { label: "Fiches illimitées",       included: isPro },
-            { label: "Générations par mois",    value: isPro ? "Illimitées" : '5' },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center justify-between">
-              <span className="text-sm" style={{ color: 'var(--ink-700)' }}>{item.label}</span>
-              {item.value ? (
-                <span className="mono text-sm font-medium" style={{ color: 'var(--ink)' }}>{item.value}</span>
-              ) : (
-                <span style={{ color: item.included ? COLOR : 'var(--ink-400)' }}>
-                  {item.included ? '✓' : '✗'}
-                </span>
-              )}
+        <section className={`${styles.panel} ${styles.dangerPanel} ${styles.widePanel}`}>
+          <div className={styles.panelHeader}>
+            <div>
+              <h2>Supprimer mon compte</h2>
+              <p className={styles.panelDescription}>Supprime définitivement ton compte Studra et toutes tes données. Cette action est irréversible.</p>
             </div>
-          ))}
-        </div>
-
-        {!isPro ? <CheckoutButton /> : <ManageSubscriptionButton />}
-      </div>
-
-      {/* Zone de danger */}
-      <div
-        className="rounded-2xl p-8 space-y-4 animate-fade-up"
-        style={{ background: 'var(--surface)', border: '1px solid #B4503C30', animationDelay: '90ms' }}
-      >
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight" style={{ color: 'var(--ink)' }}>{"Supprimer mon compte"}</h2>
-          <p className="text-sm mt-1" style={{ color: 'var(--ink-500)' }}>{"Supprime définitivement ton compte Studra et toutes tes données (fiches, flashcards, examens, planning...). Cette action est irréversible."}</p>
-        </div>
-        <DeleteAccountButton userEmail={user!.email ?? ''} deleteAccount={deleteAccount} />
+          </div>
+          <div className={styles.dangerAction}>
+            <DeleteAccountButton userEmail={user!.email ?? ''} deleteAccount={deleteAccount} />
+          </div>
+        </section>
       </div>
     </div>
   )

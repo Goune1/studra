@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation'
+import PageClient from './page-client'
 
 export default function RecallIndexPage() {
-  redirect('/recall/new')
+  return <PageClient />
 }

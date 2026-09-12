@@ -15,7 +15,7 @@ interface EdgeProps {
 
 function EdgeImpl({ id, from, to, label, highlighted, onLabelDoubleClick }: EdgeProps) {
   const path = buildEdgePath(from, to)
-  const stroke = highlighted ? 'rgba(139, 122, 255, 0.95)' : 'rgba(255,255,255,0.22)'
+  const stroke = highlighted ? '#1F4D3F' : 'rgba(24,24,27,0.24)'
   const strokeWidth = highlighted ? 1.8 : 1.2
   const mid = bezierMidpoint(from, to)
   return (
@@ -44,8 +44,8 @@ function EdgeImpl({ id, from, to, label, highlighted, onLabelDoubleClick }: Edge
             width={label.length * 6.8 + 16}
             height={18}
             rx={6}
-            fill="rgba(11,11,15,0.85)"
-            stroke="rgba(255,255,255,0.08)"
+            fill="#FFFFFF"
+            stroke="#E4E4E7"
           />
           <text
             x={0}
@@ -53,7 +53,7 @@ function EdgeImpl({ id, from, to, label, highlighted, onLabelDoubleClick }: Edge
             fontSize={11}
             fontWeight={500}
             textAnchor="middle"
-            fill={highlighted ? '#c7bdff' : '#9ca3af'}
+            fill={highlighted ? '#1F4D3F' : '#71717A'}
           >
             {label}
           </text>

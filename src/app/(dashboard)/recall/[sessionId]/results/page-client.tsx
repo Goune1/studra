@@ -1,41 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import {useRouter} from 'next/navigation'
 import Link from 'next/link'
-import { CheckCircle, XCircle, AlertCircle, RefreshCw, Layers } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
+import { ArrowCounterClockwise, Cards, CheckCircle, WarningCircle, XCircle } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
-import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { FreeRecallSession } from '@/types'
+import styles from '../../recall.module.css'
 
-const COLOR = '#1F4D3F'
-
-function ScoreRing({ score }: { score: number }) {
-  const r = 40
-  const circ = 2 * Math.PI * r
-  const offset = circ - (score / 100) * circ
-  const color = score >= 70 ? '#10B981' : score >= 40 ? '#F59E0B' : '#EF4444'
-
-  return (
-    <div className="relative w-24 h-24 flex items-center justify-center">
-      <svg className="absolute inset-0 -rotate-90" width="96" height="96">
-        <circle cx="48" cy="48" r={r} fill="none" stroke="var(--border)" strokeWidth="8" />
-        <circle
-          cx="48" cy="48" r={r} fill="none"
-          stroke={color} strokeWidth="8"
-          strokeDasharray={circ}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          style={{ transition: 'stroke-dashoffset 1s ease' }}
-        />
-      </svg>
-      <div className="text-center">
-        <span className="text-2xl font-bold" style={{ color }}>{score}</span>
-        <span className="mono text-xs block" style={{ color: 'var(--ink-400)' }}>/100</span>
-      </div>
-    </div>
-  )
+function ResultSection({ title, Icon, children }: { title: string; Icon: typeof CheckCircle; children: React.ReactNode }) {
+  return <section className={styles.resultSection}><div className={styles.resultHeading}><Icon size={17} weight="regular" /><h2>{title}</h2></div>{children}</section>
 }
 
 export default function RecallResultsPage() {
@@ -43,160 +17,30 @@ export default function RecallResultsPage() {
   const router = useRouter()
   const sessionId = params.sessionId as string
   const [session, setSession] = useState<FreeRecallSession | null>(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from('free_recall_sessions')
-        .select('*')
-        .eq('id', sessionId)
-        .single()
-
+      const { data } = await createClient().from('free_recall_sessions').select('*').eq('id', sessionId).single()
       if (!data || !data.evaluation) { router.push('/recall/new'); return }
       setSession(data as FreeRecallSession)
-      setLoading(false)
     }
     load()
-  }, [sessionId, router])
+  }, [router, sessionId])
 
-  if (loading || !session?.evaluation) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-sm" style={{ color: 'var(--ink-400)' }}>{"Chargement…"}</div>
-      </div>
-    )
-  }
-
+  if (!session?.evaluation) return <div className={styles.loadingState}>Chargement des résultats…</div>
   const { evaluation } = session
 
   return (
-    <div className="max-w-2xl mx-auto py-2">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6 animate-fade-up">
-        <div>
-          <Eyebrow className="mb-2">{"Rappel libre"}</Eyebrow>
-          <h1 className="section-h">{"Résultats"}</h1>
-          <p className="text-sm mt-2" style={{ color: 'var(--ink-500)' }}>
-            {session.content_title}
-          </p>
-        </div>
-        <ScoreRing score={evaluation.score} />
-      </div>
-
-      {/* Covered notions */}
-      {evaluation.notions_couvertes.length > 0 && (
-        <div
-          className="rounded-2xl p-5 mb-4 animate-fade-up"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '60ms' }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle size={16} style={{ color: '#10B981' }} />
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              Notions couvertes ({evaluation.notions_couvertes.length})
-            </h2>
-          </div>
-          <ul className="space-y-1.5">
-            {evaluation.notions_couvertes.map((n, i) => (
-              <li key={i} className="text-sm flex gap-2" style={{ color: 'var(--ink-700)' }}>
-                <span style={{ color: '#10B981' }}>✓</span> {n}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Missed notions */}
-      {evaluation.notions_oubliees.length > 0 && (
-        <div
-          className="rounded-2xl p-5 mb-4 animate-fade-up"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '90ms' }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <XCircle size={16} style={{ color: '#EF4444' }} />
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              {"Points à revoir"} ({evaluation.notions_oubliees.length})
-            </h2>
-          </div>
-          <ul className="space-y-1.5">
-            {evaluation.notions_oubliees.map((n, i) => (
-              <li key={i} className="text-sm flex gap-2" style={{ color: 'var(--ink-700)' }}>
-                <XCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#EF4444' }} />
-                {n}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Errors */}
-      {evaluation.erreurs.length > 0 && (
-        <div
-          className="rounded-2xl p-5 mb-4 animate-fade-up"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '120ms' }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <AlertCircle size={16} style={{ color: '#F59E0B' }} />
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              {"Analyse détaillée"}
-            </h2>
-          </div>
-          <ul className="space-y-1.5">
-            {evaluation.erreurs.map((e, i) => (
-              <li key={i} className="text-sm flex gap-2" style={{ color: 'var(--ink-700)' }}>
-                <AlertCircle size={13} className="shrink-0 mt-0.5" style={{ color: '#F59E0B' }} />
-                {e}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Suggested flashcards */}
-      {evaluation.flashcards_suggerees.length > 0 && (
-        <div
-          className="rounded-2xl p-5 mb-6 animate-fade-up"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)', animationDelay: '150ms' }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Layers size={16} style={{ color: COLOR }} />
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-              {"Voir mes flashcards"}
-            </h2>
-          </div>
-          <div className="space-y-3">
-            {evaluation.flashcards_suggerees.map((fc, i) => (
-              <div
-                key={i}
-                className="rounded-xl p-3"
-                style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
-              >
-                <p className="mono text-xs font-semibold mb-1" style={{ color: COLOR }}>Q</p>
-                <p className="text-sm mb-2" style={{ color: 'var(--ink)' }}>{fc.question}</p>
-                <p className="mono text-xs font-semibold mb-1" style={{ color: 'var(--ink-500)' }}>R</p>
-                <p className="text-sm" style={{ color: 'var(--ink-700)' }}>{fc.answer}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="flex gap-3 animate-fade-up" style={{ animationDelay: '180ms' }}>
-        <Link
-          href="/recall/new"
-          className="btn btn-outline flex-1"
-        >
-          <RefreshCw size={14} /> Nouvelle session
-        </Link>
-        <Link
-          href="/flashcards"
-          className="btn btn-primary flex-1"
-        >
-          <Layers size={14} /> Mes flashcards
-        </Link>
-      </div>
+    <div className={styles.resultsPage}>
+      <header className={styles.resultsHeader}>
+        <div><p className={styles.eyebrow}><CheckCircle size={14} weight="regular" /> Rappel libre</p><h1 className={styles.title}>Résultats.</h1><p className={styles.summary}>{session.content_title}</p></div>
+        <div className={styles.score}><div><strong>{evaluation.score}</strong><span>sur 100</span></div></div>
+      </header>
+      {evaluation.notions_couvertes.length > 0 && <ResultSection title={`Notions couvertes · ${evaluation.notions_couvertes.length}`} Icon={CheckCircle}><ul className={styles.resultList}>{evaluation.notions_couvertes.map((notion) => <li key={notion}><CheckCircle size={15} weight="fill" />{notion}</li>)}</ul></ResultSection>}
+      {evaluation.notions_oubliees.length > 0 && <ResultSection title={`Points à revoir · ${evaluation.notions_oubliees.length}`} Icon={XCircle}><ul className={styles.resultList}>{evaluation.notions_oubliees.map((notion) => <li key={notion}><XCircle size={15} weight="regular" />{notion}</li>)}</ul></ResultSection>}
+      {evaluation.erreurs.length > 0 && <ResultSection title="Analyse détaillée" Icon={WarningCircle}><ul className={styles.resultList}>{evaluation.erreurs.map((error) => <li key={error}><WarningCircle size={15} weight="regular" />{error}</li>)}</ul></ResultSection>}
+      {evaluation.flashcards_suggerees.length > 0 && <ResultSection title="Flashcards suggérées" Icon={Cards}><div className={styles.flashcardList}>{evaluation.flashcards_suggerees.map((card, index) => <article className={styles.flashcard} key={`${card.question}-${index}`}><p className={styles.flashcardLabel}>Question</p><p>{card.question}</p><p className={styles.flashcardLabel}>Réponse</p><p>{card.answer}</p></article>)}</div></ResultSection>}
+      <div className={styles.resultActions}><Link href="/recall/new" className={styles.secondaryButton}><ArrowCounterClockwise size={16} weight="regular" /> Nouvelle session</Link><Link href="/flashcards" className={styles.primaryButton}><Cards size={16} weight="regular" /> Mes flashcards</Link></div>
     </div>
   )
 }

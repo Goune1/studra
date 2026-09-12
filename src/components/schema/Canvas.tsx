@@ -277,7 +277,7 @@ export function Canvas({
         },
       })
     },
-    [connectDraft, connectionMode, onViewportChange], // viewport removed — read via viewportRef at drag start
+    [onViewportChange],
   )
 
   const handleBackgroundClick = useCallback(
@@ -408,7 +408,7 @@ export function Canvas({
         height: '100%',
         overflow: 'hidden',
         background:
-          'radial-gradient(circle at 18% 12%, rgba(88,80,236,0.12), transparent 40%), radial-gradient(circle at 82% 88%, rgba(236,72,153,0.08), transparent 45%), #0B0B10',
+          '#FAFAF9',
         touchAction: 'none',
         cursor: connectionMode ? 'crosshair' : 'grab',
         userSelect: 'none',
@@ -428,7 +428,7 @@ export function Canvas({
             x={viewport.x % gridUnit}
             y={viewport.y % gridUnit}
           >
-            <circle cx={0.5} cy={0.5} r={0.9} fill={`rgba(255,255,255,${gridOpacity})`} />
+            <circle cx={0.5} cy={0.5} r={0.9} fill={`rgba(24,24,27,${gridOpacity * 0.35})`} />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#schema-grid)" opacity={0.4} />
@@ -441,10 +441,10 @@ export function Canvas({
       >
         <defs>
           <marker id="schema-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,0.35)" />
+            <path d="M0,0 L10,5 L0,10 z" fill="rgba(24,24,27,0.30)" />
           </marker>
           <marker id="schema-arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="rgba(139,122,255,0.95)" />
+            <path d="M0,0 L10,5 L0,10 z" fill="#1F4D3F" />
           </marker>
         </defs>
         <g transform={`translate(${viewport.x} ${viewport.y}) scale(${viewport.zoom})`}>
@@ -468,7 +468,7 @@ export function Canvas({
           {connectDraftView ? (
             <path
               d={`M ${connectDraftView.from.x} ${connectDraftView.from.y} L ${connectDraftView.to.x} ${connectDraftView.to.y}`}
-              stroke="rgba(139,122,255,0.9)"
+              stroke="#1F4D3F"
               strokeWidth={1.6}
               strokeDasharray="4 4"
               fill="none"
@@ -517,9 +517,9 @@ export function Canvas({
             left: 12,
             padding: '6px 10px',
             borderRadius: 8,
-            background: 'rgba(139,122,255,0.2)',
-            border: '1px solid rgba(139,122,255,0.5)',
-            color: '#d4ccff',
+            background: 'var(--accent-soft)',
+            border: '1px solid rgba(31,77,63,0.35)',
+            color: 'var(--accent)',
             fontSize: 12,
             fontWeight: 600,
             pointerEvents: 'none',

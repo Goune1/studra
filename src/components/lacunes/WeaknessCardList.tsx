@@ -35,7 +35,7 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
             {"Cartes à retravailler"}
           </h2>
           <span
-            className="mono text-xs px-2 py-0.5 rounded-full font-semibold"
+            className=" text-xs px-2 py-0.5 rounded-full font-semibold"
             style={{ background: '#EF444415', color: '#EF4444', border: '1px solid #EF444425' }}
           >
             {cards.length}
@@ -44,14 +44,14 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
 
         {/* Sort toggle */}
         <div
-          className="flex items-center gap-1 p-1 rounded-xl"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+          className="flex items-center gap-1 p-1 rounded-lg"
+          style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
         >
           {(['failRate', 'lastSeen', 'alpha'] as const).map((key) => (
             <button
               key={key}
               onClick={() => setSort(key)}
-              className="px-2.5 py-1.5 rounded-lg mono text-[10px] font-medium transition-all duration-150 cursor-pointer"
+              className="px-2.5 py-1.5 rounded-lg  text-[10px] font-medium transition-all duration-150 cursor-pointer"
               style={{
                 background: sort === key ? 'var(--accent-soft)' : 'transparent',
                 color: sort === key ? 'var(--accent)' : 'var(--ink-400)',
@@ -67,7 +67,7 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
       {critical.length > 0 && (
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-2">
-            <span className="mono text-[9px] font-bold uppercase tracking-widest" style={{ color: '#EF4444' }}>
+            <span className=" text-[9px] font-bold uppercase tracking-widest" style={{ color: '#EF4444' }}>
               {"Priorité"}
             </span>
             <div className="flex-1 h-px" style={{ background: '#EF444420' }} />
@@ -82,10 +82,10 @@ export function WeaknessCardList({ cards }: WeaknessCardListProps) {
       {watchlist.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="mono text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--ink-400)' }}>
+            <span className=" text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--ink-400)' }}>
               {"Points faibles"}
             </span>
-            <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+            <div className="flex-1 h-px" style={{ background: 'var(--ink-200)' }} />
           </div>
           {watchlist.map((card, i) => (
             <WeaknessCard key={card.id} card={card} index={critical.length + i} />

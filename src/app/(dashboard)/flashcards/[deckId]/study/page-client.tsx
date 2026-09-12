@@ -7,9 +7,9 @@ import { FlashCard } from '@/components/flashcards/FlashCard'
 import type { DueCard } from '@/lib/fsrs/service'
 import type { RatingPreview } from '@/lib/fsrs/types'
 import Link from 'next/link'
-import { X, RotateCcw, CheckCircle, Clock } from 'lucide-react'
+import { ArrowCounterClockwise, ArrowLeft, CheckCircle, Clock, SpinnerGap } from '@phosphor-icons/react'
 import { trackFlashcardsSessionStart, trackFlashcardsSessionComplete, trackFlashcardsSessionAbandoned } from '@/lib/analytics'
-const COLOR = '#1F4D3F'
+import styles from './study.module.css'
 
 const RATING_COLORS: Record<number, string> = {
   1: '#B4503C',
@@ -174,190 +174,115 @@ export default function StudyPage() {
     setIsFlipped(false)
   }
 
-  // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 rounded-full border-2 animate-spin"
-          style={{ borderColor: COLOR + '20', borderTopColor: COLOR }} />
+      <div className={styles.centerState}>
+        <div className={styles.loadingCard}>
+          <SpinnerGap size={20} className={styles.spinner} aria-hidden="true" />
+          <div><strong>Préparation de la session</strong><span>Studra cherche les cartes arrivées à échéance.</span></div>
+        </div>
       </div>
     )
   }
 
-  // ── No cards due ──────────────────────────────────────────────────────────
   if (noCards) {
     const nextDate = nextDueAt
       ? format.dateTime(new Date(nextDueAt), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
       : null
     return (
-      <div className="h-full flex flex-col items-center justify-center px-4">
-        <div className="w-full max-w-sm animate-fade-up text-center">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            style={{ background: 'var(--accent-soft)', border: '1px solid rgba(31,77,63,0.2)' }}>
-            <CheckCircle size={28} style={{ color: 'var(--accent)' }} />
-          </div>
-          <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--ink)' }}>{"Tout est à jour !"}</h2>
-          <p className="text-sm mb-2" style={{ color: 'var(--ink-500)' }}>
-            {`${totalInDeck} ${totalInDeck === 1 ? 'carte' : 'cartes'} dans ce deck — aucune révision due pour l'instant.`}
-          </p>
-          {nextDate && (
-            <div className="flex items-center justify-center gap-2 text-xs mb-8" style={{ color: 'var(--accent)' }}>
-              <Clock size={12} />{`Prochaine révision : ${nextDate}`}
-            </div>
-          )}
-          <Link href={`/flashcards/${deckId}`} className="btn btn-primary">
-            {"Retour au deck"}
-          </Link>
-        </div>
+      <div className={styles.centerState}>
+        <section className={styles.doneCard}>
+          <div className={styles.doneIcon}><CheckCircle size={24} weight="regular" aria-hidden="true" /></div>
+          <p className={styles.stateLabel}>Rien à réviser maintenant</p>
+          <h1>Ce deck est à jour.</h1>
+          <p>{totalInDeck} carte{totalInDeck > 1 ? 's' : ''} dans ce deck, aucune n’est arrivée à échéance.</p>
+          {nextDate && <span className={styles.nextReview}><Clock size={14} /> Prochaine révision : {nextDate}</span>}
+          <Link href={`/flashcards/${deckId}`} className={styles.stateButton}><ArrowLeft size={14} /> Retour au deck</Link>
+        </section>
       </div>
     )
   }
 
-  // ── Results screen ────────────────────────────────────────────────────────
   if (finished) {
     const total = stats.again + stats.hard + stats.good + stats.easy
     const retained = stats.good + stats.easy
     const score = total > 0 ? Math.round((retained / total) * 100) : 0
-    const sc = score >= 75 ? '#1F4D3F' : score >= 50 ? '#A8762E' : '#B4503C'
 
     return (
-      <div className="h-full flex flex-col items-center justify-center px-4">
-        <div className="w-full max-w-sm animate-fade-up">
-          <div className="rounded-2xl border p-8 text-center mb-6"
-            style={{ background: 'var(--bg-elev)', borderLeft: `4px solid ${sc}`, borderColor: 'var(--ink-200)' }}>
-            <p className="mono text-[10px] font-medium uppercase tracking-widest mb-3"
-              style={{ color: 'var(--ink-400)' }}>{"Session terminée"}</p>
-            <div className="text-6xl font-normal mb-2 tracking-tight" style={{ color: sc }}>{score}%</div>
-            <p className="text-sm mb-6 line-clamp-1" style={{ color: 'var(--ink-500)' }}>{deckTitle}</p>
-
-            <div className="grid grid-cols-4 gap-2 mb-2">
-              {([
-                { label: "À revoir",  value: stats.again, color: RATING_COLORS[1] },
-                { label: "Difficile", value: stats.hard,  color: RATING_COLORS[2] },
-                { label: "Bien",      value: stats.good,  color: RATING_COLORS[3] },
-                { label: "Facile",    value: stats.easy,  color: RATING_COLORS[4] },
-              ] as const).map(({ label, value, color }) => (
-                <div key={label} className="rounded-xl p-3 text-center"
-                  style={{ background: color + '10', border: `1px solid ${color}20` }}>
-                  <div className="text-2xl font-semibold tabular-nums tracking-tight"
-                    style={{ color, fontFamily: 'var(--font-mono, monospace)' }}>{value}</div>
-                  <div className="text-[9px] mt-0.5" style={{ color: 'var(--text-3)' }}>{label}</div>
-                </div>
-              ))}
-            </div>
+      <div className={styles.centerState}>
+        <section className={styles.resultsCard}>
+          <div className={styles.resultsIntro}>
+            <p className={styles.stateLabel}>Session terminée</p>
+            <h1>{score}% retenues</h1>
+            <p>{deckTitle}</p>
           </div>
-
-          <div className="flex gap-3">
-            <button onClick={restart} className="btn btn-outline flex-1">
-              <RotateCcw size={13} />{"Recommencer"}
-            </button>
-            <Link href={`/flashcards/${deckId}`} className="btn btn-primary flex-1">
-              {"Retour au deck"}
-            </Link>
+          <div className={styles.resultRows}>
+            {([
+              { label: 'À revoir', value: stats.again, color: RATING_COLORS[1] },
+              { label: 'Difficile', value: stats.hard, color: RATING_COLORS[2] },
+              { label: 'Bien', value: stats.good, color: RATING_COLORS[3] },
+              { label: 'Facile', value: stats.easy, color: RATING_COLORS[4] },
+            ] as const).map(({ label, value, color }) => (
+              <div key={label}><span style={{ color }}>{value}</span><small>{label}</small></div>
+            ))}
           </div>
-        </div>
+          <div className={styles.resultActions}>
+            <button type="button" onClick={restart}><ArrowCounterClockwise size={15} /> Recommencer</button>
+            <Link href={`/flashcards/${deckId}`}>Retour au deck</Link>
+          </div>
+        </section>
       </div>
     )
   }
 
-  // ── Study screen ──────────────────────────────────────────────────────────
   const card = cards[currentIndex]
-  const progress = (currentIndex / cards.length) * 100
+  const progress = ((currentIndex + 1) / cards.length) * 100
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Top bar */}
-      <div className="shrink-0 h-14 flex items-center px-4 md:px-8 gap-4 border-b"
-        style={{ borderColor: 'var(--ink-200)' }}>
-        <Link href={`/flashcards/${deckId}`}
-          className="flex items-center gap-1.5 text-xs transition-colors shrink-0"
-          style={{ color: 'var(--ink-500)' }}>
-          <X size={14} />{"Annuler"}
-        </Link>
-
-        <div className="flex-1 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span className="mono text-[10px] tabular-nums truncate max-w-48" style={{ color: 'var(--ink-400)' }}>{deckTitle}</span>
-            <span className="mono text-[10px] tabular-nums shrink-0" style={{ color: 'var(--ink-400)' }}>
-              {currentIndex + 1}/{cards.length}
-            </span>
-          </div>
-          <div className="w-full h-1 rounded-full" style={{ background: 'var(--ink-200)' }}>
-            <div className="h-1 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%`, background: COLOR }} />
-          </div>
+    <div className={styles.studyPage}>
+      <header className={styles.studyHeader}>
+        <Link href={`/flashcards/${deckId}`}><ArrowLeft size={14} /> Quitter</Link>
+        <div className={styles.studyProgress}>
+          <div><span>{deckTitle}</span><strong>{currentIndex + 1} sur {cards.length}</strong></div>
+          <div className={styles.progressTrack}><span style={{ width: `${progress}%` }} /></div>
         </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {stats.again > 0 && (
-            <span className="text-[9px] tabular-nums" style={{ color: RATING_COLORS[1], fontFamily: 'var(--font-mono, monospace)' }}>
-              {stats.again} ↺
-            </span>
-          )}
-          <span className="text-[9px] tabular-nums" style={{ color: RATING_COLORS[3], fontFamily: 'var(--font-mono, monospace)' }}>
-            {stats.good + stats.easy} ✓
-          </span>
+        <div className={styles.liveStats}>
+          <span style={{ color: RATING_COLORS[1] }}>{stats.again} à revoir</span>
+          <span style={{ color: RATING_COLORS[3] }}>{stats.good + stats.easy} retenues</span>
         </div>
-      </div>
+      </header>
 
-      {/* Card area — shrinks to make room for the rating bar */}
-      <div className="flex-1 flex items-center justify-center px-4 py-6 overflow-auto min-h-0">
+      <main className={styles.studyMain}>
         <FlashCard
           key={card.id}
           question={card.question}
           answer={card.answer}
           onFlipChange={handleFlipChange}
-          current={currentIndex + 1}
-          total={cards.length}
         />
-      </div>
 
-      {/* ── Anki-style bottom rating bar ────────────────────────────────── */}
-      <div
-        className="shrink-0 border-t transition-all duration-300 ease-out overflow-hidden"
-        style={{
-          borderColor: 'var(--border)',
-          background: 'var(--sidebar-bg)',
-          height: isFlipped ? 80 : 0,
-          opacity: isFlipped ? 1 : 0,
-        }}
-      >
-        <div className="h-full grid grid-cols-4 divide-x" style={{ borderColor: 'var(--border)' }}>
-          {([1, 2, 3, 4] as const).map((r) => {
-            const p = currentPreview.find((pr) => pr.rating === r)
-            const color = p?.color ?? RATING_COLORS[r]
-            const label = p?.label ?? ['À revoir', 'Difficile', 'Bien', 'Facile'][r - 1]
-            const interval = p?.intervalLabel ?? ''
-            return (
-              <button
-                key={r}
-                onClick={() => handleRate(r)}
-                className="flex flex-col items-center justify-center gap-0.5 transition-all hover:opacity-80 active:scale-95 divide-x-0"
-                style={{ background: color + '08' }}
-                title={`${r} — ${label}`}
-              >
-                <span className="text-xs font-semibold" style={{ color }}>{label}</span>
-                {interval && (
-                  <span className="text-[10px] font-mono" style={{ color: color + 'aa' }}>{interval}</span>
-                )}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Dot navigation */}
-      <div className="shrink-0 flex items-center justify-center gap-1.5 flex-wrap py-3 px-4"
-        style={{ borderTop: isFlipped ? 'none' : '1px solid var(--border)' }}>
-        {cards.map((_, i) => (
-          <div key={i} className="rounded-full transition-all duration-200"
-            style={{
-              width: i === currentIndex ? 20 : 6,
-              height: 6,
-              background: i < currentIndex ? COLOR + '60' : i === currentIndex ? COLOR : 'var(--border-2)',
-            }} />
-        ))}
-      </div>
+        {isFlipped && (
+          <section className={styles.ratingPanel} aria-label="Évaluer la difficulté de la carte">
+            <div className={styles.ratingPrompt}>
+              <span>Ta réponse</span>
+              <strong>À quel point était-ce difficile ?</strong>
+            </div>
+            <div className={styles.ratingButtons}>
+              {([1, 2, 3, 4] as const).map((rating) => {
+                const preview = currentPreview.find((item) => item.rating === rating)
+                const color = preview?.color ?? RATING_COLORS[rating]
+                const label = preview?.label ?? ['À revoir', 'Difficile', 'Bien', 'Facile'][rating - 1]
+                return (
+                  <button type="button" key={rating} onClick={() => handleRate(rating)} title={`${rating} · ${label}`}>
+                    <span style={{ color }}>{rating}</span>
+                    <strong>{label}</strong>
+                    {preview?.intervalLabel && <small>{preview.intervalLabel}</small>}
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+        )}
+      </main>
     </div>
   )
 }

@@ -25,10 +25,6 @@ export default function HowItWorks() {
     <section className="sec" id="methode-bref">
       <div className="container">
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 80, maxWidth: 720 }}>
-          <div className="eyebrow">
-            <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>{"Comment ça marche"}</span>
-          </div>
           <h2 className="section-h">
             {"Trois étapes."}<br />
             <span className="dim">{"Pas plus."}</span>

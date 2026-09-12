@@ -68,10 +68,6 @@ export default function Pricing() {
     <section className="sec" id="tarifs">
       <div className="container">
         <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 56, maxWidth: 760 }}>
-          <div className="eyebrow">
-            <span className="eyebrow-dot" style={{ background: "var(--ink-400)", animation: "none" }} />
-            <span>{"Tarifs"}</span>
-          </div>
           <h2 className="section-h">
             {"Gratuit pour commencer."}<br />
             <span className="dim">{"Pas cher pour aller au bout."}</span>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Sparkles } from 'lucide-react'
+import { Check, Sparkle } from '@phosphor-icons/react'
 import { trackPaywallViewed, trackPaywallCtaClicked } from '@/lib/analytics'
 import type { GenerationTool } from './types'
 
@@ -48,20 +48,20 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl p-7 shadow-2xl"
+        className="w-full max-w-md rounded-[11px] p-7"
         style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-start gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
             style={{ background: COLOR + '15' }}
           >
-            <Sparkles size={18} style={{ color: COLOR }} />
+            <Sparkle size={18} style={{ color: COLOR }} />
           </div>
           <div>
             <h2 className="text-base font-semibold" style={{ color: 'var(--ink)' }}>{"Tes 5 générations gratuites sont utilisées"}</h2>
@@ -72,10 +72,7 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
         <ul className="flex flex-col gap-2.5 mb-5">
           {PRO_FEATURES.map((f) => (
             <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: 'var(--ink-700)' }}>
-              <span
-                className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] flex-shrink-0"
-                style={{ background: COLOR + '20', color: COLOR }}
-              >✓</span>
+              <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: COLOR + '20', color: COLOR }}><Check size={11} weight="bold" /></span>
               {f}
             </li>
           ))}
@@ -83,7 +80,7 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
 
         {price && (
           <div
-            className="mb-5 flex items-baseline gap-2 rounded-xl px-4 py-3"
+            className="mb-5 flex items-baseline gap-2 rounded-lg px-4 py-3"
             style={{ background: COLOR + '0c', border: `1px solid ${COLOR}25` }}
           >
             <span className="text-2xl font-semibold" style={{ color: 'var(--ink)' }}>{price}</span>
@@ -99,8 +96,8 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-colors disabled:opacity-50"
-            style={{ background: 'var(--surface-2)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
+            className="flex-1 rounded-lg px-4 py-3 text-sm font-medium transition-colors disabled:opacity-50"
+            style={{ background: 'var(--bg-elev)', border: '1px solid var(--ink-200)', color: 'var(--ink-700)' }}
           >
             {"Plus tard"}
           </button>
@@ -108,7 +105,7 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
             type="button"
             onClick={handleCheckout}
             disabled={loading}
-            className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-lg px-4 py-3 text-sm font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             style={{ background: COLOR }}
           >
             {loading ? "Redirection…" : "Passer Pro"}

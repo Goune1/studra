@@ -1,106 +1,63 @@
-import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { ArrowLeft, CalendarBlank, Path } from '@phosphor-icons/react/dist/ssr'
+import { notFound } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import { TimelineViewer } from '@/components/timeline-viewer'
-import type { TimelineData } from '@/types'
-import { AlignLeft } from 'lucide-react'
 import { DeleteEntityButton } from '@/components/DeleteEntityButton'
-const COLOR = '#1F4D3F'
+import type { TimelineData } from '@/types'
+import styles from '../timelines.module.css'
 
-const CAT_COLORS: Record<string, string> = {
-  politique: '#B4503C', economique: '#A8762E', social: '#1F4D3F',
-  culturel: '#3E6B7A', militaire: '#6B7280',
-}
-const CATEGORY_LABELS: Record<string, string> = {
-  politique: 'Politique', militaire: 'Militaire', economique: 'Économique',
-  social: 'Social', culturel: 'Culturel', default: 'Autre',
-}
+const COLOR = '#1F4D3F'
+const CATEGORY_LABELS: Record<string, string> = { politique: 'Politique', militaire: 'Militaire', economique: 'Économique', social: 'Social', culturel: 'Culturel', default: 'Autre' }
 
 export default async function TimelinePage({ params }: { params: Promise<{ timelineId: string }> }) {
-  const {timelineId} = await params
-  const format = ({number: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('fr-FR', options).format(value), dateTime: (value: Date | string | number, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('fr-FR', options).format(new Date(value)), relativeTime: (value: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat('fr-FR', {numeric: 'auto'}).format(value, unit)})
+  const { timelineId } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
-  const { data: timeline } = await supabase
-    .from('timelines').select('*').eq('id', timelineId).eq('user_id', user!.id).single()
+  const { data: timeline } = await supabase.from('timelines').select('*').eq('id', timelineId).eq('user_id', user!.id).single()
   if (!timeline) notFound()
 
   const data = timeline.generated_data as TimelineData
   const events = data?.events ?? []
-  const eventCount = events.length
-
-  // Category breakdown
-  const cats = Object.entries(
-    events.reduce<Record<string, number>>((acc, e) => {
-      const c = e.category ?? 'default'
-      acc[c] = (acc[c] ?? 0) + 1
-      return acc
-    }, {})
-  ).sort((a, b) => b[1] - a[1]).slice(0, 4)
-
-  // Date range
-  const dates = events.map((e) => e.date).filter(Boolean).sort()
-  const dateSpan = dates.length ? (dates[0].slice(0, 4) === dates[dates.length - 1].slice(0, 4)
-    ? dates[0].slice(0, 4)
-    : `${dates[0].slice(0, 4)} — ${dates[dates.length - 1].slice(0, 4)}`)
-    : '—'
+  const categories = Object.entries(events.reduce<Record<string, number>>((accumulator, event) => {
+    const category = event.category ?? 'default'
+    accumulator[category] = (accumulator[category] ?? 0) + 1
+    return accumulator
+  }, {})).sort((a, b) => b[1] - a[1]).slice(0, 4)
+  const dates = events.map((event) => event.date).filter(Boolean).sort()
+  const dateSpan = dates.length ? (dates[0].slice(0, 4) === dates[dates.length - 1].slice(0, 4) ? dates[0].slice(0, 4) : `${dates[0].slice(0, 4)} — ${dates[dates.length - 1].slice(0, 4)}`) : '—'
+  const createdAt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(timeline.created_at))
 
   return (
-    <div className="max-w-350">
-      <div className="flex items-center justify-between mb-6">
-        <Link href="/timelines" className="inline-flex items-center gap-1.5 text-xs transition-colors" style={{ color: 'var(--ink-500)' }}>
-          <AlignLeft size={12} />{"← Mes frises"}
-        </Link>
-        <DeleteEntityButton
-          table="timelines"
-          id={timeline.id}
-          entityLabel={"cette frise"}
-          variant="button"
-          redirectTo="/timelines"
-        />
-      </div>
-
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          {timeline.subject && (
-            <span className="text-[10px] px-2.5 py-1 rounded-full font-semibold"
-              style={{ background: COLOR + '15', color: COLOR, border: `1px solid ${COLOR}25` }}>
-              {timeline.subject}
-            </span>
-          )}
-          <span className="mono text-[10px] tabular-nums" style={{ color: 'var(--ink-400)' }}>
-            {format.dateTime(new Date(timeline.created_at), {day: 'numeric', month: 'short', year: 'numeric'})}
-          </span>
+    <div className={styles.detailPage}>
+      <Link href="/timelines" className={styles.backLink}><ArrowLeft size={14} aria-hidden="true" />Toutes les frises</Link>
+      <header className={styles.headerCard}>
+        <div className={styles.headerMain}>
+          <div className={styles.identity}>
+            <p>{timeline.subject || 'Frise chronologique'}</p>
+            <h1>{timeline.title}</h1>
+            <div className={styles.identityMeta}>
+              <span className={styles.statBadge}><Path size={13} aria-hidden="true" />{events.length} {events.length === 1 ? 'événement' : 'événements'}</span>
+              <span className={`${styles.statBadge} ${styles.neutralBadge}`}>{dateSpan}</span>
+              {categories.map(([category, count]) => <span key={category} className={`${styles.statBadge} ${styles.neutralBadge}`}>{CATEGORY_LABELS[category] ?? CATEGORY_LABELS.default} · {count}</span>)}
+            </div>
+          </div>
+          <div className={styles.headerActions}>
+            <DeleteEntityButton table="timelines" id={timeline.id} entityLabel="cette frise" variant="button" redirectTo="/timelines" color={COLOR} />
+          </div>
         </div>
-        <h1 className="section-h leading-tight mb-5">
-          {timeline.title}
-        </h1>
-
-        {/* Stats strip */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
-            style={{ background: 'var(--accent-soft)', color: COLOR, border: `1px solid ${COLOR}25` }}>
-            {`${eventCount} ${eventCount === 1 ? 'événement' : 'événements'}`}
-          </span>
-          <span className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
-            style={{ background: 'var(--surface-2)', color: 'var(--ink-700)', border: '1px solid var(--ink-200)' }}>
-            {dateSpan}
-          </span>
-          {cats.map(([cat, count]) => (
-            <span key={cat} className="mono text-xs px-3 py-1.5 rounded-full tabular-nums font-medium"
-              style={{ background: (CAT_COLORS[cat] ?? COLOR) + '15', color: CAT_COLORS[cat] ?? COLOR, border: `1px solid ${(CAT_COLORS[cat] ?? COLOR)}25` }}>
-              {CATEGORY_LABELS[cat] ?? CATEGORY_LABELS.default} {count}
-            </span>
-          ))}
+        <div className={styles.headerNote}>
+          <span><CalendarBlank size={13} aria-hidden="true" /> Créée le {createdAt}</span>
+          <span>Dates couvertes : {dateSpan}</span>
         </div>
-      </div>
-
-      {/* Timeline viewer */}
-      <div className="rounded-2xl border overflow-hidden" style={{ background: 'var(--bg-elev)', borderColor: 'var(--ink-200)' }}>
-        <TimelineViewer data={data} />
-      </div>
+      </header>
+      <section className={styles.viewerSection}>
+        <div className={styles.viewerHeading}>
+          <div><p>Chronologie</p><h2>Événements organisés par date</h2></div>
+          <span>{events.length} élément{events.length === 1 ? '' : 's'}</span>
+        </div>
+        <div className={styles.viewerContent}><TimelineViewer data={data} /></div>
+      </section>
     </div>
   )
 }

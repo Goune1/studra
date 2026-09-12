@@ -1,38 +1,34 @@
 'use client'
 
 import { useState } from 'react'
+import { ArrowRight, CircleNotch } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import styles from './billing-button.module.css'
+
 export function CheckoutButton() {
   const [loading, setLoading] = useState(false)
+
   async function handleCheckout() {
     setLoading(true)
     try {
-      const res = await fetch('/api/billing/checkout', { method: 'POST' })
-      const data = await res.json()
-
-      if (!res.ok) {
-        toast.error(data.error ?? "Erreur lors du checkout")
+      const response = await fetch('/api/billing/checkout', { method: 'POST' })
+      const data = await response.json()
+      if (!response.ok) {
+        toast.error(data.error ?? 'Erreur lors du checkout')
         return
       }
-
       window.location.href = data.url
     } catch {
-      toast.error("Une erreur est survenue")
+      toast.error('Une erreur est survenue')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <button
-      onClick={handleCheckout}
-      disabled={loading}
-      className="w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-semibold text-lg transition-colors"
-      style={{ background: '#1F4D3F', color: '#ffffff' }}
-      onMouseEnter={e => !loading && ((e.currentTarget as HTMLButtonElement).style.background = '#2a6854')}
-      onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = '#1F4D3F')}
-    >
-      {loading ? "Redirection..." : "✨ Passer en Pro — 4,99€/mois"}
+    <button type="button" onClick={handleCheckout} disabled={loading} className={styles.button}>
+      {loading ? <CircleNotch size={15} className={styles.spinner} /> : <ArrowRight size={15} />}
+      {loading ? 'Redirection…' : 'Passer en Pro · 4,99 €/mois'}
     </button>
   )
 }

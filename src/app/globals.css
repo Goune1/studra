@@ -580,6 +580,7 @@
   background: var(--accent);
   color: var(--accent-fg);
   border-color: var(--accent);
+  box-shadow: none;
 }
 
 .landing-v2 .btn-primary:hover {
