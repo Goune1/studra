@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateFiche } from '@/lib/openai'
 import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
@@ -7,6 +7,7 @@ import {
   refundGenerationCredit,
   QUOTA_EXCEEDED_ERROR,
 } from '@/lib/generation-quota'
+import { processReferralQualification } from '@/lib/referral'
 
 
 export async function POST(request: Request) {
@@ -65,6 +66,8 @@ export async function POST(request: Request) {
     await refundGenerationCredit(user.id)
     return NextResponse.json({ error: 'Erreur lors de la sauvegarde' }, { status: 500 })
   }
+
+  after(() => processReferralQualification(user.id))
 
   return NextResponse.json({ ficheId: fiche.id })
 }

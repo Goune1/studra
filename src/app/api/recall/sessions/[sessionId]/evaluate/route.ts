@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { evaluateFreeRecall } from '@/lib/openai'
 import { aiRateLimitResponse, checkAiRateLimit } from '@/lib/ai-rate-limit'
@@ -7,6 +7,7 @@ import {
   refundGenerationCredit,
   QUOTA_EXCEEDED_ERROR,
 } from '@/lib/generation-quota'
+import { processReferralQualification } from '@/lib/referral'
 
 const MAX_USER_TEXT = 50_000
 
@@ -73,6 +74,8 @@ export async function POST(
     evaluation,
     score: evaluation.score,
   }).eq('id', sessionId)
+
+  after(() => processReferralQualification(user.id))
 
   return NextResponse.json({ evaluation })
 }
