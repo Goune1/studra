@@ -1,4 +1,5 @@
 import {NextResponse, type NextRequest} from 'next/server'
+import {setReferralCookie} from '@/lib/referral-code'
 import {stripLegacyLocalePrefix} from '@/lib/route-access'
 import {updateSession} from '@/lib/supabase/middleware'
 
@@ -7,10 +8,14 @@ export async function proxy(request: NextRequest) {
   if (frenchPathname) {
     const url = request.nextUrl.clone()
     url.pathname = frenchPathname
-    return NextResponse.redirect(url, 308)
+    const response = NextResponse.redirect(url, 308)
+    setReferralCookie(request, response)
+    return response
   }
 
-  return (await updateSession(request)).response
+  const {response} = await updateSession(request)
+  setReferralCookie(request, response)
+  return response
 }
 
 export const config = {

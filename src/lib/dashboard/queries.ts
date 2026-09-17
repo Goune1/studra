@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { resolvePlan } from '@/lib/plan'
 import type { StudyPlan, StudyPlanTask, StudyPlanTaskType } from '@/types'
 
 export type ToolType = 'flashcards' | 'fiche' | 'schema' | 'frise' | 'examen'
@@ -38,7 +39,7 @@ export interface RecentItem {
 export interface DashboardUser {
   id: string
   name: string
-  plan: 'free' | 'pro'
+  isPro: boolean
   generationsUsed: number
   generationsQuota: number
 }
@@ -143,7 +144,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     recentTimelinesRes,
     recentExamsRes,
   ] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user.id).single(),
+    supabase.from('profiles').select('*, is_pro').eq('id', user.id).single(),
 
     supabase
       .from('flashcards')
@@ -313,13 +314,13 @@ export async function getDashboardData(): Promise<DashboardData> {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6)
 
-  const isPro = profile?.plan === 'pro'
+  const { isPro } = resolvePlan(profile)
 
   return {
     user: {
       id: user.id,
       name: profile?.full_name?.split(' ')[0] ?? 'là',
-      plan: isPro ? 'pro' : 'free',
+      isPro,
       generationsUsed: profile?.generations_used_this_month ?? 0,
       generationsQuota: 5,
     },

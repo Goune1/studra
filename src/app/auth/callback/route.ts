@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { sendWelcomeEmail } from '@/lib/resend'
 import { attributeReferral, qualifyReferral } from '@/lib/affiliate'
 import { verifyAffiliateCookie } from '@/lib/affiliate-cookie'
+import { attributeReferralFromCookie } from '@/lib/referral'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -28,6 +29,9 @@ export async function GET(request: Request) {
         if (user.email_confirmed_at) {
           await qualifyReferral(user.id).catch(console.error)
         }
+        // Parrainage utilisateur : sans effet pour un compte existant, la RPC
+        // n'attribue que les profils créés depuis moins d'une heure.
+        await attributeReferralFromCookie(user.id, user.app_metadata?.provider ?? 'oauth')
         const createdAt = new Date(user.created_at).getTime()
         const lastSignIn = new Date(user.last_sign_in_at ?? user.created_at).getTime()
         isNewUser = Math.abs(lastSignIn - createdAt) < 60_000

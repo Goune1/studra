@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { X, Copy, Check, ExternalLink, RotateCcw } from 'lucide-react'
-import { AdminUser, Plan, StripeStatus } from '@/lib/admin/mock-data'
+import { AdminUser, StripeStatus } from '@/lib/admin/mock-data'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const AVATAR_COLORS = [
@@ -32,8 +32,8 @@ function fmtDateTime(iso: string | null): string {
   })
 }
 
-function PlanBadge({ plan }: { plan: Plan }) {
-  return plan === 'pro'
+function PlanBadge({ isPro }: { isPro: boolean }) {
+  return isPro
     ? <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-green-500/15 text-green-400 border border-green-500/30">PRO</span>
     : <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-amber-500/30 text-amber-500">FREE</span>
 }
@@ -138,7 +138,7 @@ export function MemberPanel({ member, onClose }: Props) {
               <section>
                 <h3 className="font-mono text-[10px] text-gray-600 uppercase tracking-widest mb-3">Abonnement</h3>
                 <div className="space-y-2">
-                  <Row label="Plan"><PlanBadge plan={member.plan} /></Row>
+                  <Row label="Plan"><PlanBadge isPro={member.isPro} /></Row>
                   <Row label="Statut Stripe"><StatusBadge status={member.stripeStatus} /></Row>
                   <Row label="Customer ID">
                     {member.stripeCustomerId
@@ -232,7 +232,7 @@ export function MemberPanel({ member, onClose }: Props) {
 
             {/* ── Footer actions ── */}
             <div className="px-5 py-4 border-t border-[#222222] flex items-center gap-2 shrink-0">
-              {member.plan === 'free' && (
+              {!member.isPro && (
                 <button className="flex items-center gap-2 h-8 px-3 rounded border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition-colors text-xs font-mono">
                   <RotateCcw size={12} />
                   Réinitialiser le quota

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { isReferralCode } from '@/lib/referral-code'
 
 /** Backward compatibility for legacy `/?ref=...` links. New links use the
  * server-side redirect route and work without JavaScript. */
@@ -12,7 +13,8 @@ export function AffiliateTracker() {
   useEffect(() => {
     if (tracked.current) return
     const ref = searchParams.get('ref')
-    if (!ref) return
+    // Un code de parrainage utilisateur est géré par le proxy, pas par l'affiliation.
+    if (!ref || isReferralCode(ref)) return
     tracked.current = true
 
     fetch('/api/affiliate/track', {

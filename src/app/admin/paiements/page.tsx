@@ -25,7 +25,7 @@ export default async function PaiementsPage() {
 
   const users = await fetchAdminUsers()
 
-  const proUsers    = users.filter(u => u.plan === 'pro')
+  const proUsers    = users.filter(u => u.hasStripeSubscription)
   const activeCount = users.filter(u => u.stripeStatus === 'active').length
   const mrr         = activeCount * 4.99
 
@@ -82,8 +82,8 @@ export default async function PaiementsPage() {
                         <p className="font-mono text-[10px] text-gray-600">{u.email}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${u.plan === 'pro' ? 'bg-violet-500/20 text-violet-400' : 'bg-[#222] text-gray-500'}`}>
-                          {u.plan.toUpperCase()}
+                        <span className={`font-mono text-[10px] px-2 py-0.5 rounded font-bold ${u.isPro ? 'bg-violet-500/20 text-violet-400' : 'bg-[#222] text-gray-500'}`}>
+                          {u.isPro ? 'PRO' : 'FREE'}
                         </span>
                       </td>
                       <td className="px-4 py-3">

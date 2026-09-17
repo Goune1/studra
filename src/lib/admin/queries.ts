@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { PLAN_SELECT, resolvePlan } from '@/lib/plan'
 import type { AdminUser, RecentGeneration, StripeStatus } from './mock-data'
 
 // Service-role client — bypasses RLS, NEVER expose to client
@@ -33,7 +34,7 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('id, email, full_name, plan, stripe_customer_id, stripe_subscription_id, generations_used_this_month, created_at')
+      .select(`id, email, full_name, ${PLAN_SELECT}, stripe_subscription_id, generations_used_this_month, created_at`)
       .order('created_at', { ascending: false }),
     supabase.auth.admin.listUsers({ perPage: 1000 }),
     supabase.from('decks')                  .select('user_id, created_at'),
@@ -84,10 +85,11 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   ] as (RecentGeneration & { userId: string })[]
 
   return profiles.map(profile => {
+    const { isPro, hasStripeSubscription } = resolvePlan(profile)
     const hasSub      = !!profile.stripe_subscription_id
     const hasCus      = !!profile.stripe_customer_id
     let stripeStatus: StripeStatus = 'none'
-    if (profile.plan === 'pro' && hasSub)  stripeStatus = 'active'
+    if (hasStripeSubscription && hasSub)   stripeStatus = 'active'
     else if (hasCus && !hasSub)            stripeStatus = 'canceled'
 
     const userId = profile.id
@@ -102,11 +104,12 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       id:                userId,
       name:              profile.full_name ?? profile.email.split('@')[0],
       email:             profile.email,
-      plan:              profile.plan as 'free' | 'pro',
+      isPro,
+      hasStripeSubscription,
       stripeStatus,
       stripeCustomerId:  profile.stripe_customer_id  ?? null,
       generationsUsed:   profile.generations_used_this_month,
-      generationsQuota:  profile.plan === 'pro' ? null : 5,
+      generationsQuota:  isPro ? null : 5,
       createdAt:         profile.created_at,
       lastLoginAt:       lastLoginMap.get(userId) ?? null,
       recentGenerations,

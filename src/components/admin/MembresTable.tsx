@@ -33,8 +33,8 @@ function fmtDate(iso: string): string {
 }
 
 // ─── sub-components ──────────────────────────────────────────────────────────
-function PlanBadge({ plan }: { plan: Plan }) {
-  return plan === 'pro'
+function PlanBadge({ isPro }: { isPro: boolean }) {
+  return isPro
     ? <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-green-500/15 text-green-400 border border-green-500/30">PRO</span>
     : <span className="font-mono text-[10px] px-1.5 py-0.5 rounded border border-amber-500/30 text-amber-500">FREE</span>
 }
@@ -94,7 +94,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
           const q = search.toLowerCase()
           if (!u.name.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q) && !u.id.includes(q)) return false
         }
-        if (planFilter   !== 'all' && u.plan         !== planFilter)   return false
+        if (planFilter   !== 'all' && u.isPro        !== (planFilter === 'pro')) return false
         if (statusFilter !== 'all' && u.stripeStatus !== statusFilter) return false
         return true
       })
@@ -255,7 +255,7 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
 
                   {/* Plan */}
                   <td className="px-3 py-0">
-                    <PlanBadge plan={user.plan} />
+                    <PlanBadge isPro={user.isPro} />
                   </td>
 
                   {/* Stripe */}
@@ -292,13 +292,13 @@ export function MembresTable({ users, onSelectMember, selectedMemberId }: Props)
 
                       {/* Reset quota */}
                       <button
-                        disabled={user.plan !== 'free' || undefined}
+                        disabled={user.isPro || undefined}
                         className={`p-1.5 rounded transition-colors ${
-                          user.plan === 'free'
+                          !user.isPro
                             ? 'text-gray-600 hover:text-amber-400 hover:bg-[#252525]'
                             : 'text-[#2a2a2a] cursor-not-allowed'
                         }`}
-                        title={user.plan === 'free' ? 'Réinitialiser le quota' : 'Non applicable (Pro)'}
+                        title={!user.isPro ? 'Réinitialiser le quota' : 'Non applicable (Pro)'}
                       >
                         <RotateCcw size={13} />
                       </button>

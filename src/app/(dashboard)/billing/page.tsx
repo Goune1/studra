@@ -1,14 +1,16 @@
 import { Check, Minus } from '@phosphor-icons/react/dist/ssr'
 import { createClient } from '@/lib/supabase/server'
+import { resolvePlan } from '@/lib/plan'
 import { CheckoutButton, ManageSubscriptionButton } from './billing-actions'
 import styles from './billing.module.css'
 
 export default async function BillingPage() {
+  const format = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
+  const { data: profile } = await supabase.from('profiles').select('*, is_pro').eq('id', user!.id).single()
 
-  const isPro = profile?.plan === 'pro'
+  const { isPro, hasStripeSubscription, hasStripeCustomer, offeredProUntil } = resolvePlan(profile)
   const generationsLeft = isPro ? null : Math.max(0, 5 - (profile?.generations_used_this_month ?? 0))
   const features = [
     { label: 'Flashcards illimitées', included: isPro },
@@ -27,6 +29,11 @@ export default async function BillingPage() {
             {generationsLeft === 0
               ? 'Tu as utilisé toutes tes générations ce mois-ci.'
               : `Il te reste ${generationsLeft} ${generationsLeft === 1 ? 'génération' : 'générations'} ce mois-ci.`}
+          </p>
+        )}
+        {offeredProUntil && (
+          <p className={styles.quotaNotice}>
+            {`Pro offert jusqu'au ${format.format(new Date(offeredProUntil))}. Si tu t'abonnes pendant cette période, l'abonnement démarre tout de suite et court en parallèle : les jours offerts restants ne sont pas reportés.`}
           </p>
         )}
       </header>
@@ -56,7 +63,7 @@ export default async function BillingPage() {
         </ul>
 
         <div className={styles.panelAction}>
-          {!isPro ? <CheckoutButton /> : <ManageSubscriptionButton />}
+          {hasStripeSubscription ? hasStripeCustomer && <ManageSubscriptionButton /> : <CheckoutButton />}
         </div>
       </section>
     </main>

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateStudyPlanSchedule, type StudyPlanContentItem } from '@/lib/openai'
 import { buildSchedule } from '@/lib/scheduler'
@@ -9,6 +9,7 @@ import {
   refundGenerationCredit,
   QUOTA_EXCEEDED_ERROR,
 } from '@/lib/generation-quota'
+import { processReferralQualification } from '@/lib/referral'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -97,6 +98,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Erreur lors de la planification des sessions' }, { status: 500 })
     }
   }
+
+  after(() => processReferralQualification(user.id))
 
   return NextResponse.json({
     planId: plan.id,

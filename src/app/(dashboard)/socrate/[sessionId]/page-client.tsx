@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { ArrowLeft, BookOpen, CheckCircle, Lightbulb, PaperPlaneTilt, WarningCircle } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
+import { resolvePlan } from '@/lib/plan'
 import { ProGate } from '@/components/pro-gate'
 import type { FeynmanDiagnosis, FeynmanSession, Profile, SocrateMessage } from '@/types'
 import styles from '../socrate.module.css'
@@ -29,7 +30,7 @@ export default function SocrateSessionPage() {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
-      supabase.from('profiles').select('*').eq('id', user.id).single().then(({ data }) => {
+      supabase.from('profiles').select('*, is_pro').eq('id', user.id).single().then(({ data }) => {
         if (data) setProfile(data as Profile)
         setProfileLoading(false)
       })
@@ -37,7 +38,7 @@ export default function SocrateSessionPage() {
   }, [])
 
   useEffect(() => {
-    if (!profile || profile.plan !== 'pro') return
+    if (!profile || !resolvePlan(profile).isPro) return
     async function load() {
       const supabase = createClient()
       const { data } = await supabase.from('feynman_sessions').select('*').eq('id', sessionId).single()
@@ -90,7 +91,7 @@ export default function SocrateSessionPage() {
 
   if (profileLoading) return null
   if (!profile) return null
-  if (profile.plan !== 'pro') return <ProGate profile={profile}>{null}</ProGate>
+  if (!resolvePlan(profile).isPro) return <ProGate profile={profile}>{null}</ProGate>
   if (!session && !loading) return null
 
   const typing = <div className={styles.typing} aria-label="Socrate écrit"><span /><span /><span /></div>

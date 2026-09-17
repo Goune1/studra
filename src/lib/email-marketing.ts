@@ -16,6 +16,7 @@ import { createHmac, timingSafeEqual } from 'crypto'
 import { createClient } from '@supabase/supabase-js'
 import OpenAI from 'openai'
 import { resend } from '@/lib/resend'
+import { IS_PRO_FIELD } from '@/lib/plan'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -165,7 +166,7 @@ export async function getRecipients(filter: RecipientFilter): Promise<{
       .from('profiles')
       .select('id, email, full_name')
       .eq('marketing_consent', true)
-      .eq('plan', filter.plan ?? 'free')
+      .eq(IS_PRO_FIELD, filter.plan === 'pro')
     if (error) throw error
     return { recipients: data ?? [], excluded: 0 }
   }
