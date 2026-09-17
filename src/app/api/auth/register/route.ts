@@ -4,6 +4,7 @@ import { sendWelcomeEmail } from '@/lib/resend'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 import { attributeReferral } from '@/lib/affiliate'
 import { verifyAffiliateCookie } from '@/lib/affiliate-cookie'
+import { attributeReferralFromCookie } from '@/lib/referral'
 import { cookies } from 'next/headers'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -61,6 +62,9 @@ export async function POST(request: Request) {
   if (refCode) {
     await attributeReferral(refCode, data.user.id, Boolean(data.user.email_confirmed_at)).catch(console.error)
   }
+
+  // Parrainage utilisateur (cookie posé par le proxy sur /?ref=CODE)
+  await attributeReferralFromCookie(data.user.id)
 
   return NextResponse.json({ user: { id: data.user.id, email: data.user.email } })
 }
