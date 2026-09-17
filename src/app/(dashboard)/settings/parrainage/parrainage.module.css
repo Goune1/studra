@@ -1,0 +1,180 @@
+.stack {
+  display: grid;
+  gap: 14px;
+}
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 22px 22px;
+}
+
+.linkField {
+  min-width: 0;
+  flex: 1 1 auto;
+  min-height: 42px;
+  border: 1px solid var(--ink-200);
+  border-radius: 8px;
+  padding: 0 13px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+  letter-spacing: .01em;
+}
+
+.linkField:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.copyButton {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.copyButton:hover {
+  background: #173d32;
+}
+
+.copyButton:active {
+  transform: translateY(1px);
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.progressBlock {
+  padding: 20px 22px 18px;
+  border-bottom: 1px solid var(--ink-200);
+}
+
+.progressValue {
+  margin: 0;
+  color: var(--ink);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -.035em;
+  line-height: 1;
+}
+
+.progressValue span {
+  margin-left: 4px;
+  color: var(--ink-500);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.progressTrack {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.progressStep {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ink-200);
+}
+
+.progressStep[data-filled='true'] {
+  background: var(--accent);
+}
+
+.footnote,
+.muted,
+.empty {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.footnote {
+  padding: 14px 22px 20px;
+  border-top: 1px solid var(--ink-200);
+}
+
+.empty {
+  padding: 22px;
+}
+
+.history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 22px;
+}
+
+.historyRow + .historyRow {
+  border-top: 1px solid var(--ink-200);
+}
+
+.historyTitle {
+  margin: 0;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.historyMeta {
+  margin: 3px 0 0;
+  color: var(--ink-500);
+  font-size: 12px;
+}
+
+.historyStatus {
+  margin: 0;
+  color: var(--ink-500);
+  font-size: 12.5px;
+  text-align: right;
+}
+
+.historyRow[data-status='rewarded'] .historyStatus,
+.historyRow[data-status='qualified'] .historyStatus {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+@media (max-width: 560px) {
+  .linkRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .historyRow {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .historyStatus {
+    text-align: left;
+  }
+}

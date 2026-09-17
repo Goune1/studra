@@ -13,6 +13,10 @@ export const REFERRAL_COOKIE = 'studra_referral'
 
 export const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30
 
+export function referralLink(code: string): string {
+  return `https://www.studra.fr/?ref=${code}`
+}
+
 export function isReferralCode(value: string | null | undefined): value is string {
   return typeof value === 'string' && REFERRAL_CODE_PATTERN.test(value)
 }
