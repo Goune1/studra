@@ -93,10 +93,13 @@ test('les notifications ne partent que sur une transition réelle, sans pouvoir 
   assert.match(notifyBody, /try \{[\s\S]*Promise\.allSettled[\s\S]*catch \(error\)/)
 })
 
-test('referral_link_created est envoyé côté client après une copie réussie', () => {
-  assert.match(read('src/lib/analytics.ts'), /capture\('referral_link_created', \{ source: 'settings_parrainage' \}\)/)
-  const button = read('src/app/(dashboard)/settings/parrainage/copy-link-button.tsx')
-  assert.ok(button.indexOf('trackReferralLinkCreated()') > button.indexOf('await navigator.clipboard.writeText(link)'))
+test('referral_link_created est envoyé côté client après une copie réussie, avec son emplacement', () => {
+  const analytics = read('src/lib/analytics.ts')
+  assert.match(analytics, /export type ReferralLinkSource = 'settings_parrainage' \| 'dashboard_banner'/)
+  assert.match(analytics, /capture\('referral_link_created', \{ source \}\)/)
+  const button = read('src/components/referral/CopyReferralLinkButton.tsx')
+  assert.ok(button.indexOf('trackReferralLinkCreated(source)') > button.indexOf('await navigator.clipboard.writeText(link)'))
+  assert.match(read('src/app/(dashboard)/settings/parrainage/parrainage-view.tsx'), /<CopyReferralLinkButton link=\{link\} source="settings_parrainage" \/>/)
 })
 
 test('le webhook Stripe garde son propre envoi PostHog, sans dépendre du parrainage', () => {

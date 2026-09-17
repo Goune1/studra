@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { resolvePlan } from '@/lib/plan'
+import { referralLink } from '@/lib/referral-code'
+import { shouldPromoteReferral } from '@/lib/referral-summary'
 import type { StudyPlan, StudyPlanTask, StudyPlanTaskType } from '@/types'
 
 export type ToolType = 'flashcards' | 'fiche' | 'schema' | 'frise' | 'examen'
@@ -61,6 +63,8 @@ export interface DashboardData {
   week: WeekStats
   upcomingExams: UpcomingExam[]
   recentItems: RecentItem[]
+  /** Lien affiché par le bandeau de parrainage, null quand il ne doit pas apparaître. */
+  referralPromo: { link: string } | null
 }
 
 const TASK_TYPE_LABEL: Record<StudyPlanTaskType, string> = {
@@ -143,6 +147,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     recentSchemasRes,
     recentTimelinesRes,
     recentExamsRes,
+    referralRewardsRes,
   ] = await Promise.all([
     supabase.from('profiles').select('*, is_pro').eq('id', user.id).single(),
 
@@ -187,6 +192,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     supabase.from('schemas').select('id, title, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(4),
     supabase.from('timelines').select('id, title, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(4),
     supabase.from('exams').select('id, title, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(4),
+    supabase.from('referral_rewards').select('id', { count: 'exact', head: true }).eq('referrer_id', user.id),
   ])
 
   const profile = profileRes.data
@@ -314,7 +320,12 @@ export async function getDashboardData(): Promise<DashboardData> {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6)
 
-  const { isPro } = resolvePlan(profile)
+  const { isPro, hasStripeSubscription } = resolvePlan(profile)
+  const promoteReferral = shouldPromoteReferral({
+    referralCode: profile?.referral_code,
+    hasStripeSubscription,
+    monthsGranted: referralRewardsRes.count ?? 0,
+  })
 
   return {
     user: {
@@ -337,5 +348,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     },
     upcomingExams,
     recentItems,
+    referralPromo: promoteReferral && !referralRewardsRes.error ? { link: referralLink(profile!.referral_code) } : null,
   }
 }

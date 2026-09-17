@@ -72,7 +72,8 @@ const VIEW = 'src/app/(dashboard)/settings/parrainage/parrainage-view.tsx'
 const NEW_UI_FILES = [
   PAGE,
   VIEW,
-  'src/app/(dashboard)/settings/parrainage/copy-link-button.tsx',
+  'src/components/referral/CopyReferralLinkButton.tsx',
+  'src/components/referral/copy-referral-link-button.module.css',
   'src/app/(dashboard)/settings/parrainage/parrainage.module.css',
   'src/app/(dashboard)/settings/settings-nav.tsx',
   'src/app/(dashboard)/settings/layout.tsx',

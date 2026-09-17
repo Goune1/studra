@@ -7,6 +7,7 @@ import {
   Plus,
 } from '@phosphor-icons/react/dist/ssr'
 import type { DashboardData } from '@/lib/dashboard/queries'
+import { ReferralBanner } from './ReferralBanner'
 import styles from './dashboard.module.css'
 
 const MIN_REVIEWS_RETENTION = 10
@@ -21,7 +22,7 @@ const CREATE_TOOLS = [
 ]
 
 export function DashboardActive({ data, dateLabel }: { data: DashboardData; dateLabel: string }) {
-  const { user, dueCards, dueDecks, reviewEstimateMin, todayTasks, week, upcomingExams } = data
+  const { user, dueCards, dueDecks, reviewEstimateMin, todayTasks, week, upcomingExams, referralPromo } = data
   const planningTasks = todayTasks.filter((task) => task.kind === 'planning')
   const nextPlannedTask = planningTasks[0]
   const remainingPlanningTasks = nextPlannedTask ? planningTasks.slice(1) : []
@@ -154,6 +155,8 @@ export function DashboardActive({ data, dateLabel }: { data: DashboardData; date
           </div>
         </section>
       )}
+
+      {referralPromo && <ReferralBanner link={referralPromo.link} />}
 
       <section className={styles.supportCard} aria-label="Rythme et outils">
         <div className={styles.rhythmBlock}>

@@ -1,0 +1,117 @@
+.banner {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 14px;
+  border: 1px solid var(--ink-200);
+  border-radius: 11px;
+  padding: 18px 52px 18px 20px;
+  background: var(--bg-elev);
+}
+
+.icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--ink-200);
+  border-radius: 9px;
+  color: var(--accent);
+}
+
+.body {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -.02em;
+}
+
+.summary {
+  margin: 4px 0 0;
+  color: var(--ink-500);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.linkField {
+  width: min(100%, 290px);
+  min-height: 42px;
+  border: 1px solid var(--ink-200);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.linkField:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.progressLink {
+  color: var(--ink-700);
+  font-size: 13px;
+  font-weight: 500;
+  text-underline-offset: 3px;
+}
+
+.progressLink:hover {
+  color: var(--accent);
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-400);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.close:hover {
+  color: var(--ink);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .banner {
+    padding: 16px 44px 16px 16px;
+  }
+
+  .icon {
+    display: none;
+  }
+
+  .linkField {
+    width: 100%;
+  }
+}

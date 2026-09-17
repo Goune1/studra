@@ -4,7 +4,7 @@ import {
   type ReferralHistoryItem,
   type ReferralSummary,
 } from '@/lib/referral-summary'
-import { CopyLinkButton } from './copy-link-button'
+import { CopyReferralLinkButton } from '@/components/referral/CopyReferralLinkButton'
 import settingsStyles from '../settings.module.css'
 import styles from './parrainage.module.css'
 
@@ -53,7 +53,7 @@ export function ParrainageView({ link, summary, offeredProUntil }: ParrainageVie
             {link ? (
               <>
                 <input className={styles.linkField} value={link} readOnly aria-label="Ton lien de parrainage" />
-                <CopyLinkButton link={link} />
+                <CopyReferralLinkButton link={link} source="settings_parrainage" />
               </>
             ) : (
               <p className={styles.muted}>Ton lien n&apos;est pas encore disponible. Recharge la page dans un instant.</p>

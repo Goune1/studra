@@ -79,3 +79,20 @@ export function summarizeReferrals(referrals: ReferralRow[], rewards: RewardRow[
     history,
   }
 }
+
+/**
+ * Le bandeau de promotion du dashboard ne s'adresse qu'aux utilisateurs pour
+ * qui un mois offert a de la valeur : pas aux abonnés Stripe (le mois court en
+ * parallèle de l'abonnement), ni à ceux qui ont déjà atteint le plafond.
+ */
+export function shouldPromoteReferral({
+  referralCode,
+  hasStripeSubscription,
+  monthsGranted,
+}: {
+  referralCode: string | null | undefined
+  hasStripeSubscription: boolean
+  monthsGranted: number
+}): boolean {
+  return Boolean(referralCode) && !hasStripeSubscription && monthsGranted < MAX_REWARDED_MONTHS
+}

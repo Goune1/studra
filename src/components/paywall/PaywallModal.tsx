@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { Check, Sparkle } from '@phosphor-icons/react'
-import { trackPaywallViewed, trackPaywallCtaClicked } from '@/lib/analytics'
+import { trackPaywallViewed, trackPaywallCtaClicked, trackReferralPaywallClicked } from '@/lib/analytics'
 import type { GenerationTool } from './types'
 
 const COLOR = '#1F4D3F'
@@ -111,6 +112,18 @@ export function PaywallModal({ tool, price, onClose }: PaywallModalProps) {
             {loading ? "Redirection…" : "Passer Pro"}
           </button>
         </div>
+
+        <p className="mt-4 text-center text-xs" style={{ color: 'var(--ink-500)' }}>
+          {"Pas envie de payer ? "}
+          <Link
+            href="/settings/parrainage"
+            onClick={() => trackReferralPaywallClicked(tool, 'modal')}
+            className="font-medium underline underline-offset-2"
+            style={{ color: 'var(--accent)' }}
+          >
+            {"Invite 2 amis et gagne un mois de Pro offert"}
+          </Link>
+        </p>
       </div>
     </div>
   )

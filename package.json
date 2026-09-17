@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --test scripts/seo-performance.test.mjs",
-    "test:referral": "node --test scripts/plan-resolution.test.mjs scripts/plan-entitlement.test.mjs scripts/referral-schema.test.mjs scripts/referral-attribution.test.mjs scripts/referral-cookie.test.mjs scripts/referral-qualification.test.mjs scripts/referral-hooks.test.mjs scripts/referral-page.test.mjs scripts/referral-notifications.test.mjs",
+    "test:referral": "node --test scripts/plan-resolution.test.mjs scripts/plan-entitlement.test.mjs scripts/referral-schema.test.mjs scripts/referral-attribution.test.mjs scripts/referral-cookie.test.mjs scripts/referral-qualification.test.mjs scripts/referral-hooks.test.mjs scripts/referral-page.test.mjs scripts/referral-notifications.test.mjs scripts/referral-promo.test.mjs",
     "test:affiliate": "node --test scripts/affiliate-production.test.mjs scripts/affiliate-stripe.test.mjs scripts/affiliate-lifecycle.test.mjs scripts/affiliate-database.test.mjs"
   },
   "dependencies": {

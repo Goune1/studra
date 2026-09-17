@@ -350,7 +350,21 @@ export function trackAIGenerationSuccess(tool: Tool, duration_ms: number) {
 // PARRAINAGE
 // -------------------
 
+export type ReferralLinkSource = 'settings_parrainage' | 'dashboard_banner'
+
 /** Le code existe dès la création du profil : on mesure le premier geste de partage, la copie du lien. */
-export function trackReferralLinkCreated() {
-  capture('referral_link_created', { source: 'settings_parrainage' })
+export function trackReferralLinkCreated(source: ReferralLinkSource) {
+  capture('referral_link_created', { source })
+}
+
+export function trackReferralBannerViewed() {
+  capture('referral_banner_viewed')
+}
+
+export function trackReferralBannerDismissed() {
+  capture('referral_banner_dismissed')
+}
+
+export function trackReferralPaywallClicked(tool: Tool, surface: 'banner' | 'modal') {
+  capture('referral_paywall_clicked', { tool, surface })
 }
