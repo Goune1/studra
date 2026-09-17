@@ -7,7 +7,7 @@ interface Props {
 
 export function KpiStrip({ users }: Props) {
   const total     = users.length
-  const proCount  = users.filter(u => u.plan === 'pro').length
+  const proCount  = users.filter(u => u.hasStripeSubscription).length
   const proRate   = total > 0 ? Math.round((proCount / total) * 100) : 0
   const totalGens = users.reduce((s, u) => s + u.generationsUsed, 0)
 

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight, Check } from '@phosphor-icons/react/dist/ssr'
+import { resolvePlan } from '@/lib/plan'
 import type { Profile } from '@/types'
 import styles from './pro-gate.module.css'
 
@@ -9,7 +10,7 @@ interface ProGateProps {
 }
 
 export function ProGate({ profile, children }: ProGateProps) {
-  if (profile.plan === 'pro') return <>{children}</>
+  if (resolvePlan(profile).isPro) return <>{children}</>
 
   const features = [
     'Générations illimitées',

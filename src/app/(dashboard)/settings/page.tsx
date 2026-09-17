@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Brain, CaretRight, Check, X } from '@phosphor-icons/react/dist/ssr'
 import { createClient } from '@/lib/supabase/server'
+import { resolvePlan } from '@/lib/plan'
 import { CheckoutButton } from '@/components/checkout-button'
 import { ManageSubscriptionButton } from '@/components/manage-subscription-button'
 import { MarketingConsentToggle } from '@/components/settings/MarketingConsentToggle'
@@ -12,9 +13,9 @@ export default async function SettingsPage() {
   const format = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user!.id).single()
+  const { data: profile } = await supabase.from('profiles').select('*, is_pro').eq('id', user!.id).single()
 
-  const isPro = profile?.plan === 'pro'
+  const { isPro, hasStripeSubscription, hasStripeCustomer, offeredProUntil } = resolvePlan(profile)
   const generationsLeft = isPro ? null : Math.max(0, 5 - (profile?.generations_used_this_month ?? 0))
 
   return (
@@ -80,6 +81,11 @@ export default async function SettingsPage() {
                 : `Il te reste ${generationsLeft!} ${generationsLeft === 1 ? 'génération' : 'générations'} ce mois-ci.`}
             </p>
           )}
+          {offeredProUntil && (
+            <p className={styles.usageNotice}>
+              {`Pro offert jusqu'au ${format.format(new Date(offeredProUntil))}. Si tu t'abonnes pendant cette période, l'abonnement démarre tout de suite et court en parallèle : les jours offerts restants ne sont pas reportés.`}
+            </p>
+          )}
           <div className={styles.featureList}>
             {[
               { label: 'Flashcards illimitées', included: isPro },
@@ -97,7 +103,7 @@ export default async function SettingsPage() {
               </div>
             ))}
           </div>
-          <div className={styles.subscriptionAction}>{!isPro ? <CheckoutButton /> : <ManageSubscriptionButton />}</div>
+          <div className={styles.subscriptionAction}>{hasStripeSubscription ? hasStripeCustomer && <ManageSubscriptionButton /> : <CheckoutButton />}</div>
         </section>
 
         <section className={`${styles.panel} ${styles.dangerPanel} ${styles.widePanel}`}>

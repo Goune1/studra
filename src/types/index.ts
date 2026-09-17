@@ -3,6 +3,10 @@ export interface Profile {
   email: string
   full_name: string | null
   plan: 'free' | 'pro'
+  pro_until: string | null
+  referral_code: string
+  /** Champ calculé public.is_pro, présent seulement si sélectionné (`*, is_pro`). */
+  is_pro?: boolean
   lemon_squeezy_customer_id: string | null
   lemon_squeezy_subscription_id: string | null
   generations_used_this_month: number

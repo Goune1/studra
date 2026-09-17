@@ -8,6 +8,7 @@ import { AnalysisPanel } from '@/components/lacunes/AnalysisPanel'
 import { EmptyState } from '@/components/lacunes/EmptyState'
 import { ProGate } from '@/components/pro-gate'
 import { createClient } from '@/lib/supabase/client'
+import { resolvePlan } from '@/lib/plan'
 import { Eyebrow } from '@/components/ui/Eyebrow'
 import type { MockCard, MockStats, LacunesAnalysis } from '@/lib/lacunes/mock'
 import type { Profile } from '@/types'
@@ -41,7 +42,7 @@ export default function LacunesPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
       trackLacunesOpen(user.id)
-      supabase.from('profiles').select('*').eq('id', user.id).single().then(({ data }) => {
+      supabase.from('profiles').select('*, is_pro').eq('id', user.id).single().then(({ data }) => {
         if (data) setProfile(data as Profile)
         setProfileLoading(false)
       })
@@ -49,7 +50,7 @@ export default function LacunesPage() {
   }, [])
 
   useEffect(() => {
-    if (profile?.plan === 'pro') {
+    if (resolvePlan(profile).isPro) {
       fetchLacunes()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,7 +83,7 @@ export default function LacunesPage() {
   if (profileLoading) return null
   if (!profile) return null
 
-  if (profile.plan !== 'pro') {
+  if (!resolvePlan(profile).isPro) {
     return <ProGate profile={profile}>{null}</ProGate>
   }
 

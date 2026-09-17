@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
+import { PLAN_SELECT, resolvePlan } from '@/lib/plan'
 
 export const FREE_GENERATIONS_QUOTA = 5
 
@@ -21,11 +22,11 @@ export async function getGenerationQuota(): Promise<GenerationQuota | null> {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('plan, generations_used_this_month')
+    .select(`${PLAN_SELECT}, generations_used_this_month`)
     .eq('id', user.id)
     .single()
 
-  const isPro = profile?.plan === 'pro'
+  const { isPro } = resolvePlan(profile)
   const used = profile?.generations_used_this_month ?? 0
 
   return {

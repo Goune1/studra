@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import ContentPicker from '@/components/ContentPicker'
 import { ProGate } from '@/components/pro-gate'
 import { createClient } from '@/lib/supabase/client'
+import { resolvePlan } from '@/lib/plan'
 import type { ContentItem, Profile } from '@/types'
 import styles from '../socrate.module.css'
 
@@ -21,7 +22,7 @@ export default function SocrateNewPage() {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
-      supabase.from('profiles').select('*').eq('id', user.id).single().then(({ data }) => {
+      supabase.from('profiles').select('*, is_pro').eq('id', user.id).single().then(({ data }) => {
         if (data) setProfile(data as Profile)
         setProfileLoading(false)
       })
@@ -55,7 +56,7 @@ export default function SocrateNewPage() {
 
   if (profileLoading) return null
   if (!profile) return null
-  if (profile.plan !== 'pro') return <ProGate profile={profile}>{null}</ProGate>
+  if (!resolvePlan(profile).isPro) return <ProGate profile={profile}>{null}</ProGate>
 
   return (
     <div className={styles.newPage}>

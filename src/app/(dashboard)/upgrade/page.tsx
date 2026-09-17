@@ -1,6 +1,7 @@
 import { Check } from '@phosphor-icons/react/dist/ssr'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { PLAN_SELECT, resolvePlan } from '@/lib/plan'
 import { CheckoutButton } from '../billing/billing-actions'
 import styles from '../billing/billing.module.css'
 
@@ -8,11 +9,13 @@ const FREE_FEATURES = ['5 générations IA par mois', 'Accès à tous les format
 const PRO_FEATURES = ['Générations IA illimitées', 'Mode Socrate (maïeutique)', "Planning d'examen personnalisé", 'Analyse des lacunes avancée', 'Toutes les futures fonctionnalités']
 
 export default async function UpgradePage() {
+  const format = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('plan, generations_used_this_month').eq('id', user!.id).single()
+  const { data: profile } = await supabase.from('profiles').select(`${PLAN_SELECT}, generations_used_this_month`).eq('id', user!.id).single()
 
-  if (profile?.plan === 'pro') redirect('/dashboard')
+  const { hasStripeSubscription, offeredProUntil } = resolvePlan(profile)
+  if (hasStripeSubscription) redirect('/dashboard')
 
   const generationsLeft = Math.max(0, 5 - (profile?.generations_used_this_month ?? 0))
   const overQuota = generationsLeft === 0
@@ -23,11 +26,17 @@ export default async function UpgradePage() {
         <p className={styles.eyebrow}>Abonnement</p>
         <h1 className={styles.title}>Passe à la vitesse supérieure</h1>
         <p className={styles.summary}>Choisis le plan qui suit ton rythme de révision.</p>
-        <p className={styles.quotaNotice}>
-          {overQuota
-            ? 'Tu as utilisé tes 5 générations ce mois-ci. Passe Pro pour continuer sans limite.'
-            : `Il te reste ${generationsLeft} ${generationsLeft === 1 ? 'génération' : 'générations'} ce mois-ci.`}
-        </p>
+        {offeredProUntil ? (
+          <p className={styles.quotaNotice}>
+            {`Pro offert jusqu'au ${format.format(new Date(offeredProUntil))}. Si tu t'abonnes pendant cette période, l'abonnement démarre tout de suite et court en parallèle : les jours offerts restants ne sont pas reportés.`}
+          </p>
+        ) : (
+          <p className={styles.quotaNotice}>
+            {overQuota
+              ? 'Tu as utilisé tes 5 générations ce mois-ci. Passe Pro pour continuer sans limite.'
+              : `Il te reste ${generationsLeft} ${generationsLeft === 1 ? 'génération' : 'générations'} ce mois-ci.`}
+          </p>
+        )}
       </header>
 
       <section aria-label="Comparaison des abonnements" className={styles.planGrid}>

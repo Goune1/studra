@@ -22,7 +22,8 @@ export interface AdminUser {
   id:                string
   name:              string
   email:             string
-  plan:              Plan
+  isPro:             boolean          // accès Pro effectif (Stripe ou Pro offert)
+  hasStripeSubscription: boolean     // abonnement Stripe payant
   stripeStatus:      StripeStatus
   stripeCustomerId:  string | null
   generationsUsed:   number

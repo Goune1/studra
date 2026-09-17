@@ -61,7 +61,7 @@ export function DashboardActive({ data, dateLabel }: { data: DashboardData; date
           <p className={styles.date}>{dateLabel.toLowerCase()}</p>
         </div>
         <div className={styles.meta}>
-          {user.plan === 'pro' && <span>Pro</span>}
+          {user.isPro && <span>Pro</span>}
         </div>
       </header>
 
