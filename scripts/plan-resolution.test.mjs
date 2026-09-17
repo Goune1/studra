@@ -36,8 +36,8 @@ const ALLOWED_LINES = [
   // Déclaration du type Profile (colonne sélectionnée par `*`), sans lecture.
   { file: 'src/types/index.ts', pattern: /^\s*pro_until: string \| null$/ },
   // Résultat de la RPC referral_qualify : date du mois offert qui vient d'être
-  // accordé, jamais utilisée pour décider de l'accès Pro.
-  { file: 'src/lib/referral.ts', pattern: /^\s*pro_until\?: string \| null$|row\.pro_until/ },
+  // accordé (emails, propriété PostHog), jamais utilisée pour décider de l'accès Pro.
+  { file: 'src/lib/referral.ts', pattern: /^\s*pro_until\?: string \| null$|row\.pro_until|^\s*pro_until: reward\.proUntil,$/ },
 ]
 
 const FORBIDDEN = [

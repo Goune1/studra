@@ -345,3 +345,12 @@ export function trackAIGenerationError(tool: Tool, error_code: string) {
 export function trackAIGenerationSuccess(tool: Tool, duration_ms: number) {
   capture('ai_generation_succeeded', { tool, duration_ms })
 }
+
+// -------------------
+// PARRAINAGE
+// -------------------
+
+/** Le code existe dès la création du profil : on mesure le premier geste de partage, la copie du lien. */
+export function trackReferralLinkCreated() {
+  capture('referral_link_created', { source: 'settings_parrainage' })
+}

@@ -71,7 +71,7 @@ test('l’inscription email et le callback OAuth attribuent via le cookie', () =
   for (const file of ['src/app/api/auth/register/route.ts', 'src/app/auth/callback/route.ts']) {
     const source = read(file)
     assert.match(source, /import \{ attributeReferralFromCookie \} from '@\/lib\/referral'/, file)
-    assert.match(source, /await attributeReferralFromCookie\((?:data\.user|user)\.id\)/, file)
+    assert.match(source, /await attributeReferralFromCookie\((?:data\.user\.id, 'email'|user\.id, user\.app_metadata\?\.provider \?\? 'oauth')\)/, file)
   }
   const referral = read('src/lib/referral.ts')
   assert.match(referral, /rpc\('referral_attribute'/)

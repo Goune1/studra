@@ -31,7 +31,7 @@ export async function GET(request: Request) {
         }
         // Parrainage utilisateur : sans effet pour un compte existant, la RPC
         // n'attribue que les profils créés depuis moins d'une heure.
-        await attributeReferralFromCookie(user.id)
+        await attributeReferralFromCookie(user.id, user.app_metadata?.provider ?? 'oauth')
         const createdAt = new Date(user.created_at).getTime()
         const lastSignIn = new Date(user.last_sign_in_at ?? user.created_at).getTime()
         isNewUser = Math.abs(lastSignIn - createdAt) < 60_000

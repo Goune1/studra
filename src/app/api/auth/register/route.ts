@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   }
 
   // Parrainage utilisateur (cookie posé par le proxy sur /?ref=CODE)
-  await attributeReferralFromCookie(data.user.id)
+  await attributeReferralFromCookie(data.user.id, 'email')
 
   return NextResponse.json({ user: { id: data.user.id, email: data.user.email } })
 }

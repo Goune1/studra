@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 import { toast } from 'sonner'
+import { trackReferralLinkCreated } from '@/lib/analytics'
 import styles from './parrainage.module.css'
 
 export function CopyLinkButton({ link }: { link: string }) {
@@ -18,6 +19,7 @@ export function CopyLinkButton({ link }: { link: string }) {
     try {
       await navigator.clipboard.writeText(link)
       setCopied(true)
+      trackReferralLinkCreated()
     } catch {
       toast.error('Impossible de copier le lien. Sélectionne-le puis copie-le manuellement.')
     }

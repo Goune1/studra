@@ -117,6 +117,76 @@ async function sendTransactionalEmail(to: string, templateName: keyof Transactio
   return resend.emails.send({from: FROM, to, subject: template.subject, html: baseLayout(template.body(url))})
 }
 
+// ── Parrainage ───────────────────────────────────────────────────────────────
+// Sujets sans emoji, contrairement aux templates historiques (choix assumé).
+
+const REFERRAL_MAX_MONTHS = 3
+const REFERRALS_PER_MONTH = 2
+
+export interface ReferralQualifiedEmailData {
+  /** Filleuls qualifiés comptant pour le prochain mois (sur 2), null au plafond. */
+  progress: number | null
+}
+
+export interface ReferralRewardEmailData {
+  sequence: number
+  proUntil: string
+  hasStripeSubscription: boolean
+}
+
+function referralPageUrl(): string {
+  return new URL('/settings/parrainage', APP_URL).toString()
+}
+
+function paragraph(text: string): string {
+  return `<p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">${text}</p>`
+}
+
+export function referralQualifiedEmail({progress}: ReferralQualifiedEmailData): {subject: string; html: string} {
+  const next = progress === null
+    ? `Tu as déjà obtenu tes ${REFERRAL_MAX_MONTHS} mois offerts : ce parrainage est bien enregistré, mais il ne donne plus de mois supplémentaire.`
+    : `Tu es à ${progress}/${REFERRALS_PER_MONTH} vers ton prochain mois de Pro offert.`
+  return {
+    subject: "Un de tes filleuls vient d'être qualifié",
+    html: baseLayout(`
+      <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Un filleul de plus</h1>
+      ${paragraph('Une personne inscrite avec ton lien de parrainage vient de générer son premier contenu sur Studra.')}
+      ${paragraph(next)}
+      <div style="height:8px;"></div>
+      ${emailButton(referralPageUrl(), 'Voir mon parrainage')}
+    `),
+  }
+}
+
+export function referralRewardEmail({sequence, proUntil, hasStripeSubscription}: ReferralRewardEmailData): {subject: string; html: string} {
+  const until = new Intl.DateTimeFormat('fr-FR', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris'}).format(new Date(proUntil))
+  const count = sequence >= REFERRAL_MAX_MONTHS
+    ? `C'était ton ${REFERRAL_MAX_MONTHS}e et dernier mois offert. Merci d'avoir fait connaître Studra.`
+    : `Mois offerts obtenus : ${sequence}/${REFERRAL_MAX_MONTHS}.`
+  return {
+    subject: 'Tu as gagné un mois de Studra Pro',
+    html: baseLayout(`
+      <h1 style="margin:0 0 16px;font-size:24px;color:#1a1a2e;">Un mois de Pro offert</h1>
+      ${paragraph('Deux personnes inscrites avec ton lien utilisent maintenant Studra. Comme promis, tu gagnes un mois de Studra Pro, sans carte bancaire.')}
+      ${paragraph(`Ton Pro offert court jusqu'au <strong>${until}</strong>.`)}
+      ${hasStripeSubscription ? paragraph('Ton abonnement en cours continue normalement : le mois offert court en parallèle.') : ''}
+      ${paragraph(count)}
+      <div style="height:8px;"></div>
+      ${emailButton(referralPageUrl(), 'Voir mon parrainage')}
+    `),
+  }
+}
+
+export async function sendReferralQualifiedEmail(to: string, data: ReferralQualifiedEmailData) {
+  const {subject, html} = referralQualifiedEmail(data)
+  return resend.emails.send({from: FROM, to, subject, html})
+}
+
+export async function sendReferralRewardEmail(to: string, data: ReferralRewardEmailData) {
+  const {subject, html} = referralRewardEmail(data)
+  return resend.emails.send({from: FROM, to, subject, html})
+}
+
 export async function sendWelcomeEmail(to: string) {
   return sendTransactionalEmail(to, 'welcome')
 }
