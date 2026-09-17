@@ -4,7 +4,10 @@
 
 alter table public.profiles
   add column if not exists stripe_subscription_event_at timestamptz,
-  add column if not exists stripe_subscription_created_at timestamptz;
+  add column if not exists stripe_subscription_created_at timestamptz,
+  add column if not exists stripe_current_period_end timestamptz,
+  add column if not exists subscription_cancel_at_period_end boolean not null default false,
+  add column if not exists updated_at timestamptz not null default now();
 
 alter table public.affiliate_settings
   add column if not exists minimum_payout_minor bigint,
@@ -302,7 +305,7 @@ begin
 end;
 $$;
 
-revoke all on function public.register_affiliate(text,text,text,text,text,text,text,text,text) from public;
+revoke all on function public.register_affiliate(text,text,text,text,text,text,text,text,text) from public, anon, authenticated;
 grant execute on function public.register_affiliate(text,text,text,text,text,text,text,text,text) to authenticated;
 
 create or replace function public.update_affiliate_payment_method(
@@ -338,7 +341,7 @@ begin
 end;
 $$;
 
-revoke all on function public.update_affiliate_payment_method(text,text,text,text,text) from public;
+revoke all on function public.update_affiliate_payment_method(text,text,text,text,text) from public, anon, authenticated;
 grant execute on function public.update_affiliate_payment_method(text,text,text,text,text) to authenticated;
 
 create or replace function public.affiliate_attribute_referral(
@@ -371,7 +374,7 @@ begin
   return found;
 end;
 $$;
-revoke all on function public.affiliate_attribute_referral(text,uuid,boolean) from public;
+revoke all on function public.affiliate_attribute_referral(text,uuid,boolean) from public, anon, authenticated;
 grant execute on function public.affiliate_attribute_referral(text,uuid,boolean) to service_role;
 
 create or replace function public.affiliate_qualify_referral(p_referred_user_id uuid)
@@ -389,7 +392,7 @@ begin
   return found;
 end;
 $$;
-revoke all on function public.affiliate_qualify_referral(uuid) from public;
+revoke all on function public.affiliate_qualify_referral(uuid) from public, anon, authenticated;
 grant execute on function public.affiliate_qualify_referral(uuid) to service_role;
 
 create or replace function public.affiliate_record_commission(
@@ -450,7 +453,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_record_commission(uuid,text,text,text,text,bigint,text,timestamptz) from public;
+revoke all on function public.affiliate_record_commission(uuid,text,text,text,text,bigint,text,timestamptz) from public, anon, authenticated;
 grant execute on function public.affiliate_record_commission(uuid,text,text,text,text,bigint,text,timestamptz) to service_role;
 
 create or replace function public.affiliate_record_adjustment(
@@ -533,7 +536,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_record_adjustment(text,text,text,bigint,bigint,text,text,text) from public;
+revoke all on function public.affiliate_record_adjustment(text,text,text,bigint,bigint,text,text,text) from public, anon, authenticated;
 grant execute on function public.affiliate_record_adjustment(text,text,text,bigint,bigint,text,text,text) to service_role;
 
 create or replace function public.affiliate_record_or_queue_adjustment(
@@ -648,7 +651,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_record_or_queue_adjustment(text,text,text,bigint,bigint,text,text,text) from public;
+revoke all on function public.affiliate_record_or_queue_adjustment(text,text,text,bigint,bigint,text,text,text) from public, anon, authenticated;
 grant execute on function public.affiliate_record_or_queue_adjustment(text,text,text,bigint,bigint,text,text,text) to service_role;
 
 create or replace function public.affiliate_reconcile_pending_adjustments(p_stripe_payment_intent_id text)
@@ -679,7 +682,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_reconcile_pending_adjustments(text) from public;
+revoke all on function public.affiliate_reconcile_pending_adjustments(text) from public, anon, authenticated;
 grant execute on function public.affiliate_reconcile_pending_adjustments(text) to service_role;
 
 create or replace function public.affiliate_record_commission_and_reconcile(
@@ -714,7 +717,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_record_commission_and_reconcile(uuid,text,text,text,text,bigint,text,timestamptz) from public;
+revoke all on function public.affiliate_record_commission_and_reconcile(uuid,text,text,text,text,bigint,text,timestamptz) from public, anon, authenticated;
 grant execute on function public.affiliate_record_commission_and_reconcile(uuid,text,text,text,text,bigint,text,timestamptz) to service_role;
 
 create or replace function public.affiliate_reverse_dispute(p_stripe_dispute_id text)
@@ -765,7 +768,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_reverse_dispute(text) from public;
+revoke all on function public.affiliate_reverse_dispute(text) from public, anon, authenticated;
 grant execute on function public.affiliate_reverse_dispute(text) to service_role;
 
 create or replace function public.affiliate_mature_commissions(p_now timestamptz default now())
@@ -789,7 +792,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_mature_commissions(timestamptz) from public;
+revoke all on function public.affiliate_mature_commissions(timestamptz) from public, anon, authenticated;
 grant execute on function public.affiliate_mature_commissions(timestamptz) to service_role;
 
 create or replace function public.affiliate_prepare_payout(
@@ -863,7 +866,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_prepare_payout(uuid,text,text,uuid,text) from public;
+revoke all on function public.affiliate_prepare_payout(uuid,text,text,uuid,text) from public, anon, authenticated;
 grant execute on function public.affiliate_prepare_payout(uuid,text,text,uuid,text) to service_role;
 
 create or replace function public.affiliate_confirm_payout(
@@ -898,7 +901,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_confirm_payout(uuid,text,uuid) from public;
+revoke all on function public.affiliate_confirm_payout(uuid,text,uuid) from public, anon, authenticated;
 grant execute on function public.affiliate_confirm_payout(uuid,text,uuid) to service_role;
 
 create or replace function public.affiliate_fail_payout(
@@ -925,7 +928,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_fail_payout(uuid,text,uuid) from public;
+revoke all on function public.affiliate_fail_payout(uuid,text,uuid) from public, anon, authenticated;
 grant execute on function public.affiliate_fail_payout(uuid,text,uuid) to service_role;
 
 create or replace function public.affiliate_admin_update(
@@ -966,7 +969,7 @@ begin
   );
 end;
 $$;
-revoke all on function public.affiliate_admin_update(uuid,text,numeric,uuid) from public;
+revoke all on function public.affiliate_admin_update(uuid,text,numeric,uuid) from public, anon, authenticated;
 grant execute on function public.affiliate_admin_update(uuid,text,numeric,uuid) to service_role;
 
 create or replace function public.apply_stripe_subscription_state(
@@ -1018,7 +1021,7 @@ begin
   return true;
 end;
 $$;
-revoke all on function public.apply_stripe_subscription_state(uuid,text,text,boolean,boolean,timestamptz,timestamptz,boolean,timestamptz) from public;
+revoke all on function public.apply_stripe_subscription_state(uuid,text,text,boolean,boolean,timestamptz,timestamptz,boolean,timestamptz) from public, anon, authenticated;
 grant execute on function public.apply_stripe_subscription_state(uuid,text,text,boolean,boolean,timestamptz,timestamptz,boolean,timestamptz) to service_role;
 
 create or replace function public.affiliate_claim_stripe_event(
@@ -1051,7 +1054,7 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_claim_stripe_event(text,text,text) from public;
+revoke all on function public.affiliate_claim_stripe_event(text,text,text) from public, anon, authenticated;
 grant execute on function public.affiliate_claim_stripe_event(text,text,text) to service_role;
 
 create or replace function public.affiliate_complete_stripe_event(p_event_id text)
@@ -1060,7 +1063,7 @@ returns void language sql security definer set search_path = public as $$
   set status = 'completed', completed_at = now(), updated_at = now(), last_error = null
   where event_id = p_event_id and status = 'processing';
 $$;
-revoke all on function public.affiliate_complete_stripe_event(text) from public;
+revoke all on function public.affiliate_complete_stripe_event(text) from public, anon, authenticated;
 grant execute on function public.affiliate_complete_stripe_event(text) to service_role;
 
 create or replace function public.affiliate_fail_stripe_event(p_event_id text, p_error text)
@@ -1069,5 +1072,5 @@ returns void language sql security definer set search_path = public as $$
   set status = 'failed', last_error = left(p_error, 2000), updated_at = now()
   where event_id = p_event_id and status = 'processing';
 $$;
-revoke all on function public.affiliate_fail_stripe_event(text,text) from public;
+revoke all on function public.affiliate_fail_stripe_event(text,text) from public, anon, authenticated;
 grant execute on function public.affiliate_fail_stripe_event(text,text) to service_role;

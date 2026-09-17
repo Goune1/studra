@@ -79,5 +79,5 @@ begin
 end;
 $$;
 
-revoke all on function public.affiliate_prepare_payout(uuid,text,text,uuid,text) from public;
+revoke all on function public.affiliate_prepare_payout(uuid,text,text,uuid,text) from public, anon, authenticated;
 grant execute on function public.affiliate_prepare_payout(uuid,text,text,uuid,text) to service_role;
