@@ -6,7 +6,7 @@ const moduleUrl = pathToFileURL(new URL('../src/lib/route-access.ts', import.met
 const {isDashboardRoute} = await import(moduleUrl)
 
 test('les routes dashboard exactes et leurs enfants sont privées', () => {
-  for (const pathname of ['/dashboard', '/dashboard/', '/flashcards', '/flashcards/abc', '/settings/revision']) {
+  for (const pathname of ['/dashboard', '/dashboard/', '/flashcards', '/flashcards/abc', '/settings/revision', '/tage-mage', '/tage-mage/diagnostic']) {
     assert.equal(isDashboardRoute(pathname), true, pathname)
   }
 })

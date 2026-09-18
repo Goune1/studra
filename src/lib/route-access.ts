@@ -10,6 +10,7 @@ const dashboardRoutes = [
   '/recall',
   '/annales',
   '/planning',
+  '/tage-mage',
   '/settings',
   '/billing',
   '/affiliate',
