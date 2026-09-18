@@ -38,7 +38,7 @@ export default async function TageMagePage() {
         </div>
         <section className={styles.heroNote} aria-label="Format du diagnostic">
           <ChartBar size={23} weight="regular" aria-hidden="true" />
-          <div><strong>Diagnostic court</strong><span>24 questions · 6 sous-tests</span></div>
+          <div><strong>Diagnostic privé</strong><span>24 questions · 6 sous-tests · résultat indicatif</span></div>
         </section>
       </header>
 
