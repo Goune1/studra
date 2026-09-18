@@ -347,6 +347,30 @@ export function trackAIGenerationSuccess(tool: Tool, duration_ms: number) {
 }
 
 // -------------------
+// TAGE MAGE
+// -------------------
+
+export function trackTageMageModuleViewed() {
+  capture('tage_mage_module_viewed')
+}
+
+export function trackTageMageGoalSaved() {
+  capture('tage_mage_goal_saved')
+}
+
+export function trackTageMageDiagnosticStarted() {
+  capture('tage_mage_diagnostic_started')
+}
+
+export function trackTageMageDiagnosticCompleted(durationSeconds: number, answeredCount: number) {
+  capture('tage_mage_diagnostic_completed', { duration_seconds: durationSeconds, answered_count: answeredCount })
+}
+
+export function trackTageMageResultsViewed() {
+  capture('tage_mage_results_viewed')
+}
+
+// -------------------
 // PARRAINAGE
 // -------------------
 

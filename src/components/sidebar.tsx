@@ -118,6 +118,7 @@ export function Sidebar({ isOpen, onClose, isPro, userName, userEmail, userAvata
     { href: '/fiches', label: "Fiches", Icon: FileText },
     { href: '/socrate', label: "Socrate", Icon: Lightbulb },
     { href: '/exams', label: "Examens", Icon: ClipboardCheck },
+    { href: '/tage-mage', label: "TAGE MAGE", Icon: Target },
     { href: '/planning', label: "Planning", Icon: CalendarDays },
     { href: '/timelines', label: "Frises", Icon: AlignLeft },
     { href: '/schemas', label: "Schémas", Icon: GitBranch },
